@@ -36,9 +36,9 @@
   --sidebar-accent-foreground: #374151;
   --sidebar-border: #e5e7eb;
   --sidebar-ring: #065f46;
-  --font-sans: DM Sans, sans-serif;
-  --font-serif: Lora, serif;
-  --font-mono: IBM Plex Mono, monospace;
+  --font-sans: Geist, sans-serif;
+  --font-serif: Geist, serif;
+  --font-mono: Geist Mono, monospace;
   --radius: 0.5rem;
   --shadow-2xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
@@ -90,9 +90,9 @@
   --sidebar-accent-foreground: #a1a1aa;
   --sidebar-border: #4b5563;
   --sidebar-ring: #6ee7b7;
-  --font-sans: DM Sans, sans-serif;
-  --font-serif: Lora, serif;
-  --font-mono: IBM Plex Mono, monospace;
+  --font-sans: Geist, sans-serif;
+  --font-serif: Geist, serif;
+  --font-mono: Geist Mono, monospace;
   --radius: 0.5rem;
   --shadow-2xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
