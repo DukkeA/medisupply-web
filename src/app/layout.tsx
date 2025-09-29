@@ -4,6 +4,7 @@ import './globals.css'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/sidebar/app-sidebar'
 import QueryProvider from '@/components/providers/query-client-provider'
+import { Toaster } from '@/components/ui/sonner'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,6 +37,7 @@ export default function RootLayout({
             <SidebarInset>{children}</SidebarInset>
           </SidebarProvider>
         </QueryProvider>
+        <Toaster />
       </body>
     </html>
   )
