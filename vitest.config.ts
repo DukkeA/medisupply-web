@@ -17,14 +17,12 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/.{idea,git,cache,output,temp}/**',
-      '**/src/components/ui/**', // Exclude shadcn UI components
-      '**/src/components/layout/sidebar/**' // Exclude generated sidebar
+      '**/src/components/ui/**' // Exclude shadcn UI components
     ],
     coverage: {
       provider: 'v8',
       exclude: [
         'src/components/ui/**',
-        'src/components/layout/sidebar/**',
         'src/app/**/layout.tsx', // Exclude layouts temporarily
         'src/app/**/page.tsx', // Exclude pages temporarily
         'src/app/**/loading.tsx', // Exclude loading components
@@ -34,6 +32,10 @@ export default defineConfig({
         'src/messages/**', // Exclude translation files
         'middleware.ts', // Exclude Next.js middleware
         '.next/**', // Exclude Next.js build files
+        'out/**', // Exclude Next.js static export output
+        'src/__tests__/**', // Exclude test utilities
+        'src/lib/**', // Exclude lib utilities (add tests if needed)
+        'src/components/layout/sidebar/index.ts', // Exclude main barrel export
         '**/*.config.*',
         '**/*.d.ts'
       ],

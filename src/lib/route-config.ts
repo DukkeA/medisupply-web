@@ -1,4 +1,6 @@
 // Configuración de rutas para el breadcrumb dinámico
+// TODO: Evaluate if this is a pure utility module or if it needs unit tests
+// for business logic like formatSegmentLabel and complex route resolution
 export interface RouteConfig {
   label: string
   showInBreadcrumb?: boolean

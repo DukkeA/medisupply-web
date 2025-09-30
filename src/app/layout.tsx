@@ -6,7 +6,7 @@ import {
   SidebarProvider,
   SidebarTrigger
 } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/layout/sidebar/app-sidebar'
+import { AppSidebar } from '@/components/layout/sidebar'
 import QueryProvider from '@/components/providers/QueryProvider'
 import { Toaster } from '@/components/ui/sonner'
 import { Separator } from '@/components/ui/separator'
