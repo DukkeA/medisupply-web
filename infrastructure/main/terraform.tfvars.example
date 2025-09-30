@@ -1,0 +1,14 @@
+# Example Terraform variables file
+# Copy this to terraform.tfvars and modify as needed
+
+# Project configuration
+project_name = "medisupply-web"
+environment  = "prod"
+aws_region   = "us-east-1"
+
+# Domain configuration (optional)
+# domain_name = "your-domain.com"
+# enable_ssl  = true
+
+# Performance and cost optimization
+enable_cloudfront = true

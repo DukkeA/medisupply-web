@@ -7,7 +7,7 @@ import {
   SidebarTrigger
 } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/sidebar/app-sidebar'
-import QueryProvider from '@/components/providers/query-client-provider'
+import QueryProvider from '@/components/providers/QueryProvider'
 import { Toaster } from '@/components/ui/sonner'
 import { Separator } from '@/components/ui/separator'
 import { DynamicBreadcrumb } from '@/components/layout/dynamic-breadcrumb'

@@ -1,13 +1,17 @@
-'use client'
-
-import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import { toast } from 'sonner'
+import { ClientToastButton } from './client-toast-button'
 
 export default function Home() {
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+        {/* MediSupply Web App */}
+        <div className="bg-blue-100 p-4 rounded mb-4">
+          <p>
+            <strong>MediSupply Web Application</strong>
+          </p>
+          <p>Production deployment with S3 + CloudFront</p>
+        </div>
         <Image
           className="dark:invert"
           src="/next.svg"
@@ -30,9 +34,7 @@ export default function Home() {
         </ol>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <Button onClick={() => toast.success('Ola ke Ase')}>
-            Ola ke Ase
-          </Button>
+          <ClientToastButton />
           <a
             className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
