@@ -52,7 +52,7 @@ export function ProvidersTable() {
   }
 
   if (isError) {
-    return <div>Error loading contacts.</div>
+    return <div>Error loading providers.</div>
   }
 
   return (

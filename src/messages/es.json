@@ -43,5 +43,62 @@
         "creating": "Creando..."
       }
     }
+  },
+  "products": {
+    "page": {
+      "title": "Productos",
+      "description": "Administra tus productos aquí."
+    },
+    "table": {
+      "addButton": "Agregar Producto",
+      "addCSVButton": "Cargar CSV",
+      "columns": {
+        "sku": "SKU",
+        "name": "Nombre",
+        "category": "Categoría",
+        "price": "Precio",
+        "refrigerated": "Refrigerado",
+        "provider": "Proveedor"
+      },
+      "loading": "Cargando productos...",
+      "error": "Error al cargar productos.",
+      "noData": "No se encontraron productos. Agrega tu primer producto para comenzar."
+    },
+    "modal": {
+      "toastSuccess": "¡Producto creado exitosamente!",
+      "toastError": "Error al crear producto. Por favor intenta de nuevo.",
+      "title": "Crear Nuevo Producto",
+      "description": "Completa la información del producto a continuación. Haz clic en guardar cuando hayas terminado.",
+      "fields": {
+        "sku": "SKU",
+        "name": "Nombre",
+        "category": "Categoría",
+        "price": "Precio",
+        "refrigerated": "Refrigerado",
+        "provider": "Proveedor"
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "create": "Crear",
+        "creating": "Creando..."
+      }
+    },
+    "csvModal": {
+      "toastSuccess": "¡Productos cargados exitosamente!",
+      "toastError": "Error al cargar productos. Por favor intenta de nuevo.",
+      "noFileError": "Por favor selecciona un archivo CSV.",
+      "invalidFileType": "Por favor selecciona un archivo CSV válido.",
+      "title": "Cargar Productos desde CSV",
+      "description": "Carga un archivo CSV con información de productos. El archivo debe incluir columnas para SKU, nombre, categoría, precio, refrigerado y proveedor.",
+      "fields": {
+        "file": "Archivo CSV",
+        "fileDescription": "Formato aceptado: .csv (máx 10MB)"
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "upload": "Cargar",
+        "uploading": "Cargando..."
+      }
+    }
   }
 }

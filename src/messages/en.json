@@ -43,5 +43,62 @@
         "creating": "Creating..."
       }
     }
+  },
+  "products": {
+    "page": {
+      "title": "Products",
+      "description": "Manage your products here."
+    },
+    "table": {
+      "addButton": "Add Product",
+      "addCSVButton": "Upload CSV",
+      "columns": {
+        "sku": "SKU",
+        "name": "Name",
+        "category": "Category",
+        "price": "Price",
+        "refrigerated": "Refrigerated",
+        "provider": "Provider"
+      },
+      "loading": "Loading products...",
+      "error": "Error loading products.",
+      "noData": "No products found. Add your first product to get started."
+    },
+    "modal": {
+      "toastSuccess": "Product created successfully!",
+      "toastError": "Error creating product. Please try again.",
+      "title": "Create New Product",
+      "description": "Fill in the product information below. Click save when you're done.",
+      "fields": {
+        "sku": "SKU",
+        "name": "Name",
+        "category": "Category",
+        "price": "Price",
+        "refrigerated": "Refrigerated",
+        "provider": "Provider"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "creating": "Creating..."
+      }
+    },
+    "csvModal": {
+      "toastSuccess": "Products uploaded successfully!",
+      "toastError": "Error uploading products. Please try again.",
+      "noFileError": "Please select a CSV file.",
+      "invalidFileType": "Please select a valid CSV file.",
+      "title": "Upload Products from CSV",
+      "description": "Upload a CSV file containing product information. The file should include columns for SKU, name, category, price, refrigerated, and provider.",
+      "fields": {
+        "file": "CSV File",
+        "fileDescription": "Accepted format: .csv (max 10MB)"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "upload": "Upload",
+        "uploading": "Uploading..."
+      }
+    }
   }
 }

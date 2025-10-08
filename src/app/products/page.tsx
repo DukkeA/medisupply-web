@@ -1,15 +1,22 @@
+'use client'
+
+import { ProductsTable } from '@/components/products/products-table'
+import { useTranslations } from 'next-intl'
+
 export default function ProductsPage() {
+  const t = useTranslations('products')
+
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Productos</h2>
+    <main className="container mx-auto py-10">
+      <div className="flex flex-col gap-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {t('page.title')}
+          </h1>
+          <p className="text-muted-foreground">{t('page.description')}</p>
+        </div>
+        <ProductsTable />
       </div>
-      <div className="space-y-4">
-        <p>
-          Esta es la página de productos. El breadcrumb debería mostrar: Inicio
-          › Productos
-        </p>
-      </div>
-    </div>
+    </main>
   )
 }
