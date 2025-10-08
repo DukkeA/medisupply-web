@@ -1,0 +1,102 @@
+[
+  {
+    "id": "1",
+    "name": "María García",
+    "company": "MediPharm Colombia",
+    "nit": "900123456-1",
+    "email": "maria.garcia@medipharm.co",
+    "phone": "+57 312 456 7890",
+    "address": "Calle 100 #15-20, Bogotá",
+    "country": "Colombia"
+  },
+  {
+    "id": "2",
+    "name": "Carlos Rodríguez",
+    "company": "Farmaceuticas del Norte",
+    "nit": "800234567-2",
+    "email": "carlos.rodriguez@fdnorte.mx",
+    "phone": "+52 55 1234 5678",
+    "address": "Av. Insurgentes 500, CDMX",
+    "country": "México"
+  },
+  {
+    "id": "3",
+    "name": "Ana Silva",
+    "company": "BioMedical Supplies Brazil",
+    "nit": "12.345.678/0001-90",
+    "email": "ana.silva@biomedical.br",
+    "phone": "+55 11 98765 4321",
+    "address": "Rua Paulista 1000, São Paulo",
+    "country": "Brasil"
+  },
+  {
+    "id": "4",
+    "name": "John Smith",
+    "company": "Global Health Solutions",
+    "nit": "987654321",
+    "email": "john.smith@globalhealth.com",
+    "phone": "+1 305 555 0123",
+    "address": "1500 Brickell Ave, Miami, FL",
+    "country": "USA"
+  },
+  {
+    "id": "5",
+    "name": "Luis Fernández",
+    "company": "Distribuidora Médica Andina",
+    "nit": "J-98765432-0",
+    "email": "luis.fernandez@dma.ve",
+    "phone": "+58 212 987 6543",
+    "address": "Av. Francisco de Miranda, Caracas",
+    "country": "Venezuela"
+  },
+  {
+    "id": "6",
+    "name": "Sophie Laurent",
+    "company": "EuroMed Distributors",
+    "nit": "FR12345678901",
+    "email": "sophie.laurent@euromed.fr",
+    "phone": "+33 1 42 86 82 00",
+    "address": "25 Rue de la Paix, Paris",
+    "country": "Francia"
+  },
+  {
+    "id": "7",
+    "name": "Miguel Torres",
+    "company": "Suministros Médicos del Pacífico",
+    "nit": "700456789-3",
+    "email": "miguel.torres@smpacífico.pe",
+    "phone": "+51 1 234 5678",
+    "address": "Av. Javier Prado 2500, Lima",
+    "country": "Perú"
+  },
+  {
+    "id": "8",
+    "name": "Yuki Tanaka",
+    "company": "Asian Medical Supplies Co.",
+    "nit": "1234567890123",
+    "email": "yuki.tanaka@amsco.jp",
+    "phone": "+81 3 1234 5678",
+    "address": "1-1-1 Shibuya, Tokyo",
+    "country": "Japón"
+  },
+  {
+    "id": "9",
+    "name": "Roberto Martínez",
+    "company": "Innovación Médica S.A.",
+    "nit": "600789012-4",
+    "email": "roberto.martinez@innovamed.ar",
+    "phone": "+54 11 4567 8901",
+    "address": "Av. Corrientes 1234, Buenos Aires",
+    "country": "Argentina"
+  },
+  {
+    "id": "10",
+    "name": "Elena Kovács",
+    "company": "Central European Medical Trade",
+    "nit": "HU12345678",
+    "email": "elena.kovacs@cemt.hu",
+    "phone": "+36 1 234 5678",
+    "address": "Andrássy út 60, Budapest",
+    "country": "Hungría"
+  }
+]
