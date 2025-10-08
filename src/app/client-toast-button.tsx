@@ -2,8 +2,11 @@
 
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 export function ClientToastButton() {
-  return <Button onClick={() => toast.success('Ola ke Ase')}>Ola ke Ase</Button>
+  const t = useTranslations('common')
+
+  return <Button onClick={() => toast.success(t('hello'))}>{t('hello')}</Button>
 }
 // Test comment
