@@ -1,20 +1,32 @@
 import { getRequestConfig } from 'next-intl/server'
-import { routing } from './routing'
-import { Locale } from './config'
+import { cookies, headers } from 'next/headers'
 
-export default getRequestConfig(async ({ requestLocale }) => {
-  // This typically corresponds to the `[locale]` segment
-  const requestedLocale = await requestLocale
+export default getRequestConfig(async () => {
+  const cookieStore = await cookies()
+  const headersList = await headers()
 
-  // Ensure that a valid locale is used
-  const isValidLocale =
-    requestedLocale && routing.locales.includes(requestedLocale as Locale)
-  const locale: Locale = isValidLocale
-    ? (requestedLocale as Locale)
-    : routing.defaultLocale
+  // 1. Intentar obtener el locale de la cookie
+  let locale = cookieStore.get('locale')?.value
+
+  // 2. Si no hay cookie, detectar del navegador
+  if (!locale) {
+    const acceptLanguage = headersList.get('accept-language')
+    if (acceptLanguage) {
+      // Extraer el primer idioma del header (ej: "es-ES,es;q=0.9,en;q=0.8" -> "es")
+      const browserLang = acceptLanguage
+        .split(',')[0]
+        .split('-')[0]
+        .toLowerCase()
+      // Solo usar si es un idioma soportado
+      locale = ['en', 'es'].includes(browserLang) ? browserLang : 'en'
+    }
+  }
+
+  // 3. Fallback a inglés
+  locale = locale || 'en'
 
   return {
     locale,
-    messages: (await import(`../messages/${locale}.json`)).default
+    messages: (await import(`../../messages/${locale}.json`)).default
   }
 })
