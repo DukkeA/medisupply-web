@@ -2,6 +2,20 @@
   "common": {
     "hello": "¡Hola Mundo!"
   },
+  "sidebar": {
+    "providers": "Proveedores",
+    "products": "Productos",
+    "vendors": "Vendedores",
+    "manage-vendors": "Administrar Vendedores",
+    "vendors-plans": "Planes de Vendedores",
+    "reports": "Informes",
+    "overview": "Vista General",
+    "generate-report": "Generar Informe",
+    "inventory": "Inventario",
+    "items": "Artículos",
+    "warehouses": "Almacenes",
+    "routes": "Rutas"
+  },
   "providers": {
     "page": {
       "title": "Proveedores",

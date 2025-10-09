@@ -27,114 +27,116 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
-
-const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg'
-  },
-  navMain: [
-    {
-      title: 'Providers',
-      url: '/providers',
-      icon: SquareTerminal,
-      isActive: true,
-      items: []
-    },
-    {
-      title: 'Products',
-      url: '/products',
-      icon: Bot,
-      items: []
-    },
-    {
-      title: 'Vendors',
-      url: '/vendors',
-      icon: BookOpen,
-      isActive: true,
-      items: [
-        {
-          title: 'Manage Vendors',
-          url: '/vendors'
-        },
-        {
-          title: 'Vendors Plans',
-          url: '/vendors/plans'
-        }
-      ]
-    },
-    {
-      title: 'Reports',
-      url: '/reports',
-      icon: Settings2,
-      isActive: true,
-      items: [
-        {
-          title: 'Overview',
-          url: '/reports'
-        },
-        {
-          title: 'Generate Report',
-          url: '/reports/generate'
-        }
-      ]
-    },
-    {
-      title: 'Inventory',
-      url: '/inventory',
-      icon: Settings2,
-      isActive: true,
-      items: [
-        {
-          title: 'Items',
-          url: '/inventory'
-        },
-        {
-          title: 'Warehouses',
-          url: '/inventory/warehouses'
-        }
-      ]
-    },
-    {
-      title: 'Routes',
-      url: '/routes',
-      icon: Settings2,
-      items: []
-    }
-  ],
-  navSecondary: [
-    {
-      title: 'Support',
-      url: '#',
-      icon: LifeBuoy
-    },
-    {
-      title: 'Feedback',
-      url: '#',
-      icon: Send
-    }
-  ],
-  projects: [
-    {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame
-    },
-    {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart
-    },
-    {
-      name: 'Travel',
-      url: '#',
-      icon: Map
-    }
-  ]
-}
+import { useTranslations } from 'next-intl'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const t = useTranslations('sidebar')
+
+  const data = {
+    user: {
+      name: 'shadcn',
+      email: 'm@example.com',
+      avatar: '/avatars/shadcn.jpg'
+    },
+    navMain: [
+      {
+        title: t('providers'),
+        url: '/providers',
+        icon: SquareTerminal,
+        isActive: true,
+        items: []
+      },
+      {
+        title: t('products'),
+        url: '/products',
+        icon: Bot,
+        items: []
+      },
+      {
+        title: t('vendors'),
+        url: '/vendors',
+        icon: BookOpen,
+        isActive: true,
+        items: [
+          {
+            title: t('manage-vendors'),
+            url: '/vendors'
+          },
+          {
+            title: t('vendors-plans'),
+            url: '/vendors/plans'
+          }
+        ]
+      },
+      {
+        title: t('reports'),
+        url: '/reports',
+        icon: Settings2,
+        isActive: true,
+        items: [
+          {
+            title: t('overview'),
+            url: '/reports'
+          },
+          {
+            title: t('generate-report'),
+            url: '/reports/generate'
+          }
+        ]
+      },
+      {
+        title: t('inventory'),
+        url: '/inventory',
+        icon: Settings2,
+        isActive: true,
+        items: [
+          {
+            title: t('items'),
+            url: '/inventory'
+          },
+          {
+            title: t('warehouses'),
+            url: '/inventory/warehouses'
+          }
+        ]
+      },
+      {
+        title: t('routes'),
+        url: '/routes',
+        icon: Settings2,
+        items: []
+      }
+    ],
+    navSecondary: [
+      {
+        title: 'Support',
+        url: '#',
+        icon: LifeBuoy
+      },
+      {
+        title: 'Feedback',
+        url: '#',
+        icon: Send
+      }
+    ],
+    projects: [
+      {
+        name: 'Design Engineering',
+        url: '#',
+        icon: Frame
+      },
+      {
+        name: 'Sales & Marketing',
+        url: '#',
+        icon: PieChart
+      },
+      {
+        name: 'Travel',
+        url: '#',
+        icon: Map
+      }
+    ]
+  }
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
