@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
+import LocationSelector from '../ui/location-input'
 
 type CreateProviderModalProps = {
   open: boolean
@@ -152,12 +153,10 @@ export function CreateProviderModal({
             </div>
             <div className="grid gap-2">
               <Label htmlFor="country">{t('modal.fields.country')}</Label>
-              <Input
-                id="country"
-                value={formData.country}
-                onChange={(e) => handleChange('country', e.target.value)}
-                placeholder="United States"
-                required
+              <LocationSelector
+                onCountryChange={(country) => {
+                  handleChange('country', country?.name || '')
+                }}
               />
             </div>
           </div>
