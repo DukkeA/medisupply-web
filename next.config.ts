@@ -1,14 +1,7 @@
-import type { NextConfig } from 'next'
+import { NextConfig } from 'next'
 import createNextIntlPlugin from 'next-intl/plugin'
 
+const nextConfig: NextConfig = {}
+
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
-
-const nextConfig: NextConfig = {
-  output: 'export',
-  trailingSlash: true,
-  images: {
-    unoptimized: true
-  }
-}
-
 export default withNextIntl(nextConfig)

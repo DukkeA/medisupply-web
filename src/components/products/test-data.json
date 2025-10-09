@@ -1,0 +1,92 @@
+[
+  {
+    "id": "1",
+    "sku": "MED001",
+    "name": "Paracetamol 500mg",
+    "category": "Analgésicos",
+    "price": 12.5,
+    "refrigerated": false,
+    "provider": "FarmaPlus"
+  },
+  {
+    "id": "2",
+    "sku": "MED002",
+    "name": "Insulin Glargine",
+    "category": "Antidiabetics",
+    "price": 89.99,
+    "refrigerated": true,
+    "provider": "BioMed Solutions"
+  },
+  {
+    "id": "3",
+    "sku": "MED003",
+    "name": "Amoxicilina 875mg",
+    "category": "Antibióticos",
+    "price": 24.75,
+    "refrigerated": false,
+    "provider": "FarmaPlus"
+  },
+  {
+    "id": "4",
+    "sku": "MED004",
+    "name": "Nitrile Gloves (100 units)",
+    "category": "Disposable Supplies",
+    "price": 18.5,
+    "refrigerated": false,
+    "provider": "MediSupply Corp"
+  },
+  {
+    "id": "5",
+    "sku": "MED005",
+    "name": "Digital Thermometer",
+    "category": "Medical Equipment",
+    "price": 35.0,
+    "refrigerated": false,
+    "provider": "TechMed"
+  },
+  {
+    "id": "6",
+    "sku": "MED006",
+    "name": "Influenza Vaccine",
+    "category": "Vaccines",
+    "price": 45.0,
+    "refrigerated": true,
+    "provider": "BioMed Solutions"
+  },
+  {
+    "id": "7",
+    "sku": "MED007",
+    "name": "Sterile Gauze (100 pcs)",
+    "category": "Wound Care",
+    "price": 15.99,
+    "refrigerated": false,
+    "provider": "MediSupply Corp"
+  },
+  {
+    "id": "8",
+    "sku": "MED008",
+    "name": "Omeprazol 20mg",
+    "category": "Antiácidos",
+    "price": 16.8,
+    "refrigerated": false,
+    "provider": "FarmaPlus"
+  },
+  {
+    "id": "9",
+    "sku": "MED009",
+    "name": "Professional Stethoscope",
+    "category": "Medical Equipment",
+    "price": 125.0,
+    "refrigerated": false,
+    "provider": "TechMed"
+  },
+  {
+    "id": "10",
+    "sku": "MED010",
+    "name": "Saline Solution 500ml",
+    "category": "IV Solutions",
+    "price": 8.5,
+    "refrigerated": false,
+    "provider": "MediSupply Corp"
+  }
+]

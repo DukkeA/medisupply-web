@@ -1,0 +1,118 @@
+{
+  "common": {
+    "hello": "Hello World!"
+  },
+  "sidebar": {
+    "providers": "Providers",
+    "products": "Products",
+    "vendors": "Vendors",
+    "manage-vendors": "Manage Vendors",
+    "vendors-plans": "Vendors Plans",
+    "reports": "Reports",
+    "overview": "Overview",
+    "generate-report": "Generate Report",
+    "inventory": "Inventory",
+    "items": "Items",
+    "warehouses": "Warehouses",
+    "routes": "Routes"
+  },
+  "providers": {
+    "page": {
+      "title": "Providers",
+      "description": "Manage your providers here."
+    },
+    "table": {
+      "addButton": "Add Provider",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "address": "Address",
+        "city": "City",
+        "country": "Country",
+        "nit": "NIT",
+        "company": "Company"
+      },
+      "loading": "Loading providers...",
+      "error": "Error loading providers.",
+      "noData": "No providers found. Add your first provider to get started."
+    },
+    "modal": {
+      "toastSuccess": "Provider created successfully!",
+      "toastError": "Error creating provider. Please try again.",
+      "title": "Create New Provider",
+      "description": "Fill in the provider information below. Click save when you're done.",
+      "fields": {
+        "name": "Name",
+        "company": "Company",
+        "nit": "NIT",
+        "email": "Email",
+        "phone": "Phone",
+        "address": "Address",
+        "country": "Country"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "creating": "Creating..."
+      }
+    }
+  },
+  "products": {
+    "page": {
+      "title": "Products",
+      "description": "Manage your products here."
+    },
+    "table": {
+      "addButton": "Add Product",
+      "addCSVButton": "Upload CSV",
+      "columns": {
+        "sku": "SKU",
+        "name": "Name",
+        "category": "Category",
+        "price": "Price",
+        "refrigerated": "Refrigerated",
+        "provider": "Provider"
+      },
+      "loading": "Loading products...",
+      "error": "Error loading products.",
+      "noData": "No products found. Add your first product to get started."
+    },
+    "modal": {
+      "toastSuccess": "Product created successfully!",
+      "toastError": "Error creating product. Please try again.",
+      "title": "Create New Product",
+      "description": "Fill in the product information below. Click save when you're done.",
+      "fields": {
+        "sku": "SKU",
+        "name": "Name",
+        "category": "Category",
+        "price": "Price",
+        "refrigerated": "Refrigerated",
+        "provider": "Provider"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "creating": "Creating..."
+      }
+    },
+    "csvModal": {
+      "toastSuccess": "Products uploaded successfully!",
+      "toastError": "Error uploading products. Please try again.",
+      "noFileError": "Please select a CSV file.",
+      "invalidFileType": "Please select a valid CSV file.",
+      "title": "Upload Products from CSV",
+      "description": "Upload a CSV file containing product information. The file should include columns for SKU, name, category, price, refrigerated, and provider.",
+      "fields": {
+        "file": "CSV File",
+        "fileDescription": "Accepted format: .csv (max 10MB)"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "upload": "Upload",
+        "uploading": "Uploading..."
+      }
+    }
+  }
+}
