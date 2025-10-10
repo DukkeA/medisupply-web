@@ -114,5 +114,42 @@
         "uploading": "Uploading..."
       }
     }
+  },
+  "vendors": {
+    "page": {
+      "title": "Vendors",
+      "description": "Manage your vendors here."
+    },
+    "table": {
+      "addButton": "Add Vendor",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "country": "Country",
+        "territory": "Territory"
+      },
+      "loading": "Loading vendors...",
+      "error": "Error loading vendors.",
+      "noData": "No vendors found. Add your first vendor to get started."
+    },
+    "modal": {
+      "toastSuccess": "Vendor created successfully!",
+      "toastError": "Error creating vendor. Please try again.",
+      "title": "Create New Vendor",
+      "description": "Fill in the vendor information below. Click save when you're done.",
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "country": "Country",
+        "territory": "Territory"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "creating": "Creating..."
+      }
+    }
   }
 }
