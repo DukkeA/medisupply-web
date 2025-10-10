@@ -19,6 +19,7 @@ import { cn } from '@/utils/classNames'
 
 // Import JSON data directly
 import countries from '@/data/countries.json'
+import states from '@/data/states.json'
 
 interface Timezone {
   zoneName: string
@@ -54,30 +55,61 @@ interface CountryProps {
   emojiU: string
 }
 
+interface StateProps {
+  id: number
+  name: string
+  country_id: number
+  country_code: string
+  country_name: string
+  state_code: string
+  type: string | null
+  latitude: string
+  longitude: string
+}
+
 interface LocationSelectorProps {
   disabled?: boolean
   onCountryChange?: (country: CountryProps | null) => void
+  onStateChange?: (state: StateProps | null) => void
+  showStates?: boolean
 }
 
 const LocationSelector = ({
   disabled,
-  onCountryChange
+  onCountryChange,
+  onStateChange,
+  showStates = false
 }: LocationSelectorProps) => {
   const [selectedCountry, setSelectedCountry] = useState<CountryProps | null>(
     null
   )
+  const [selectedState, setSelectedState] = useState<StateProps | null>(null)
   const [openCountryDropdown, setOpenCountryDropdown] = useState(false)
+  const [openStateDropdown, setOpenStateDropdown] = useState(false)
 
   // Cast imported JSON data to their respective types
   const countriesData = countries as CountryProps[]
+  const statesData = states as StateProps[]
+
+  // Filter states for selected country
+  const availableStates = statesData.filter(
+    (state) => state.country_id === selectedCountry?.id
+  )
 
   const handleCountrySelect = (country: CountryProps | null) => {
     setSelectedCountry(country)
+    setSelectedState(null) // Reset state when country changes
     onCountryChange?.(country)
+    onStateChange?.(null)
+  }
+
+  const handleStateSelect = (state: StateProps | null) => {
+    setSelectedState(state)
+    onStateChange?.(state)
   }
 
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col gap-4">
       {/* Country Selector */}
       <Popover
         open={openCountryDropdown}
@@ -141,6 +173,62 @@ const LocationSelector = ({
           </Command>
         </PopoverContent>
       </Popover>
+
+      {/* State Selector - Only shown if showStates is true and selected country has states */}
+      {showStates && availableStates.length > 0 && (
+        <Popover open={openStateDropdown} onOpenChange={setOpenStateDropdown}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={openStateDropdown}
+              disabled={!selectedCountry}
+              className="w-full justify-between"
+            >
+              {selectedState ? (
+                <span>{selectedState.name}</span>
+              ) : (
+                <span className="text-muted-foreground">Select State...</span>
+              )}
+              <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="p-0">
+            <Command>
+              <CommandInput placeholder="Search state..." />
+              <CommandList>
+                <CommandEmpty>No state found.</CommandEmpty>
+                <CommandGroup>
+                  <ScrollArea className="h-[300px]">
+                    {availableStates.map((state) => (
+                      <CommandItem
+                        key={state.id}
+                        value={state.name}
+                        onSelect={() => {
+                          handleStateSelect(state)
+                          setOpenStateDropdown(false)
+                        }}
+                        className="flex cursor-pointer items-center justify-between text-sm"
+                      >
+                        <span>{state.name}</span>
+                        <Check
+                          className={cn(
+                            'h-4 w-4',
+                            selectedState?.id === state.id
+                              ? 'opacity-100'
+                              : 'opacity-0'
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                    <ScrollBar orientation="vertical" />
+                  </ScrollArea>
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      )}
     </div>
   )
 }

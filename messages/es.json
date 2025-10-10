@@ -114,5 +114,42 @@
         "uploading": "Cargando..."
       }
     }
+  },
+  "vendors": {
+    "page": {
+      "title": "Vendedores",
+      "description": "Administra tus vendedores aquí."
+    },
+    "table": {
+      "addButton": "Agregar Vendedor",
+      "columns": {
+        "name": "Nombre",
+        "email": "Correo Electrónico",
+        "phone": "Teléfono",
+        "country": "País",
+        "territory": "Territorio"
+      },
+      "loading": "Cargando vendedores...",
+      "error": "Error al cargar vendedores.",
+      "noData": "No se encontraron vendedores. Agrega tu primer vendedor para comenzar."
+    },
+    "modal": {
+      "toastSuccess": "¡Vendedor creado exitosamente!",
+      "toastError": "Error al crear vendedor. Por favor intenta de nuevo.",
+      "title": "Crear Nuevo Vendedor",
+      "description": "Completa la información del vendedor a continuación. Haz clic en guardar cuando hayas terminado.",
+      "fields": {
+        "name": "Nombre",
+        "email": "Correo Electrónico",
+        "phone": "Teléfono",
+        "country": "País",
+        "territory": "Territorio"
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "create": "Crear",
+        "creating": "Creando..."
+      }
+    }
   }
 }
