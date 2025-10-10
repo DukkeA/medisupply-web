@@ -90,7 +90,7 @@ export function CreateProviderModal({
           <DialogTitle>{t('modal.title')}</DialogTitle>
           <DialogDescription>{t('modal.description')}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form data-testid="provider-form" onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="name">{t('modal.fields.name')}</Label>
@@ -163,6 +163,7 @@ export function CreateProviderModal({
           </div>
           <DialogFooter>
             <Button
+              data-testid="cancel-provider"
               type="button"
               variant="ghost"
               onClick={() => onOpenChange(false)}

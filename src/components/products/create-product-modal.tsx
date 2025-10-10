@@ -76,7 +76,12 @@ export function CreateProductModal({
   // form handlers
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createProductMutation(formData)
+    try {
+      createProductMutation(formData)
+      
+    } catch (error) {
+      toast.error(t('modal.toastError'))
+    }
   }
 
   const handleChange = (field: keyof typeof formData, value: string) => {
@@ -90,7 +95,7 @@ export function CreateProductModal({
           <DialogTitle>{t('modal.title')}</DialogTitle>
           <DialogDescription>{t('modal.description')}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form role='form' onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="sku">{t('modal.fields.sku')}</Label>
