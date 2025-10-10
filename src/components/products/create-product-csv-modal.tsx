@@ -92,13 +92,14 @@ export function CreateProductCSVModal({
           <DialogTitle>{t('csvModal.title')}</DialogTitle>
           <DialogDescription>{t('csvModal.description')}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form data-testid="csv-form" onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="file">{t('csvModal.fields.file')}</Label>
               <div className="flex items-center gap-2">
                 <Input
                   id="file"
+                  data-testid="csv-file-input" 
                   type="file"
                   accept=".csv"
                   onChange={handleFileChange}

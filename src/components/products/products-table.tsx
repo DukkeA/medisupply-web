@@ -60,18 +60,18 @@ export function ProductsTable() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end gap-4">
-        <Button variant="outline" onClick={() => setIsCSVModalOpen(true)}>
+        <Button data-testid="add-product-button" variant="outline" onClick={() => setIsCSVModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           {t('table.addCSVButton')}
         </Button>
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button data-testid="import-csv-button"  onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           {t('table.addButton')}
         </Button>
       </div>
 
       <div>
-        <Table>
+        <Table data-testid="products-table" role="table">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead>{t('table.columns.sku')}</TableHead>
