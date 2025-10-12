@@ -17,41 +17,40 @@ import { Label } from '@/components/ui/label'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
-import LocationSelector from '../ui/location-input'
+import LocationSelector from '../../ui/location-input'
 
-type CreateVendorModalProps = {
+type CreateWarehouseModalProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function CreateVendorModal({
+export function CreateWarehouseModal({
   open,
   onOpenChange
-}: CreateVendorModalProps) {
+}: CreateWarehouseModalProps) {
   // query client instance
   const queryClient = useQueryClient()
-  const t = useTranslations('vendors')
+  const t = useTranslations('warehouses')
 
   // form state
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    phone: '',
+    address: '',
     country: '',
-    territory: ''
+    city: ''
   })
 
-  // mutation to create a new vendor
-  const { mutate: createVendorMutation, isPending } = useMutation({
-    mutationKey: ['create-vendor'],
-    mutationFn: async (newVendor: typeof formData) => {
-      const response = await fetch('/api/vendors', {
+  // mutation to create a new warehouse
+  const { mutate: createWarehouseMutation, isPending } = useMutation({
+    mutationKey: ['create-warehouse'],
+    mutationFn: async (newWarehouse: typeof formData) => {
+      const response = await fetch('/api/warehouses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify(newVendor)
+        body: JSON.stringify(newWarehouse)
       })
       if (!response.ok) {
         throw new Error('Network response was not ok')
@@ -60,7 +59,7 @@ export function CreateVendorModal({
     },
     onSuccess: () => {
       onOpenChange(false)
-      queryClient.invalidateQueries({ queryKey: ['vendors'] })
+      queryClient.invalidateQueries({ queryKey: ['warehouses'] })
       toast.success(t('modal.toastSuccess'))
     },
     onError: () => {
@@ -71,7 +70,7 @@ export function CreateVendorModal({
   // form handlers
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createVendorMutation(formData)
+    createWarehouseMutation(formData)
   }
 
   const handleChange = (field: keyof typeof formData, value: string) => {
@@ -93,43 +92,31 @@ export function CreateVendorModal({
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleChange('name', e.target.value)}
-                placeholder="John Doe"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">{t('modal.fields.email')}</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                placeholder="john@example.com"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="phone">{t('modal.fields.phone')}</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => handleChange('phone', e.target.value)}
-                placeholder="+1 234 567 8900"
+                placeholder="Main Warehouse"
                 required
               />
             </div>
             <LocationSelector
               showStates={true}
               countryLabel={t('modal.fields.country')}
-              stateLabel={t('modal.fields.territory')}
+              stateLabel={t('modal.fields.city')}
               onCountryChange={(country) => {
                 handleChange('country', country?.name || '')
               }}
               onStateChange={(state) => {
-                handleChange('territory', state?.name || '')
+                handleChange('city', state?.name || '')
               }}
             />
+            <div className="grid gap-2">
+              <Label htmlFor="address">{t('modal.fields.address')}</Label>
+              <Input
+                id="address"
+                value={formData.address}
+                onChange={(e) => handleChange('address', e.target.value)}
+                placeholder="123 Main St, New York, USA"
+                required
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button

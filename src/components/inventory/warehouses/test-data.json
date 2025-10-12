@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "name": "Main Warehouse",
+    "country": "USA",
+    "city": "Anytown",
+    "address": "123 Main St, Anytown, USA"
+  },
+  {
+    "id": 2,
+    "name": "Secondary Warehouse",
+    "country": "USA",
+    "city": "Othertown",
+    "address": "456 Elm St, Othertown, USA"
+  },
+  {
+    "id": 3,
+    "name": "Almacén Central Madrid",
+    "country": "España",
+    "city": "Madrid",
+    "address": "Calle de Alcalá 45, Madrid, España"
+  },
+  {
+    "id": 4,
+    "name": "Toronto Distribution Center",
+    "country": "Canada",
+    "city": "Toronto",
+    "address": "100 King Street West, Toronto, Canada"
+  },
+  {
+    "id": 5,
+    "name": "Bodega Ciudad de México",
+    "country": "México",
+    "city": "Ciudad de México",
+    "address": "Av. Reforma 222, Ciudad de México, México"
+  },
+  {
+    "id": 6,
+    "name": "London Storage Facility",
+    "country": "United Kingdom",
+    "city": "London",
+    "address": "25 Oxford Street, London, UK"
+  },
+  {
+    "id": 7,
+    "name": "Almacén Bogotá Norte",
+    "country": "Colombia",
+    "city": "Bogotá",
+    "address": "Calle 100 #15-20, Bogotá, Colombia"
+  },
+  {
+    "id": 8,
+    "name": "Paris Logistics Hub",
+    "country": "France",
+    "city": "Paris",
+    "address": "50 Avenue des Champs-Élysées, Paris, France"
+  },
+  {
+    "id": 9,
+    "name": "Centro de Distribución Buenos Aires",
+    "country": "Argentina",
+    "city": "Buenos Aires",
+    "address": "Av. Corrientes 1234, Buenos Aires, Argentina"
+  },
+  {
+    "id": 10,
+    "name": "Berlin Warehouse Complex",
+    "country": "Germany",
+    "city": "Berlin",
+    "address": "Unter den Linden 10, Berlin, Germany"
+  }
+]
