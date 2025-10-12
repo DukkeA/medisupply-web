@@ -233,5 +233,26 @@
         "creating": "Adding..."
       }
     }
+  },
+  "vendorPlans": {
+    "title": "Vendor Plans",
+    "vendor": "Vendor",
+    "period": "Period",
+    "goal": "Goal",
+    "actual": "Actual",
+    "status": "Status",
+    "noResults": "No vendor plans found.",
+    "create": "Create Plan",
+    "createTitle": "Create New Vendor Plan",
+    "createDescription": "Fill in the vendor plan information below. Click create when you're done.",
+    "createSuccess": "Vendor plan created successfully!",
+    "createError": "Error creating vendor plan. Please try again.",
+    "creating": "Creating...",
+    "selectVendor": "Select a vendor...",
+    "searchVendor": "Search vendor...",
+    "noVendorFound": "No vendor found.",
+    "onTrack": "On Track",
+    "exceeded": "Exceeded",
+    "belowTarget": "Below Target"
   }
 }
