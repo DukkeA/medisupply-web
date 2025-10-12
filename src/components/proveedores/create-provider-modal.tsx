@@ -151,14 +151,12 @@ export function CreateProviderModal({
                 required
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="country">{t('modal.fields.country')}</Label>
-              <LocationSelector
-                onCountryChange={(country) => {
-                  handleChange('country', country?.name || '')
-                }}
-              />
-            </div>
+            <LocationSelector
+              countryLabel={t('modal.fields.country')}
+              onCountryChange={(country) => {
+                handleChange('country', country?.name || '')
+              }}
+            />
           </div>
           <DialogFooter>
             <Button

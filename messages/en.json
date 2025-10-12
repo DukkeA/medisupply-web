@@ -151,5 +151,87 @@
         "creating": "Creating..."
       }
     }
+  },
+  "warehouses": {
+    "page": {
+      "title": "Warehouses",
+      "description": "Manage your warehouses here."
+    },
+    "table": {
+      "addButton": "Add Warehouse",
+      "columns": {
+        "name": "Name",
+        "city": "City",
+        "country": "Country",
+        "address": "Address"
+      },
+      "loading": "Loading warehouses...",
+      "error": "Error loading warehouses.",
+      "noData": "No warehouses found. Add your first warehouse to get started."
+    },
+    "modal": {
+      "toastSuccess": "Warehouse created successfully!",
+      "toastError": "Error creating warehouse. Please try again.",
+      "title": "Create New Warehouse",
+      "description": "Fill in the warehouse information below. Click save when you're done.",
+      "fields": {
+        "name": "Name",
+        "city": "City",
+        "country": "Country",
+        "address": "Address"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "creating": "Creating..."
+      }
+    }
+  },
+  "inventory": {
+    "page": {
+      "title": "Inventory",
+      "description": "Manage your inventory here."
+    },
+    "table": {
+      "addButton": "Add to Inventory",
+      "columns": {
+        "productId": "Product ID",
+        "warehouseId": "Warehouse ID",
+        "totalQuantity": "Total Quantity",
+        "reservedQuantity": "Reserved",
+        "batchNumber": "Batch Number",
+        "expirationDate": "Expiration Date"
+      },
+      "loading": "Loading inventory...",
+      "error": "Error loading inventory.",
+      "noData": "No inventory items found. Add your first item to get started."
+    },
+    "modal": {
+      "toastSuccess": "Item added to inventory successfully!",
+      "toastError": "Error adding item to inventory. Please try again.",
+      "title": "Add to Inventory",
+      "description": "Fill in the inventory item information below. Click save when you're done.",
+      "noResults": "No results found.",
+      "fields": {
+        "product": "Product",
+        "warehouse": "Warehouse",
+        "totalQuantity": "Total Quantity",
+        "reservedQuantity": "Reserved Quantity",
+        "batchNumber": "Batch Number",
+        "expirationDate": "Expiration Date"
+      },
+      "placeholders": {
+        "selectProduct": "Select a product...",
+        "searchProduct": "Search product...",
+        "selectWarehouse": "Select a warehouse...",
+        "searchWarehouse": "Search warehouse...",
+        "pickDate": "Pick a date"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Add to Inventory",
+        "creating": "Adding..."
+      }
+    }
   }
 }

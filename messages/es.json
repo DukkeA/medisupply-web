@@ -151,5 +151,87 @@
         "creating": "Creando..."
       }
     }
+  },
+  "warehouses": {
+    "page": {
+      "title": "Almacenes",
+      "description": "Administra tus almacenes aquí."
+    },
+    "table": {
+      "addButton": "Agregar Almacén",
+      "columns": {
+        "name": "Nombre",
+        "city": "Ciudad",
+        "country": "País",
+        "address": "Dirección"
+      },
+      "loading": "Cargando almacenes...",
+      "error": "Error al cargar almacenes.",
+      "noData": "No se encontraron almacenes. Agrega tu primer almacén para comenzar."
+    },
+    "modal": {
+      "toastSuccess": "¡Almacén creado exitosamente!",
+      "toastError": "Error al crear almacén. Por favor intenta de nuevo.",
+      "title": "Crear Nuevo Almacén",
+      "description": "Completa la información del almacén a continuación. Haz clic en guardar cuando hayas terminado.",
+      "fields": {
+        "name": "Nombre",
+        "city": "Ciudad",
+        "country": "País",
+        "address": "Dirección"
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "create": "Crear",
+        "creating": "Creando..."
+      }
+    }
+  },
+  "inventory": {
+    "page": {
+      "title": "Inventario",
+      "description": "Administra tu inventario aquí."
+    },
+    "table": {
+      "addButton": "Agregar al Inventario",
+      "columns": {
+        "productId": "ID del Producto",
+        "warehouseId": "ID del Almacén",
+        "totalQuantity": "Cantidad Total",
+        "reservedQuantity": "Reservada",
+        "batchNumber": "Número de Lote",
+        "expirationDate": "Fecha de Vencimiento"
+      },
+      "loading": "Cargando inventario...",
+      "error": "Error al cargar inventario.",
+      "noData": "No se encontraron artículos en el inventario. Agrega tu primer artículo para comenzar."
+    },
+    "modal": {
+      "toastSuccess": "¡Artículo agregado al inventario exitosamente!",
+      "toastError": "Error al agregar artículo al inventario. Por favor intenta de nuevo.",
+      "title": "Agregar al Inventario",
+      "description": "Completa la información del artículo de inventario a continuación. Haz clic en guardar cuando hayas terminado.",
+      "noResults": "No se encontraron resultados.",
+      "fields": {
+        "product": "Producto",
+        "warehouse": "Almacén",
+        "totalQuantity": "Cantidad Total",
+        "reservedQuantity": "Cantidad Reservada",
+        "batchNumber": "Número de Lote",
+        "expirationDate": "Fecha de Vencimiento"
+      },
+      "placeholders": {
+        "selectProduct": "Selecciona un producto...",
+        "searchProduct": "Buscar producto...",
+        "selectWarehouse": "Selecciona un almacén...",
+        "searchWarehouse": "Buscar almacén...",
+        "pickDate": "Selecciona una fecha"
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "create": "Agregar al Inventario",
+        "creating": "Agregando..."
+      }
+    }
   }
 }
