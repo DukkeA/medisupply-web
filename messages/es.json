@@ -233,5 +233,30 @@
         "creating": "Agregando..."
       }
     }
+  },
+  "vendorPlans": {
+    "page": {
+      "title": "Planes de Vendedores",
+      "description": "Administra tus planes de vendedores aquí."
+    },
+    "vendor": "Vendedor",
+    "period": "Período",
+    "goal": "Meta",
+    "actual": "Real",
+    "status": "Estado",
+    "noResults": "No se encontraron planes de vendedores.",
+    "create": "Crear Plan",
+    "createTitle": "Crear Nuevo Plan de Vendedor",
+    "createDescription": "Completa la información del plan de vendedor a continuación. Haz clic en crear cuando hayas terminado.",
+    "createSuccess": "¡Plan de vendedor creado exitosamente!",
+    "createError": "Error al crear el plan de vendedor. Por favor intenta de nuevo.",
+    "creating": "Creando...",
+    "selectVendor": "Selecciona un vendedor...",
+    "searchVendor": "Buscar vendedor...",
+    "noVendorFound": "No se encontró ningún vendedor.",
+    "onTrack": "En Curso",
+    "exceeded": "Superado",
+    "belowTarget": "Por Debajo de la Meta",
+    "cancel": "Cancelar"
   }
 }

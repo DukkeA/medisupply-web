@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "vendor_id": 1,
+    "period": "Q1 2024",
+    "goal": 50000,
+    "actual": 45000,
+    "status": "On Track"
+  },
+  {
+    "id": 2,
+    "vendor_id": 2,
+    "period": "Q1 2024",
+    "goal": 60000,
+    "actual": 62000,
+    "status": "Exceeded"
+  },
+  {
+    "id": 3,
+    "vendor_id": 3,
+    "period": "Q2 2024",
+    "goal": 55000,
+    "actual": 48000,
+    "status": "Below Target"
+  },
+  {
+    "id": 4,
+    "vendor_id": 1,
+    "period": "Q2 2024",
+    "goal": 52000,
+    "actual": 51500,
+    "status": "On Track"
+  },
+  {
+    "id": 5,
+    "vendor_id": 4,
+    "period": "Q1 2024",
+    "goal": 48000,
+    "actual": 50000,
+    "status": "Exceeded"
+  },
+  {
+    "id": 6,
+    "vendor_id": 5,
+    "period": "Q2 2024",
+    "goal": 70000,
+    "actual": 65000,
+    "status": "Below Target"
+  },
+  {
+    "id": 7,
+    "vendor_id": 6,
+    "period": "Q3 2024",
+    "goal": 58000,
+    "actual": 58500,
+    "status": "On Track"
+  },
+  {
+    "id": 8,
+    "vendor_id": 2,
+    "period": "Q3 2024",
+    "goal": 65000,
+    "actual": 70000,
+    "status": "Exceeded"
+  }
+]
