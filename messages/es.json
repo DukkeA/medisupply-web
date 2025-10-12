@@ -235,7 +235,10 @@
     }
   },
   "vendorPlans": {
-    "title": "Planes de Vendedores",
+    "page": {
+      "title": "Planes de Vendedores",
+      "description": "Administra tus planes de vendedores aquí."
+    },
     "vendor": "Vendedor",
     "period": "Período",
     "goal": "Meta",
@@ -253,6 +256,7 @@
     "noVendorFound": "No se encontró ningún vendedor.",
     "onTrack": "En Curso",
     "exceeded": "Superado",
-    "belowTarget": "Por Debajo de la Meta"
+    "belowTarget": "Por Debajo de la Meta",
+    "cancel": "Cancelar"
   }
 }

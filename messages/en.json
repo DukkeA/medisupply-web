@@ -235,7 +235,10 @@
     }
   },
   "vendorPlans": {
-    "title": "Vendor Plans",
+    "page": {
+      "title": "Vendor Plans",
+      "description": "Manage your vendor plans here."
+    },
     "vendor": "Vendor",
     "period": "Period",
     "goal": "Goal",
@@ -253,6 +256,7 @@
     "noVendorFound": "No vendor found.",
     "onTrack": "On Track",
     "exceeded": "Exceeded",
-    "belowTarget": "Below Target"
+    "belowTarget": "Below Target",
+    "cancel": "Cancel"
   }
 }
