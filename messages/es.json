@@ -258,5 +258,40 @@
     "exceeded": "Superado",
     "belowTarget": "Por Debajo de la Meta",
     "cancel": "Cancelar"
+  },
+  "home": {
+    "welcome": "Bienvenido a",
+    "subtitle": "Proyecto Universitario - Sistema de Gestión de Suministros Médicos",
+    "about": {
+      "title": "Acerca de este proyecto",
+      "description": "Este es un proyecto universitario desarrollado para la gestión de inventario y suministros en el sector médico. El sistema permite administrar productos, proveedores, almacenes, vendedores y la generación de informes detallados.",
+      "purpose": "Diseñado para optimizar la gestión de la cadena de suministro médica y facilitar la toma de decisiones mediante análisis de datos."
+    },
+    "technologies": {
+      "title": "Construido con",
+      "frontend": "Frontend",
+      "backend": "Backend y Base de Datos",
+      "testing": "Testing",
+      "infrastructure": "Infraestructura",
+      "styling": "Estilos e Interfaz"
+    },
+    "features": {
+      "title": "Características Principales",
+      "providers": "Gestión de Proveedores",
+      "products": "Catálogo de Productos",
+      "inventory": "Inventario en Tiempo Real",
+      "warehouses": "Control de Almacenes",
+      "vendors": "Gestión de Vendedores",
+      "reports": "Informes Detallados",
+      "routes": "Optimización de Rutas"
+    },
+    "environment": {
+      "development": "Entorno de Desarrollo",
+      "production": "Entorno de Producción"
+    },
+    "cta": {
+      "getStarted": "Comenzar",
+      "viewDocs": "Ver Documentación"
+    }
   }
 }
