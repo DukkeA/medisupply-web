@@ -65,7 +65,7 @@ jobs:
         run: sleep 30
 
       - name: Create deployment notification
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const commit = context.sha.substring(0, 7);
