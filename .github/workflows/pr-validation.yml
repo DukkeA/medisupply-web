@@ -1,0 +1,130 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - main
+      - develop
+      - 'release/**'
+
+jobs:
+  pr-checks:
+    name: PR Validation Checks
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            feature
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+        continue-on-error: true
+
+      - name: Check for merge conflicts
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          if git merge-tree $(git merge-base HEAD origin/${{ github.base_ref }}) HEAD origin/${{ github.base_ref }} | grep -q '<<<<<<<'; then
+            echo "::error::Merge conflicts detected"
+            exit 1
+          fi
+
+      - name: Run quality checks
+        run: |
+          npm run format:check
+          npm run lint
+          npx tsc --noEmit
+
+      - name: Run tests
+        run: npm run test:coverage
+
+      - name: Build verification
+        run: npm run build
+
+      - name: Comment PR with results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const status = '${{ job.status }}';
+            const icon = status === 'success' ? '✅' : '❌';
+
+            const comment = `## ${icon} PR Validation Results
+
+            **Status:** ${status.toUpperCase()}
+            **Commit:** ${context.sha.substring(0, 7)}
+            **Branch:** \`${context.payload.pull_request.head.ref}\`
+
+            ### Checks Performed:
+            - Code formatting
+            - Linting
+            - Type checking
+            - Unit tests with coverage
+            - Build verification
+
+            ${status === 'success' 
+              ? '> All checks passed! ✨ Ready for review.' 
+              : '> Some checks failed. Please review the workflow logs.'}
+
+            ---
+            *This PR will be automatically deployed by Vercel when merged.*`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.body.includes('PR Validation Results') &&
+              comment.user.type === 'Bot'
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: comment
+              });
+            }
