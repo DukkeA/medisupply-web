@@ -258,5 +258,40 @@
     "exceeded": "Exceeded",
     "belowTarget": "Below Target",
     "cancel": "Cancel"
+  },
+  "home": {
+    "welcome": "Welcome to",
+    "subtitle": "University Project - Medical Supply Management System",
+    "about": {
+      "title": "About this project",
+      "description": "This is a university project developed for inventory and supply management in the medical sector. The system allows managing products, providers, warehouses, vendors, and generation of detailed reports.",
+      "purpose": "Designed to optimize medical supply chain management and facilitate decision-making through data analysis."
+    },
+    "technologies": {
+      "title": "Built with",
+      "frontend": "Frontend",
+      "backend": "Backend & Database",
+      "testing": "Testing",
+      "infrastructure": "Infrastructure",
+      "styling": "Styling & UI"
+    },
+    "features": {
+      "title": "Key Features",
+      "providers": "Provider Management",
+      "products": "Product Catalog",
+      "inventory": "Real-time Inventory",
+      "warehouses": "Warehouse Control",
+      "vendors": "Vendor Management",
+      "reports": "Detailed Reports",
+      "routes": "Route Optimization"
+    },
+    "environment": {
+      "development": "Development Environment",
+      "production": "Production Environment"
+    },
+    "cta": {
+      "getStarted": "Get Started",
+      "viewDocs": "View Documentation"
+    }
   }
 }

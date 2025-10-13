@@ -1,97 +1,158 @@
-import Image from 'next/image'
-import { ClientToastButton } from './client-toast-button'
+import { getTranslations } from 'next-intl/server'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import {
+  Package,
+  Warehouse,
+  ShoppingCart,
+  FileText,
+  Users,
+  Route,
+  Building2
+} from 'lucide-react'
 
-export default function Home() {
+export default async function Home() {
+  const t = await getTranslations('home')
+  const siteTitle = process.env.NEXT_PUBLIC_SITE_TITLE || 'MediSupply'
+
+  const technologies = [
+    {
+      category: t('technologies.frontend'),
+      items: ['Next.js 15', 'React 19', 'TypeScript', 'TanStack Query']
+    },
+    {
+      category: t('technologies.styling'),
+      items: ['Tailwind CSS 4', 'Shadcn/ui']
+    },
+    {
+      category: t('technologies.testing'),
+      items: ['Vitest', 'Testing Library']
+    },
+    {
+      category: t('technologies.infrastructure'),
+      items: ['Vercel']
+    }
+  ]
+
+  const features = [
+    {
+      icon: Users,
+      title: t('features.providers'),
+      color: 'text-blue-500'
+    },
+    {
+      icon: Package,
+      title: t('features.products'),
+      color: 'text-green-500'
+    },
+    {
+      icon: Warehouse,
+      title: t('features.inventory'),
+      color: 'text-purple-500'
+    },
+    {
+      icon: Building2,
+      title: t('features.warehouses'),
+      color: 'text-orange-500'
+    },
+    {
+      icon: ShoppingCart,
+      title: t('features.vendors'),
+      color: 'text-pink-500'
+    },
+    {
+      icon: FileText,
+      title: t('features.reports'),
+      color: 'text-indigo-500'
+    },
+    {
+      icon: Route,
+      title: t('features.routes'),
+      color: 'text-teal-500'
+    }
+  ]
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        {/* MediSupply Web App */}
-        <div className="bg-blue-100 p-4 rounded mb-4">
-          <p>
-            <strong>MediSupply Web Application</strong>
-          </p>
-          <p>Production deployment with Vercel</p>
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      {/* Hero Section */}
+      <div className="text-center mb-12">
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground">
+            {t('welcome')} {siteTitle}
+          </h1>
         </div>
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{' '}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          {t('subtitle')}
+        </p>
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <ClientToastButton />
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      {/* About Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="text-2xl">{t('about.title')}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">{t('about.description')}</p>
+          <p className="text-muted-foreground font-medium">
+            {t('about.purpose')}
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Features Grid */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="text-2xl">{t('features.title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {features.map((feature, index) => {
+              const Icon = feature.icon
+              return (
+                <div
+                  key={index}
+                  className="flex flex-col items-center p-4 rounded-lg bg-card hover:shadow-md transition-shadow"
+                >
+                  <Icon className={`w-8 h-8 mb-2 ${feature.color}`} />
+                  <span className="text-sm font-medium text-center">
+                    {feature.title}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Technologies Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">{t('technologies.title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {technologies.map((tech, index) => (
+              <div key={index} className="space-y-2">
+                <h3 className="font-semibold text-lg">{tech.category}</h3>
+                <div className="flex flex-wrap gap-2">
+                  {tech.items.map((item, idx) => (
+                    <Badge key={idx} variant="outline">
+                      {item}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Footer Note */}
+      <div className="mt-8 text-center text-sm text-muted-foreground">
+        <p>
+          Made with ❤️ by the MediSupply Team 05 • Uniandes Final Project 2025
+        </p>
+      </div>
     </div>
   )
 }
