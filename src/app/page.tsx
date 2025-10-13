@@ -10,7 +10,7 @@ export default function Home() {
           <p>
             <strong>MediSupply Web Application</strong>
           </p>
-          <p>Production deployment with S3 + CloudFront</p>
+          <p>Production deployment with Vercel</p>
         </div>
         <Image
           className="dark:invert"
