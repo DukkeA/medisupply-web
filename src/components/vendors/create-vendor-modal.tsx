@@ -45,14 +45,17 @@ export function CreateVendorModal({
   const { mutate: createVendorMutation, isPending } = useMutation({
     mutationKey: ['create-vendor'],
     mutationFn: async (newVendor: typeof formData) => {
-      const response = await fetch('/api/vendors', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(newVendor)
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/sellers`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(newVendor)
+        }
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }

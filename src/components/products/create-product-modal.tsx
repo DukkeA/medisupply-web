@@ -28,6 +28,8 @@ export function CreateProductModal({
   open,
   onOpenChange
 }: CreateProductModalProps) {
+  // TODO - Convertir input de proveedor en un select con opciones de proveedores existentes
+  // TODO - Poner ENUM de categorías y convertir input de categoría en un select
   // query client instance
   const queryClient = useQueryClient()
   const t = useTranslations('products')
@@ -46,14 +48,17 @@ export function CreateProductModal({
   const { mutate: createProductMutation, isPending } = useMutation({
     mutationKey: ['create-product'],
     mutationFn: async (newProduct: typeof formData) => {
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(newProduct)
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/products`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(newProduct)
+        }
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
