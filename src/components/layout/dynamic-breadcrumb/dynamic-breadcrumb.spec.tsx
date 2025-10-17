@@ -1,36 +1,54 @@
-import React from "react";
+import React, {
+  PropsWithChildren,
+  AnchorHTMLAttributes,
+  HTMLAttributes,
+} from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { DynamicBreadcrumb } from "./dynamic-breadcrumb";
 
-// ✅ Mock de next/navigation (controlamos la ruta)
+/* ✅ Mock next/navigation con tipos y acceso al mock */
 vi.mock("next/navigation", () => ({
   usePathname: vi.fn(),
 }));
-const { usePathname } = await vi.importMock<any>("next/navigation");
 
-// ✅ Mock de next/link (simple <a>)
+// Traemos el mock tipado y obtenemos la función mockeada
+const nav =
+  await vi.importMock<typeof import("next/navigation")>("next/navigation");
+const usePathname = vi.mocked(nav.usePathname);
+
+/* ✅ Mock next/link tipado */
 vi.mock("next/link", () => ({
   __esModule: true,
-  default: ({ href, children }: any) => <a href={href}>{children}</a>,
+  default: ({
+    href,
+    children,
+  }: PropsWithChildren<AnchorHTMLAttributes<HTMLAnchorElement>>) => (
+    <a href={typeof href === "string" ? href : "#"}>{children}</a>
+  ),
 }));
 
-// ✅ Mock de componentes UI para tener roles accesibles
+/* ✅ Mock de UI breadcrumb tipado (sin any) */
+// Nota: si tu alias "@/components/..." no está configurado, cambia a ruta relativa correspondiente.
 vi.mock("@/components/ui/breadcrumb", () => ({
-  Breadcrumb: ({ children }: any) => (
+  Breadcrumb: ({ children }: PropsWithChildren) => (
     <nav aria-label="breadcrumb">{children}</nav>
   ),
-  BreadcrumbList: ({ children }: any) => <ol>{children}</ol>,
-  BreadcrumbItem: ({ children, ...props }: any) => (
+  BreadcrumbList: ({ children }: PropsWithChildren) => <ol>{children}</ol>,
+  BreadcrumbItem: ({
+    children,
+    ...props
+  }: PropsWithChildren<HTMLAttributes<HTMLLIElement>>) => (
     <li {...props}>{children}</li>
   ),
-  BreadcrumbLink: ({ children }: any) => <span>{children}</span>,
-  BreadcrumbPage: ({ children }: any) => <span>{children}</span>,
-  BreadcrumbSeparator: ({ ...props }: any) => <span {...props}>/</span>,
+  BreadcrumbLink: ({ children }: PropsWithChildren) => <span>{children}</span>,
+  BreadcrumbPage: ({ children }: PropsWithChildren) => <span>{children}</span>,
+  BreadcrumbSeparator: ({ ...props }: HTMLAttributes<HTMLSpanElement>) => (
+    <span {...props}>/</span>
+  ),
 }));
 
-// ✅ Mock de helpers (etiquetas y visibilidad siempre true)
-//  - getRouteLabel: retorna el último segmento capitalizado para cubrir la llamada
+/* ✅ Helpers tipados */
 vi.mock("@/lib/route-config", () => ({
   getRouteLabel: (p: string) => {
     const seg = p.split("/").filter(Boolean).pop() ?? "Home";
@@ -43,9 +61,9 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("DynamicBreadcrumb (coverage básico)", () => {
+describe("DynamicBreadcrumb (coverage básico, sin any)", () => {
   it("no renderiza nada en ruta raíz (segments.length === 0)", () => {
-    usePathname.mockReturnValue("/"); // => return null en el componente
+    usePathname.mockReturnValue("/");
     const { container } = render(<DynamicBreadcrumb />);
     expect(container.firstChild).toBeNull();
   });
@@ -54,7 +72,6 @@ describe("DynamicBreadcrumb (coverage básico)", () => {
     usePathname.mockReturnValue("/products/123/details");
     render(<DynamicBreadcrumb />);
 
-    // <nav aria-label="breadcrumb"> existe
     expect(
       screen.getByRole("navigation", { name: /breadcrumb/i }),
     ).toBeInTheDocument();
@@ -65,8 +82,6 @@ describe("DynamicBreadcrumb (coverage básico)", () => {
     expect(screen.getByText("123")).toBeInTheDocument();
     expect(screen.getByText("Details")).toBeInTheDocument();
 
-    // Hay separadores entre segmentos (dos separadores visibles + uno antes del último)
-    // Nota: Breadcrumb inserta separador antes de cada segmento mostrado
     const seps = screen.getAllByText("/", { exact: true });
     expect(seps.length).toBeGreaterThanOrEqual(2);
   });

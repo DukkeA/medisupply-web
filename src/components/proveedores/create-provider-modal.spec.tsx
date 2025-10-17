@@ -1,123 +1,177 @@
-// create-provider-modal.min.spec.tsx
-import React from 'react'
-import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { CreateProviderModal } from './create-provider-modal'
-import { toast } from 'sonner'
+import React, { PropsWithChildren } from "react";
+import { describe, it, expect, vi, beforeAll, afterEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { CreateProviderModal } from "./create-provider-modal";
+import { toast } from "sonner";
 
-// --- Mocks ---
-vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn() } }))
-vi.mock('next-intl', async () => {
-  const actual = await vi.importActual<any>('next-intl')
+/* ──────────────── Mocks tipados ──────────────── */
+vi.mock("sonner", () => ({
+  toast: {
+    error: vi.fn<(msg?: unknown) => void>(),
+    success: vi.fn<(msg?: unknown) => void>(),
+  },
+}));
+
+vi.mock("next-intl", async () => {
+  const actual = await vi.importActual<typeof import("next-intl")>("next-intl");
   return {
     ...actual,
-    useTranslations: () => (key: string) => key, // devuelve la clave (sin namespace)
-    NextIntlClientProvider: ({ children }: any) => children,
-  }
-})
-vi.mock('../ui/location-input', () => ({
+    // devuelve la clave (sin namespace)
+    useTranslations: () => (key: string) => key,
+    NextIntlClientProvider: ({ children }: PropsWithChildren) => (
+      <>{children}</>
+    ),
+  };
+});
+
+type Country = { name: string };
+vi.mock("../ui/location-input", () => ({
   __esModule: true,
-  default: ({ onCountryChange }: any) => (
+  default: ({
+    onCountryChange,
+  }: {
+    onCountryChange?: (c: Country) => void;
+  }) => (
     <button
       type="button"
       aria-label="select-country"
-      onClick={() => onCountryChange?.({ name: 'Colombia' })}
+      onClick={() => onCountryChange?.({ name: "Colombia" })}
     >
       select-country
     </button>
   ),
-}))
+}));
 
-class ResizeObserverMock { observe(){} unobserve(){} disconnect(){} }
+/* ──────────────── Helpers tipados ──────────────── */
+
+// ResizeObserver para jsdom
+class ResizeObserverMock implements ResizeObserver {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+  takeRecords(): ResizeObserverEntry[] {
+    return [];
+  }
+}
 beforeAll(() => {
-  // @ts-expect-error
-  window.ResizeObserver = ResizeObserverMock
-})
+  (
+    window as unknown as { ResizeObserver: typeof ResizeObserver }
+  ).ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
+});
 
 const makeClient = () =>
-  new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
 const wrap = (ui: React.ReactNode) =>
-  render(<QueryClientProvider client={makeClient()}>{ui}</QueryClientProvider>)
+  render(<QueryClientProvider client={makeClient()}>{ui}</QueryClientProvider>);
+
+// fetch tipado
+type FetchResponse = { ok: boolean; json: () => Promise<unknown> };
+type FetchFn = (
+  input: RequestInfo | URL,
+  init?: RequestInit,
+) => Promise<FetchResponse>;
+const makeFetchMock = () => vi.fn<FetchFn>();
 
 afterEach(() => {
-  vi.clearAllMocks()
-  // @ts-expect-error
-  global.fetch = undefined
-})
+  vi.clearAllMocks();
+  (globalThis as { fetch?: typeof fetch }).fetch = undefined;
+});
 
+/* ──────────────── Utilidades del test ──────────────── */
 const fillBasics = () => {
-  fireEvent.change(screen.getByLabelText('modal.fields.name'), { target: { value: 'John Doe' } })
-  fireEvent.change(screen.getByLabelText('modal.fields.company'), { target: { value: 'Acme' } })
-  fireEvent.change(screen.getByLabelText('modal.fields.nit'), { target: { value: '123' } })
-  fireEvent.change(screen.getByLabelText('modal.fields.email'), { target: { value: 'john@example.com' } })
-  fireEvent.change(screen.getByLabelText('modal.fields.phone'), { target: { value: '+1 234' } })
-  fireEvent.change(screen.getByLabelText('modal.fields.address'), { target: { value: 'Main St' } })
-  fireEvent.click(screen.getByRole('button', { name: /select-country/i })) // mock LocationSelector
-}
+  fireEvent.change(screen.getByLabelText("modal.fields.name"), {
+    target: { value: "John Doe" },
+  });
+  fireEvent.change(screen.getByLabelText("modal.fields.company"), {
+    target: { value: "Acme" },
+  });
+  fireEvent.change(screen.getByLabelText("modal.fields.nit"), {
+    target: { value: "123" },
+  });
+  fireEvent.change(screen.getByLabelText("modal.fields.email"), {
+    target: { value: "john@example.com" },
+  });
+  fireEvent.change(screen.getByLabelText("modal.fields.phone"), {
+    target: { value: "+1 234" },
+  });
+  fireEvent.change(screen.getByLabelText("modal.fields.address"), {
+    target: { value: "Main St" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: /select-country/i })); // mock LocationSelector
+};
 
-describe('CreateProviderModal (mínimo para cobertura)', () => {
-  it('render básico y cierra con Cancel', () => {
-    const onOpenChange = vi.fn()
-    wrap(<CreateProviderModal open={true} onOpenChange={onOpenChange} />)
+/* ──────────────── Tests ──────────────── */
+describe("CreateProviderModal (mínimo para cobertura, sin any)", () => {
+  it("render básico y cierra con Cancel", () => {
+    const onOpenChange = vi.fn();
+    wrap(<CreateProviderModal open={true} onOpenChange={onOpenChange} />);
 
-    expect(screen.getByText('modal.title')).toBeInTheDocument()
-    expect(screen.getByText('modal.description')).toBeInTheDocument()
+    expect(screen.getByText("modal.title")).toBeInTheDocument();
+    expect(screen.getByText("modal.description")).toBeInTheDocument();
 
-    // existe el form en el portal
-    const form = screen.getByTestId('provider-form') as HTMLFormElement
-    expect(form).toBeTruthy()
+    const form = screen.getByTestId("provider-form") as HTMLFormElement;
+    expect(form).toBeTruthy();
 
-    // cancelar
-    fireEvent.click(screen.getByTestId('cancel-provider'))
-    expect(onOpenChange).toHaveBeenCalledWith(false)
-  })
+    fireEvent.click(screen.getByTestId("cancel-provider"));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
 
-  it('flujo feliz: completa campos, envía y muestra toast.success', async () => {
-    const onOpenChange = vi.fn()
-    global.fetch = vi.fn().mockResolvedValueOnce({
+  it("flujo feliz: completa campos, envía y muestra toast.success", async () => {
+    const onOpenChange = vi.fn();
+
+    const fetchMock = makeFetchMock();
+    fetchMock.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ id: 1 }),
-    } as any)
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
 
-    wrap(<CreateProviderModal open={true} onOpenChange={onOpenChange} />)
+    wrap(<CreateProviderModal open={true} onOpenChange={onOpenChange} />);
 
-    fillBasics()
+    fillBasics();
 
-    // submit directo al form (estable con portal)
-    const form = screen.getByTestId('provider-form') as HTMLFormElement
-    fireEvent.submit(form)
+    const form = screen.getByTestId("provider-form") as HTMLFormElement;
+    fireEvent.submit(form);
 
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1))
-    const [url, init] = (global.fetch as vi.Mock).mock.calls[0]
-    expect(url).toBe('/api/providers')
-    expect(init.method).toBe('POST')
-    expect(init.credentials).toBe('include')
-    expect(init.headers).toEqual(expect.objectContaining({ 'Content-Type': 'application/json' }))
-    expect(typeof init.body).toBe('string')
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("/api/providers");
+    expect((init as RequestInit).method).toBe("POST");
+    expect((init as RequestInit).credentials).toBe("include");
+    expect((init as RequestInit).headers).toEqual(
+      expect.objectContaining({ "Content-Type": "application/json" }),
+    );
+    expect(typeof (init as RequestInit).body).toBe("string");
 
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith('modal.toastSuccess')
-      expect(onOpenChange).toHaveBeenCalledWith(false)
-    })
-  })
+      expect(toast.success).toHaveBeenCalledWith("modal.toastSuccess");
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+    });
+  });
 
-  it('error del servidor: muestra toast.error', async () => {
-    const onOpenChange = vi.fn()
-    global.fetch = vi.fn().mockResolvedValueOnce({
+  it("error del servidor: muestra toast.error", async () => {
+    const onOpenChange = vi.fn();
+
+    const fetchMock = makeFetchMock();
+    fetchMock.mockResolvedValueOnce({
       ok: false,
       json: async () => ({}),
-    } as any)
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
 
-    wrap(<CreateProviderModal open={true} onOpenChange={onOpenChange} />)
+    wrap(<CreateProviderModal open={true} onOpenChange={onOpenChange} />);
 
-    fillBasics()
+    fillBasics();
 
-    const form = screen.getByTestId('provider-form') as HTMLFormElement
-    fireEvent.submit(form)
+    const form = screen.getByTestId("provider-form") as HTMLFormElement;
+    fireEvent.submit(form);
 
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1))
-    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('modal.toastError'))
-  })
-})
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith("modal.toastError"),
+    );
+  });
+});
