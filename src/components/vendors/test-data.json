@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "name": "Anna Müller",
+    "email": "anna.mueller@example.com",
+    "country": "Alemania",
+    "territory": "Munchen",
+    "phone": "+49 89 123456"
+  },
+  {
+    "id": 2,
+    "name": "Carlos Rodríguez",
+    "email": "carlos.rodriguez@example.com",
+    "country": "España",
+    "territory": "Madrid",
+    "phone": "+34 91 234 5678"
+  },
+  {
+    "id": 3,
+    "name": "John Smith",
+    "email": "john.smith@example.com",
+    "country": "United States",
+    "territory": "New York",
+    "phone": "+1 212 555 0123"
+  },
+  {
+    "id": 4,
+    "name": "María González",
+    "email": "maria.gonzalez@example.com",
+    "country": "México",
+    "territory": "Ciudad de México",
+    "phone": "+52 55 1234 5678"
+  },
+  {
+    "id": 5,
+    "name": "Sophie Laurent",
+    "email": "sophie.laurent@example.com",
+    "country": "France",
+    "territory": "Paris",
+    "phone": "+33 1 42 34 56 78"
+  },
+  {
+    "id": 6,
+    "name": "Juan Pérez",
+    "email": "juan.perez@example.com",
+    "country": "Argentina",
+    "territory": "Buenos Aires",
+    "phone": "+54 11 4321 8765"
+  },
+  {
+    "id": 7,
+    "name": "Emily Johnson",
+    "email": "emily.johnson@example.com",
+    "country": "Canada",
+    "territory": "Toronto",
+    "phone": "+1 416 555 7890"
+  },
+  {
+    "id": 8,
+    "name": "Laura Martínez",
+    "email": "laura.martinez@example.com",
+    "country": "Colombia",
+    "territory": "Bogotá",
+    "phone": "+57 1 234 5678"
+  },
+  {
+    "id": 9,
+    "name": "James Wilson",
+    "email": "james.wilson@example.com",
+    "country": "United Kingdom",
+    "territory": "London",
+    "phone": "+44 20 7123 4567"
+  },
+  {
+    "id": 10,
+    "name": "Ana Silva",
+    "email": "ana.silva@example.com",
+    "country": "Brasil",
+    "territory": "São Paulo",
+    "phone": "+55 11 98765 4321"
+  }
+]

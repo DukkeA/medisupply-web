@@ -114,5 +114,184 @@
         "uploading": "Cargando..."
       }
     }
+  },
+  "vendors": {
+    "page": {
+      "title": "Vendedores",
+      "description": "Administra tus vendedores aquí."
+    },
+    "table": {
+      "addButton": "Agregar Vendedor",
+      "columns": {
+        "name": "Nombre",
+        "email": "Correo Electrónico",
+        "phone": "Teléfono",
+        "country": "País",
+        "territory": "Territorio"
+      },
+      "loading": "Cargando vendedores...",
+      "error": "Error al cargar vendedores.",
+      "noData": "No se encontraron vendedores. Agrega tu primer vendedor para comenzar."
+    },
+    "modal": {
+      "toastSuccess": "¡Vendedor creado exitosamente!",
+      "toastError": "Error al crear vendedor. Por favor intenta de nuevo.",
+      "title": "Crear Nuevo Vendedor",
+      "description": "Completa la información del vendedor a continuación. Haz clic en guardar cuando hayas terminado.",
+      "fields": {
+        "name": "Nombre",
+        "email": "Correo Electrónico",
+        "phone": "Teléfono",
+        "country": "País",
+        "territory": "Territorio"
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "create": "Crear",
+        "creating": "Creando..."
+      }
+    }
+  },
+  "warehouses": {
+    "page": {
+      "title": "Almacenes",
+      "description": "Administra tus almacenes aquí."
+    },
+    "table": {
+      "addButton": "Agregar Almacén",
+      "columns": {
+        "name": "Nombre",
+        "city": "Ciudad",
+        "country": "País",
+        "address": "Dirección"
+      },
+      "loading": "Cargando almacenes...",
+      "error": "Error al cargar almacenes.",
+      "noData": "No se encontraron almacenes. Agrega tu primer almacén para comenzar."
+    },
+    "modal": {
+      "toastSuccess": "¡Almacén creado exitosamente!",
+      "toastError": "Error al crear almacén. Por favor intenta de nuevo.",
+      "title": "Crear Nuevo Almacén",
+      "description": "Completa la información del almacén a continuación. Haz clic en guardar cuando hayas terminado.",
+      "fields": {
+        "name": "Nombre",
+        "city": "Ciudad",
+        "country": "País",
+        "address": "Dirección"
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "create": "Crear",
+        "creating": "Creando..."
+      }
+    }
+  },
+  "inventory": {
+    "page": {
+      "title": "Inventario",
+      "description": "Administra tu inventario aquí."
+    },
+    "table": {
+      "addButton": "Agregar al Inventario",
+      "columns": {
+        "productId": "ID del Producto",
+        "warehouseId": "ID del Almacén",
+        "totalQuantity": "Cantidad Total",
+        "reservedQuantity": "Reservada",
+        "batchNumber": "Número de Lote",
+        "expirationDate": "Fecha de Vencimiento"
+      },
+      "loading": "Cargando inventario...",
+      "error": "Error al cargar inventario.",
+      "noData": "No se encontraron artículos en el inventario. Agrega tu primer artículo para comenzar."
+    },
+    "modal": {
+      "toastSuccess": "¡Artículo agregado al inventario exitosamente!",
+      "toastError": "Error al agregar artículo al inventario. Por favor intenta de nuevo.",
+      "title": "Agregar al Inventario",
+      "description": "Completa la información del artículo de inventario a continuación. Haz clic en guardar cuando hayas terminado.",
+      "noResults": "No se encontraron resultados.",
+      "fields": {
+        "product": "Producto",
+        "warehouse": "Almacén",
+        "totalQuantity": "Cantidad Total",
+        "reservedQuantity": "Cantidad Reservada",
+        "batchNumber": "Número de Lote",
+        "expirationDate": "Fecha de Vencimiento"
+      },
+      "placeholders": {
+        "selectProduct": "Selecciona un producto...",
+        "searchProduct": "Buscar producto...",
+        "selectWarehouse": "Selecciona un almacén...",
+        "searchWarehouse": "Buscar almacén...",
+        "pickDate": "Selecciona una fecha"
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "create": "Agregar al Inventario",
+        "creating": "Agregando..."
+      }
+    }
+  },
+  "vendorPlans": {
+    "page": {
+      "title": "Planes de Vendedores",
+      "description": "Administra tus planes de vendedores aquí."
+    },
+    "vendor": "Vendedor",
+    "period": "Período",
+    "goal": "Meta",
+    "actual": "Real",
+    "status": "Estado",
+    "noResults": "No se encontraron planes de vendedores.",
+    "create": "Crear Plan",
+    "createTitle": "Crear Nuevo Plan de Vendedor",
+    "createDescription": "Completa la información del plan de vendedor a continuación. Haz clic en crear cuando hayas terminado.",
+    "createSuccess": "¡Plan de vendedor creado exitosamente!",
+    "createError": "Error al crear el plan de vendedor. Por favor intenta de nuevo.",
+    "creating": "Creando...",
+    "selectVendor": "Selecciona un vendedor...",
+    "searchVendor": "Buscar vendedor...",
+    "noVendorFound": "No se encontró ningún vendedor.",
+    "onTrack": "En Curso",
+    "exceeded": "Superado",
+    "belowTarget": "Por Debajo de la Meta",
+    "cancel": "Cancelar"
+  },
+  "home": {
+    "welcome": "Bienvenido a",
+    "subtitle": "Proyecto Universitario - Sistema de Gestión de Suministros Médicos",
+    "about": {
+      "title": "Acerca de este proyecto",
+      "description": "Este es un proyecto universitario desarrollado para la gestión de inventario y suministros en el sector médico. El sistema permite administrar productos, proveedores, almacenes, vendedores y la generación de informes detallados.",
+      "purpose": "Diseñado para optimizar la gestión de la cadena de suministro médica y facilitar la toma de decisiones mediante análisis de datos."
+    },
+    "technologies": {
+      "title": "Construido con",
+      "frontend": "Frontend",
+      "backend": "Backend y Base de Datos",
+      "testing": "Testing",
+      "infrastructure": "Infraestructura",
+      "styling": "Estilos e Interfaz"
+    },
+    "features": {
+      "title": "Características Principales",
+      "providers": "Gestión de Proveedores",
+      "products": "Catálogo de Productos",
+      "inventory": "Inventario en Tiempo Real",
+      "warehouses": "Control de Almacenes",
+      "vendors": "Gestión de Vendedores",
+      "reports": "Informes Detallados",
+      "routes": "Optimización de Rutas"
+    },
+    "environment": {
+      "development": "Entorno de Desarrollo",
+      "production": "Entorno de Producción"
+    },
+    "cta": {
+      "getStarted": "Comenzar",
+      "viewDocs": "Ver Documentación"
+    }
   }
 }

@@ -17,43 +17,40 @@ import { Label } from '@/components/ui/label'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
-import LocationSelector from '../ui/location-input'
+import LocationSelector from '../../ui/location-input'
 
-type CreateProviderModalProps = {
+type CreateWarehouseModalProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function CreateProviderModal({
+export function CreateWarehouseModal({
   open,
   onOpenChange
-}: CreateProviderModalProps) {
+}: CreateWarehouseModalProps) {
   // query client instance
   const queryClient = useQueryClient()
-  const t = useTranslations('providers')
+  const t = useTranslations('warehouses')
 
   // form state
   const [formData, setFormData] = useState({
     name: '',
-    company: '',
-    nit: '',
-    email: '',
-    phone: '',
     address: '',
-    country: ''
+    country: '',
+    city: ''
   })
 
-  // mutation to create a new provider
-  const { mutate: createProviderMutation, isPending } = useMutation({
-    mutationKey: ['create-provider'],
-    mutationFn: async (newProvider: typeof formData) => {
-      const response = await fetch('/api/providers', {
+  // mutation to create a new warehouse
+  const { mutate: createWarehouseMutation, isPending } = useMutation({
+    mutationKey: ['create-warehouse'],
+    mutationFn: async (newWarehouse: typeof formData) => {
+      const response = await fetch('/api/warehouses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify(newProvider)
+        body: JSON.stringify(newWarehouse)
       })
       if (!response.ok) {
         throw new Error('Network response was not ok')
@@ -62,7 +59,7 @@ export function CreateProviderModal({
     },
     onSuccess: () => {
       onOpenChange(false)
-      queryClient.invalidateQueries({ queryKey: ['providers'] })
+      queryClient.invalidateQueries({ queryKey: ['warehouses'] })
       toast.success(t('modal.toastSuccess'))
     },
     onError: () => {
@@ -73,7 +70,7 @@ export function CreateProviderModal({
   // form handlers
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createProviderMutation(formData)
+    createWarehouseMutation(formData)
   }
 
   const handleChange = (field: keyof typeof formData, value: string) => {
@@ -87,7 +84,7 @@ export function CreateProviderModal({
           <DialogTitle>{t('modal.title')}</DialogTitle>
           <DialogDescription>{t('modal.description')}</DialogDescription>
         </DialogHeader>
-        <form data-testid="provider-form" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="name">{t('modal.fields.name')}</Label>
@@ -95,72 +92,34 @@ export function CreateProviderModal({
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleChange('name', e.target.value)}
-                placeholder="John Doe"
+                placeholder="Main Warehouse"
                 required
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="company">{t('modal.fields.company')}</Label>
-              <Input
-                id="company"
-                value={formData.company}
-                onChange={(e) => handleChange('company', e.target.value)}
-                placeholder="Acme Corp"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="nit">{t('modal.fields.nit')}</Label>
-              <Input
-                id="nit"
-                value={formData.nit}
-                onChange={(e) => handleChange('nit', e.target.value)}
-                placeholder="123456789-0"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">{t('modal.fields.email')}</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                placeholder="john@example.com"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="phone">{t('modal.fields.phone')}</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => handleChange('phone', e.target.value)}
-                placeholder="+1 234 567 8900"
-                required
-              />
-            </div>
+            <LocationSelector
+              showStates={true}
+              countryLabel={t('modal.fields.country')}
+              stateLabel={t('modal.fields.city')}
+              onCountryChange={(country) => {
+                handleChange('country', country?.name || '')
+              }}
+              onStateChange={(state) => {
+                handleChange('city', state?.name || '')
+              }}
+            />
             <div className="grid gap-2">
               <Label htmlFor="address">{t('modal.fields.address')}</Label>
               <Input
                 id="address"
                 value={formData.address}
                 onChange={(e) => handleChange('address', e.target.value)}
-                placeholder="123 Main St, Suite 100"
+                placeholder="123 Main St, New York, USA"
                 required
               />
             </div>
-            <LocationSelector
-              countryLabel={t('modal.fields.country')}
-              onCountryChange={(country) => {
-                handleChange('country', country?.name || '')
-              }}
-            />
           </div>
           <DialogFooter>
             <Button
-              data-testid="cancel-provider"
               type="button"
               variant="ghost"
               onClick={() => onOpenChange(false)}

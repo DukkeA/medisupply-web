@@ -1,13 +1,47 @@
 import { ReactNode } from 'react'
 import { render, RenderOptions } from '@testing-library/react'
 import { SidebarProvider } from '@/components/ui/sidebar'
+import { NextIntlClientProvider } from 'next-intl'
+import { vi } from 'vitest'
+
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/',
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn()
+  }),
+  useSearchParams: () => new URLSearchParams()
+}))
 
 interface SidebarWrapperProps {
   children: ReactNode
 }
 
+const messages = {
+  sidebar: {
+    providers: 'Providers',
+    products: 'Products',
+    vendors: 'Vendors',
+    'manage-vendors': 'Manage Vendors',
+    'vendors-plans': 'Vendors Plans',
+    reports: 'Reports',
+    overview: 'Overview',
+    'generate-report': 'Generate Report',
+    inventory: 'Inventory',
+    items: 'Items',
+    warehouses: 'Warehouses',
+    routes: 'Routes'
+  }
+}
+
 function SidebarWrapper({ children }: SidebarWrapperProps) {
-  return <SidebarProvider>{children}</SidebarProvider>
+  return (
+    <NextIntlClientProvider locale="en" messages={messages}>
+      <SidebarProvider>{children}</SidebarProvider>
+    </NextIntlClientProvider>
+  )
 }
 
 export function renderWithSidebar(

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "SKU12345",
+    "name": "Acetaminophen 500mg"
+  },
+  {
+    "id": "SKU12346",
+    "name": "Ibuprofen 400mg"
+  },
+  {
+    "id": "SKU12347",
+    "name": "Amoxicillin 250mg"
+  },
+  {
+    "id": "SKU12348",
+    "name": "Omeprazole 20mg"
+  },
+  {
+    "id": "SKU12349",
+    "name": "Metformin 850mg"
+  },
+  {
+    "id": "SKU12350",
+    "name": "Losartan 50mg"
+  },
+  {
+    "id": "SKU12351",
+    "name": "Atorvastatin 10mg"
+  },
+  {
+    "id": "SKU12352",
+    "name": "Aspirin 100mg"
+  }
+]

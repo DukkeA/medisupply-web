@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "Main Warehouse"
+  },
+  {
+    "id": 2,
+    "name": "Secondary Warehouse"
+  },
+  {
+    "id": 3,
+    "name": "Almacén Central Madrid"
+  },
+  {
+    "id": 4,
+    "name": "Toronto Distribution Center"
+  },
+  {
+    "id": 5,
+    "name": "Bodega Ciudad de México"
+  }
+]
