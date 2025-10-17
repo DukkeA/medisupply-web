@@ -35,7 +35,9 @@ export function InventoryTable() {
   const { data, isLoading, isError } = useQuery<InventoryItem[]>({
     queryKey: ['inventory'],
     queryFn: async () => {
-      const response = await fetch('/api/inventory')
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/inventory`
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }

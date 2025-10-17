@@ -34,7 +34,7 @@ export function VendorsTable() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['vendors'],
     queryFn: async () => {
-      const response = await fetch('/api/vendors')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sellers`)
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }

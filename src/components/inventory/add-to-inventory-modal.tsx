@@ -78,7 +78,9 @@ export function AddToInventoryModal({
   const { data: products } = useQuery<Product[]>({
     queryKey: ['products-for-inventory'],
     queryFn: async () => {
-      const response = await fetch('/api/products')
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/products`
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -93,7 +95,9 @@ export function AddToInventoryModal({
   const { data: warehouses } = useQuery<Warehouse[]>({
     queryKey: ['warehouses-for-inventory'],
     queryFn: async () => {
-      const response = await fetch('/api/warehouses')
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/warehouses`
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -108,14 +112,17 @@ export function AddToInventoryModal({
   const { mutate: addToInventoryMutation, isPending } = useMutation({
     mutationKey: ['add-to-inventory'],
     mutationFn: async (newItem: typeof formData) => {
-      const response = await fetch('/api/inventory', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(newItem)
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/inventory`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(newItem)
+        }
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }

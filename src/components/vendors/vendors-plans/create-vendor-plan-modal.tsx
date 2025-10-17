@@ -72,7 +72,7 @@ export function CreateVendorPlanModal({
   const { data: vendors } = useQuery<Vendor[]>({
     queryKey: ['vendors'],
     queryFn: async () => {
-      const response = await fetch('/api/vendors')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sellers`)
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -86,14 +86,17 @@ export function CreateVendorPlanModal({
   const mutation = useMutation({
     mutationKey: ['create-vendor-plan'],
     mutationFn: async (newPlan: VendorPlanFormData) => {
-      const response = await fetch('/api/vendor-plans', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(newPlan)
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/sellers-plans`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(newPlan)
+        }
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
