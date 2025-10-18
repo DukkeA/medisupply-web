@@ -14,7 +14,7 @@ vi.mock('../api-client', () => ({
 }))
 
 vi.mock('@/generated/api', () => ({
-  SellersApi: vi.fn().mockImplementation(() => ({
+  WebApi: vi.fn().mockImplementation(() => ({
     getSellersBffWebSellersGet: vi.fn().mockResolvedValue({
       data: {
         items: [],
@@ -91,7 +91,7 @@ describe('useSellers', () => {
     }
 
     const { result } = renderHookWithProviders(() =>
-      useSellers(10, 0, false, mockData)
+      useSellers(10, 0, mockData)
     )
 
     expect(result.current.data).toEqual(mockData)
@@ -110,7 +110,7 @@ describe('useSellers', () => {
     }
 
     const { result } = renderHookWithProviders(() =>
-      useSellers(10, 0, false, mockData)
+      useSellers(10, 0, mockData)
     )
 
     await waitFor(() => {

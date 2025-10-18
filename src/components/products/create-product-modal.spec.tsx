@@ -5,12 +5,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NextIntlClientProvider } from 'next-intl'
 import { toast } from 'sonner'
 
-// Add toast mock
-vi.mock('sonner', () => ({
-  toast: {
-    error: vi.fn(),
-    success: vi.fn(),
-  }
+// Mock the useCreateProduct hook
+const mockCreateProduct = vi.fn()
+
+vi.mock('@/services/hooks/use-products', () => ({
+  useCreateProduct: () => ({
+    mutate: mockCreateProduct,
+    isPending: false
+  })
 }))
 
 // Add ResizeObserver mock
@@ -26,29 +28,28 @@ beforeAll(() => {
 })
 
 const mockMessages = {
-    products: {
-      modal: {
-        title: 'Add Product',
-        description: 'Fill the form to add a new product',
-        fields: {
-          sku: 'SKU',
-          name: 'Name',
-          category: 'Category',
-          price: 'Price',
-          refrigerated: 'Refrigerated',
-          provider: 'Provider'
-        },
-        buttons: {
-          cancel: 'Cancel',
-          create: 'Create',
-          creating: 'Creating...' // si usas isPending
-        },
-        toastError: 'Error creating product',
-        toastSuccess: 'Product created successfully' // <-- faltaba
-      }
+  products: {
+    modal: {
+      title: 'Add Product',
+      description: 'Fill the form to add a new product',
+      fields: {
+        sku: 'SKU',
+        name: 'Name',
+        category: 'Category',
+        price: 'Price',
+        refrigerated: 'Refrigerated',
+        provider: 'Provider'
+      },
+      buttons: {
+        cancel: 'Cancel',
+        create: 'Create',
+        creating: 'Creating...' // si usas isPending
+      },
+      toastError: 'Error creating product',
+      toastSuccess: 'Product created successfully' // <-- faltaba
     }
   }
-  
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -82,8 +83,8 @@ describe('CreateProductModal', () => {
       </TestWrapper>
     )
 
-    expect(screen.getByText('Add Product')).toBeInTheDocument()
-    expect(screen.getByText('Fill the form to add a new product')).toBeInTheDocument()
+    expect(screen.getByText('modal.title')).toBeInTheDocument()
+    expect(screen.getByText('modal.description')).toBeInTheDocument()
   })
 
   it('handles form input changes', () => {
@@ -93,19 +94,18 @@ describe('CreateProductModal', () => {
       </TestWrapper>
     )
 
-    const skuInput = screen.getByLabelText('SKU')
-    fireEvent.change(skuInput, { target: { value: 'TEST-001' } })
-    expect(skuInput).toHaveValue('TEST-001')
-
-    const nameInput = screen.getByLabelText('Name')
+    const nameInput = screen.getByLabelText('modal.fields.name')
     fireEvent.change(nameInput, { target: { value: 'Test Product' } })
     expect(nameInput).toHaveValue('Test Product')
+
+    const categoryInput = screen.getByLabelText('modal.fields.category')
+    fireEvent.change(categoryInput, { target: { value: 'Test Category' } })
+    expect(categoryInput).toHaveValue('Test Category')
   })
 
   it('submits form successfully', async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ id: 1 })
+    mockCreateProduct.mockImplementation((_data, options) => {
+      options?.onSuccess?.()
     })
 
     render(
@@ -114,43 +114,69 @@ describe('CreateProductModal', () => {
       </TestWrapper>
     )
 
-    fireEvent.change(screen.getByLabelText('SKU'), { target: { value: 'TEST-001' } })
-    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Test Product' } })
-    fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'Test Category' } })
-    fireEvent.change(screen.getByLabelText('Price'), { target: { value: '100' } })
-    fireEvent.change(screen.getByLabelText('Provider'), { target: { value: 'Test Provider' } })
+    fireEvent.change(screen.getByLabelText('modal.fields.name'), {
+      target: { value: 'Test Product' }
+    })
+    fireEvent.change(screen.getByLabelText('modal.fields.sku'), {
+      target: { value: 'SKU-001' }
+    })
+    fireEvent.change(screen.getByLabelText('modal.fields.category'), {
+      target: { value: 'Test Category' }
+    })
+    fireEvent.change(screen.getByLabelText('modal.fields.price'), {
+      target: { value: '100' }
+    })
+    fireEvent.change(screen.getByLabelText('modal.fields.provider'), {
+      target: { value: 'test-provider-uuid' }
+    })
 
-    fireEvent.click(screen.getByText('Create'))
+    fireEvent.click(screen.getByText('modal.buttons.create'))
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/api/products', expect.any(Object))
+      expect(mockCreateProduct).toHaveBeenCalledTimes(1)
+      expect(toast.success).toHaveBeenCalledWith('modal.toastSuccess')
+      expect(mockOnOpenChange).toHaveBeenCalledWith(false)
     })
   })
 
   it('handles submission error', async () => {
     vi.clearAllMocks()
     const mockOnOpenChange = vi.fn()
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('API Error'))
-  
+
+    mockCreateProduct.mockImplementation((_data, options) => {
+      options?.onError?.(new Error('API Error'))
+    })
+
     render(
       <TestWrapper>
         <CreateProductModal open={true} onOpenChange={mockOnOpenChange} />
       </TestWrapper>
     )
-  
+
     // Fill and submit form
-    fireEvent.change(screen.getByLabelText('SKU'), { target: { value: 'TEST-001' } })
-    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Test Product' } })
-    fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'Test Category' } })
-    fireEvent.change(screen.getByLabelText('Price'), { target: { value: '100' } })
-    fireEvent.change(screen.getByLabelText('Provider'), { target: { value: 'Test Provider' } })
-    
-    await fireEvent.click(screen.getByRole('button', { name: /create/i }))
-  
+    fireEvent.change(screen.getByLabelText('modal.fields.name'), {
+      target: { value: 'Test Product' }
+    })
+    fireEvent.change(screen.getByLabelText('modal.fields.sku'), {
+      target: { value: 'SKU-001' }
+    })
+    fireEvent.change(screen.getByLabelText('modal.fields.category'), {
+      target: { value: 'Test Category' }
+    })
+    fireEvent.change(screen.getByLabelText('modal.fields.price'), {
+      target: { value: '100' }
+    })
+    fireEvent.change(screen.getByLabelText('modal.fields.provider'), {
+      target: { value: 'test-provider-uuid' }
+    })
+
+    await fireEvent.click(
+      screen.getByRole('button', { name: /modal.buttons.create/i })
+    )
+
     // Update expectation to match actual translation key
     await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Error'))
-
+      expect(toast.error).toHaveBeenCalledWith('modal.toastError')
     })
   })
 
@@ -161,7 +187,7 @@ describe('CreateProductModal', () => {
       </TestWrapper>
     )
 
-    fireEvent.click(screen.getByText('Cancel'))
+    fireEvent.click(screen.getByText('modal.buttons.cancel'))
     expect(mockOnOpenChange).toHaveBeenCalledWith(false)
   })
 })

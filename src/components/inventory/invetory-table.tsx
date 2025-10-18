@@ -12,19 +12,10 @@ import {
 } from '@/components/ui/table'
 import { AddToInventoryModal } from '@/components/inventory/add-to-inventory-modal'
 import { Plus } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import testData from './test-data.json'
 import { useTranslations } from 'next-intl'
-
-export type InventoryItem = {
-  id: number
-  product_id: string
-  warehouse_id: number
-  total_quantity: number
-  reserved_quantity: number
-  batch_number: string
-  expiration_date: string
-}
+import { useInventory } from '@/services/hooks/use-inventory'
+import { InventoryResponse } from '@/generated/models'
+import testData from './test-data.json'
 
 export function InventoryTable() {
   // TODO Agregar filtros por producto y almacen
@@ -33,21 +24,7 @@ export function InventoryTable() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // fetch inventory data
-  const { data, isLoading, isError } = useQuery<{ items: InventoryItem[] }>({
-    queryKey: ['inventory'],
-    queryFn: async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/inventory`
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: { items: testData }
-    })
-  })
+  const { data, isLoading, isError } = useInventory(testData)
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -70,8 +47,9 @@ export function InventoryTable() {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead>{t('table.columns.productId')}</TableHead>
-              <TableHead>{t('table.columns.warehouseId')}</TableHead>
+              <TableHead>{t('table.columns.productSku')}</TableHead>
+              <TableHead>{t('table.columns.productName')}</TableHead>
+              <TableHead>{t('table.columns.warehouseName')}</TableHead>
               <TableHead>{t('table.columns.totalQuantity')}</TableHead>
               <TableHead>{t('table.columns.reservedQuantity')}</TableHead>
               <TableHead>{t('table.columns.batchNumber')}</TableHead>
@@ -81,17 +59,18 @@ export function InventoryTable() {
           <TableBody>
             {!data || data.items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+                <TableCell colSpan={7} className="h-24 text-center">
                   {t('table.noData')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.items.map((item) => (
+              data.items.map((item: InventoryResponse) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">
-                    {item.product_id}
+                    {item.product_sku}
                   </TableCell>
-                  <TableCell>{item.warehouse_id}</TableCell>
+                  <TableCell>{item.product_name}</TableCell>
+                  <TableCell>{item.warehouse_name}</TableCell>
                   <TableCell>{item.total_quantity}</TableCell>
                   <TableCell>{item.reserved_quantity}</TableCell>
                   <TableCell>{item.batch_number}</TableCell>

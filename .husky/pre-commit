@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Pre-commit hook that runs linting and formatting checks
+#
+
+echo "Running pre-commit checks..."
+
+# Check if there are any staged files
+if ! git diff --cached --name-only | grep -qE '\.(ts|tsx|js|jsx)$'; then
+  echo "No TypeScript/JavaScript files staged, skipping checks."
+  exit 0
+fi
+
+# Run Prettier check on staged files
+echo "Checking code formatting..."
+if ! yarn format:check; then
+  echo "❌ Code formatting issues found. Run 'yarn format' to fix them."
+  exit 1
+fi
+
+# Run ESLint with auto-fix on staged files
+echo "Running linting with auto-fix..."
+if ! yarn lint --fix; then
+  echo "❌ Linting issues found that could not be auto-fixed. Please fix them manually before committing."
+  exit 1
+fi
+
+# Run TypeScript type checking
+echo "Running type checking..."
+if ! yarn tsc --noEmit; then
+  echo "❌ TypeScript errors found. Please fix them before committing."
+  exit 1
+fi
+
+echo "✅ All pre-commit checks passed!"
+exit 0

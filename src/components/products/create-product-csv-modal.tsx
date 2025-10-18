@@ -81,7 +81,7 @@ export function CreateProductCSVModal({
               <div className="flex items-center gap-2">
                 <Input
                   id="file"
-                  data-testid="csv-file-input" 
+                  data-testid="csv-file-input"
                   type="file"
                   accept=".csv"
                   onChange={handleFileChange}

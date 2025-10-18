@@ -1,157 +1,129 @@
-import React, {
-  PropsWithChildren,
-  SVGProps,
-  ButtonHTMLAttributes,
-} from "react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { VendorsTable } from "./vendors-table";
+import React, { PropsWithChildren } from 'react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { VendorsTable } from './vendors-table'
 
 /* ────────── Mocks tipados ────────── */
 
-// i18n
-vi.mock("next-intl", () => ({
-  useTranslations: () => (k: string) => k,
-}));
-
-// Icono
-vi.mock("lucide-react", () => ({
-  Plus: (p: SVGProps<SVGSVGElement>) => <svg {...p} />,
-}));
-
-// UI shadcn basics
-vi.mock("@/components/ui/button", () => ({
-  Button: ({
-    children,
-    ...props
-  }: PropsWithChildren<ButtonHTMLAttributes<HTMLButtonElement>>) => (
-    <button {...props}>{children}</button>
-  ),
-}));
-
-vi.mock("@/components/ui/table", () => ({
-  Table: ({ children }: PropsWithChildren) => <table>{children}</table>,
-  TableHeader: ({ children }: PropsWithChildren) => <thead>{children}</thead>,
-  TableBody: ({ children }: PropsWithChildren) => <tbody>{children}</tbody>,
-  TableRow: ({
-    children,
-    ...props
-  }: PropsWithChildren<Record<string, unknown>>) => (
-    <tr {...props}>{children}</tr>
-  ),
-  TableHead: ({ children }: PropsWithChildren) => <th>{children}</th>,
-  TableCell: ({
-    children,
-    ...props
-  }: PropsWithChildren<Record<string, unknown>>) => (
-    <td {...props}>{children}</td>
-  ),
-}));
-
 // Modal: exponer estado de apertura
-vi.mock("@/components/vendors/create-vendor-modal", () => ({
+vi.mock('@/components/vendors/create-vendor-modal', () => ({
   CreateVendorModal: ({ open }: { open: boolean }) => (
     <div
       data-testid="create-vendor-modal"
-      data-open={open ? "true" : "false"}
+      data-open={open ? 'true' : 'false'}
     />
-  ),
-}));
+  )
+}))
 
-// React Query: solo useQuery
-type UseQueryResult<T> = { data: T; isLoading: boolean; isError: boolean };
-const mockUseQuery = vi.fn<() => UseQueryResult<unknown[]>>();
+// Mock useSellers hook
+type UseQueryResult<T> = { data?: T; isLoading: boolean; isError: boolean }
+const mockUseSellers = vi.fn<() => UseQueryResult<unknown>>()
 
-vi.mock("@tanstack/react-query", () => ({
-  useQuery: () => mockUseQuery(),
-}));
+vi.mock('@/services/hooks/use-sellers', () => ({
+  useSellers: () => mockUseSellers()
+}))
 
 /* ────────── Tests ────────── */
 
-describe("VendorsTable (cobertura mínima, sin any)", () => {
-  const origEnv = process.env;
+describe('VendorsTable', () => {
+  const origEnv = process.env
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    process.env = { ...origEnv };
-  });
+    vi.clearAllMocks()
+    process.env = { ...origEnv }
+  })
 
   afterEach(() => {
-    process.env = origEnv;
-  });
+    process.env = origEnv
+  })
 
-  it("muestra Loading...", () => {
-    mockUseQuery.mockReturnValue({
+  it('should display loading state while fetching data', () => {
+    mockUseSellers.mockReturnValue({
       isLoading: true,
       isError: false,
-      data: [],
-    });
-    render(<VendorsTable />);
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
-  });
+      data: undefined
+    })
+    render(<VendorsTable />)
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
+  })
 
-  it("muestra mensaje de error", () => {
-    mockUseQuery.mockReturnValue({
+  it('should display error message when query fails', () => {
+    mockUseSellers.mockReturnValue({
       isLoading: false,
       isError: true,
-      data: [],
-    });
-    render(<VendorsTable />);
-    expect(screen.getByText("Error loading vendors.")).toBeInTheDocument();
-  });
+      data: undefined
+    })
+    render(<VendorsTable />)
+    expect(screen.getByText('Error loading vendors.')).toBeInTheDocument()
+  })
 
-  it("renderiza tabla y noData cuando data=[]", () => {
-    mockUseQuery.mockReturnValue({
+  it('should render table with empty state when data is empty', () => {
+    mockUseSellers.mockReturnValue({
       isLoading: false,
       isError: false,
-      data: [],
-    });
-    render(<VendorsTable />);
-    expect(screen.getByRole("table")).toBeInTheDocument();
-    expect(screen.getByText("table.noData")).toBeInTheDocument();
-  });
+      data: {
+        items: [],
+        total: 0,
+        page: 1,
+        size: 10,
+        has_next: false,
+        has_previous: false
+      }
+    })
+    render(<VendorsTable />)
+    expect(screen.getByRole('table')).toBeInTheDocument()
+    expect(screen.getByText('table.noData')).toBeInTheDocument()
+  })
 
-  it("renderiza filas y abre el modal al click", async () => {
-    // cubre la rama del spread de initialData leyendo la env var
-    process.env.NEXT_PUBLIC_MOCK_DATA = "true";
+  it('should render rows and open modal when add button is clicked', async () => {
+    process.env.NEXT_PUBLIC_MOCK_DATA = 'true'
 
-    mockUseQuery.mockReturnValue({
+    mockUseSellers.mockReturnValue({
       isLoading: false,
       isError: false,
-      data: [
-        {
-          id: "v1",
-          name: "Alice",
-          email: "alice@x.com",
-          phone: "111",
-          country: "CO",
-          territory: "Andina",
-        },
-      ],
-    });
+      data: {
+        items: [
+          {
+            id: 'v1',
+            name: 'Alice',
+            email: 'alice@x.com',
+            phone: '111',
+            country: 'CO',
+            city: 'Bogota',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01'
+          }
+        ],
+        total: 1,
+        page: 1,
+        size: 10,
+        has_next: false,
+        has_previous: false
+      }
+    })
 
-    render(<VendorsTable />);
+    render(<VendorsTable />)
 
-    expect(screen.getByRole("table")).toBeInTheDocument();
-    expect(screen.getByText("Alice")).toBeInTheDocument();
-    expect(screen.getByText("alice@x.com")).toBeInTheDocument();
-    expect(screen.getByText("111")).toBeInTheDocument();
-    expect(screen.getByText("CO")).toBeInTheDocument();
-    expect(screen.getByText("Andina")).toBeInTheDocument();
+    expect(screen.getByRole('table')).toBeInTheDocument()
+    expect(screen.getByText('Alice')).toBeInTheDocument()
+    expect(screen.getByText('alice@x.com')).toBeInTheDocument()
+    expect(screen.getByText('111')).toBeInTheDocument()
+    expect(screen.getByText('CO')).toBeInTheDocument()
+    expect(screen.getByText('Bogota')).toBeInTheDocument()
 
-    const addBtn = screen.getByRole("button");
-    expect(screen.getByTestId("create-vendor-modal")).toHaveAttribute(
-      "data-open",
-      "false",
-    );
+    const addBtn = screen.getByRole('button')
+    expect(screen.getByTestId('create-vendor-modal')).toHaveAttribute(
+      'data-open',
+      'false'
+    )
 
-    const user = userEvent.setup();
-    await user.click(addBtn);
+    const user = userEvent.setup()
+    await user.click(addBtn)
 
-    expect(screen.getByTestId("create-vendor-modal")).toHaveAttribute(
-      "data-open",
-      "true",
-    );
-  });
-});
+    expect(screen.getByTestId('create-vendor-modal')).toHaveAttribute(
+      'data-open',
+      'true'
+    )
+  })
+})

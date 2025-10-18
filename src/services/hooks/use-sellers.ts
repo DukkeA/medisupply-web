@@ -4,46 +4,35 @@ import {
   useQueryClient,
   UseQueryOptions
 } from '@tanstack/react-query'
-import { SellersApi } from '@/generated/api'
+import { WebApi } from '@/generated/api'
 import {
   SellerCreate,
   SellerCreateResponse,
-  SellerResponse,
-  PaginatedSellersResponse
+  ResponseGetSellersBffWebSellersGet
 } from '@/generated/models'
 import { apiClient } from '../api-client'
 
-const sellersApi = new SellersApi(undefined, '', apiClient)
+const webApi = new WebApi(undefined, '', apiClient)
 
 export const SELLERS_QUERY_KEY = 'sellers'
 
-export const useSellers = (
-  limit = 10,
-  offset = 0,
-  all = false,
-  mockData?: unknown
-) => {
-  const queryOptions: UseQueryOptions<
-    PaginatedSellersResponse | SellerResponse[]
-  > = {
-    queryKey: [SELLERS_QUERY_KEY, limit, offset, all],
+export const useSellers = (limit = 10, offset = 0, mockData?: unknown) => {
+  const queryOptions: UseQueryOptions<ResponseGetSellersBffWebSellersGet> = {
+    queryKey: [SELLERS_QUERY_KEY, limit, offset],
     queryFn: async () => {
-      const response = await sellersApi.getSellersBffWebSellersGet({
+      const response = await webApi.getSellersBffWebSellersGet({
         limit,
-        offset,
-        all
+        offset
       })
       return response.data
     }
   }
 
   if (process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && mockData) {
-    queryOptions.initialData = mockData as
-      | PaginatedSellersResponse
-      | SellerResponse[]
+    queryOptions.initialData = mockData as ResponseGetSellersBffWebSellersGet
   }
 
-  return useQuery<PaginatedSellersResponse | SellerResponse[]>(queryOptions)
+  return useQuery<ResponseGetSellersBffWebSellersGet>(queryOptions)
 }
 
 export const useCreateSeller = () => {
@@ -52,7 +41,7 @@ export const useCreateSeller = () => {
   return useMutation<SellerCreateResponse, Error, SellerCreate>({
     mutationKey: ['create-seller'],
     mutationFn: async (newSeller: SellerCreate) => {
-      const response = await sellersApi.createSellerBffWebSellersPost({
+      const response = await webApi.createSellerBffWebSellersPost({
         sellerCreate: newSeller
       })
       return response.data

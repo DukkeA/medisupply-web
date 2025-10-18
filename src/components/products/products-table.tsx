@@ -38,11 +38,18 @@ export function ProductsTable() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end gap-4">
-        <Button data-testid="add-product-button" variant="outline" onClick={() => setIsCSVModalOpen(true)}>
+        <Button
+          data-testid="add-product-button"
+          variant="outline"
+          onClick={() => setIsCSVModalOpen(true)}
+        >
           <Plus className="mr-2 h-4 w-4" />
           {t('table.addCSVButton')}
         </Button>
-        <Button data-testid="import-csv-button"  onClick={() => setIsModalOpen(true)}>
+        <Button
+          data-testid="import-csv-button"
+          onClick={() => setIsModalOpen(true)}
+        >
           <Plus className="mr-2 h-4 w-4" />
           {t('table.addButton')}
         </Button>
@@ -69,7 +76,7 @@ export function ProductsTable() {
             ) : (
               data.items.map((product: ProductResponse) => (
                 <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.id}</TableCell>
+                  <TableCell className="font-medium">{product.sku}</TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
                   <TableCell>{product.price}</TableCell>

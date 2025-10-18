@@ -17,11 +17,7 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import { useCreateProduct } from '@/services/hooks/use-products'
-import {
-  ProductCreate,
-  ProductCategory,
-  ProductStatus
-} from '@/generated/models'
+import { ProductCreate, ProductCategory } from '@/generated/models'
 
 type CreateProductModalProps = {
   open: boolean
@@ -42,10 +38,9 @@ export function CreateProductModal({
   >({
     name: '',
     category: ProductCategory.Otros,
-    description: '',
+    sku: '',
     price: 0,
-    provider_id: '',
-    status: ProductStatus.PendienteAprobacion
+    provider_id: ''
   })
 
   // mutation to create a new product
@@ -66,10 +61,9 @@ export function CreateProductModal({
         setFormData({
           name: '',
           category: ProductCategory.Otros,
-          description: '',
+          sku: '',
           price: 0,
-          provider_id: '',
-          status: ProductStatus.PendienteAprobacion
+          provider_id: ''
         })
       },
       onError: () => {
@@ -89,7 +83,7 @@ export function CreateProductModal({
           <DialogTitle>{t('modal.title')}</DialogTitle>
           <DialogDescription>{t('modal.description')}</DialogDescription>
         </DialogHeader>
-        <form role='form' onSubmit={handleSubmit}>
+        <form role="form" onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="name">{t('modal.fields.name')}</Label>
@@ -102,12 +96,12 @@ export function CreateProductModal({
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="sku">{t('modal.fields.sku')}</Label>
               <Input
-                id="description"
-                value={formData.description}
-                onChange={(e) => handleChange('description', e.target.value)}
-                placeholder="Product description"
+                id="sku"
+                value={formData.sku}
+                onChange={(e) => handleChange('sku', e.target.value)}
+                placeholder="SKU-001"
                 required
               />
             </div>

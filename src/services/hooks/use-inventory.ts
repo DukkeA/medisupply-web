@@ -4,55 +4,49 @@ import {
   useQueryClient,
   UseQueryOptions
 } from '@tanstack/react-query'
+import { WebApi } from '@/generated/api'
+import { PaginatedInventoriesResponse } from '@/generated/models'
 import { apiClient } from '../api-client'
 
-export interface InventoryItem {
-  id: number
-  product_id: string
-  warehouse_id: number
-  total_quantity: number
-  reserved_quantity: number
-  batch_number: string
-  expiration_date: string
-}
-
-export interface AddToInventoryRequest {
-  product_id: string
-  warehouse_id: number
-  total_quantity: number
-  reserved_quantity: number
-  batch_number: string
-  expiration_date: string
-}
+const webApi = new WebApi(undefined, '', apiClient)
 
 export const INVENTORY_QUERY_KEY = 'inventory'
 
 export const useInventory = (mockData?: unknown) => {
-  const queryOptions: UseQueryOptions<InventoryItem[]> = {
+  const queryOptions: UseQueryOptions<PaginatedInventoriesResponse> = {
     queryKey: [INVENTORY_QUERY_KEY],
     queryFn: async () => {
-      const response = await apiClient.get<InventoryItem[]>('/inventory')
+      const response = await webApi.getInventoriesBffWebInventoriesGet({})
       return response.data
     }
   }
 
   if (process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && mockData) {
-    queryOptions.initialData = mockData as InventoryItem[]
+    queryOptions.initialData = mockData as PaginatedInventoriesResponse
   }
 
-  return useQuery<InventoryItem[]>(queryOptions)
+  return useQuery<PaginatedInventoriesResponse>(queryOptions)
 }
 
 export const useAddToInventory = () => {
   const queryClient = useQueryClient()
 
-  return useMutation<InventoryItem, Error, AddToInventoryRequest>({
+  return useMutation({
     mutationKey: ['add-to-inventory'],
-    mutationFn: async (newInventoryItem: AddToInventoryRequest) => {
-      const response = await apiClient.post<InventoryItem>(
-        '/inventory',
-        newInventoryItem
-      )
+    mutationFn: async (params: {
+      product_id: string
+      warehouse_id: string
+      total_quantity: number
+      batch_number: string
+      expiration_date: string
+    }) => {
+      const response = await webApi.createInventoryBffWebInventoryPost({
+        productId: params.product_id,
+        warehouseId: params.warehouse_id,
+        totalQuantity: params.total_quantity,
+        batchNumber: params.batch_number,
+        expirationDate: params.expiration_date
+      })
       return response.data
     },
     onSuccess: () => {

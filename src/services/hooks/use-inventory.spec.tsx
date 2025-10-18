@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { waitFor } from '@testing-library/react'
-import { useInventory, useAddToInventory, InventoryItem } from './use-inventory'
+import { useInventory, useAddToInventory } from './use-inventory'
 import {
   renderHookWithProviders,
   createTestQueryClient
@@ -8,21 +8,42 @@ import {
 
 vi.mock('../api-client', () => ({
   apiClient: {
-    get: vi.fn().mockResolvedValue({
-      data: []
-    }),
-    post: vi.fn().mockResolvedValue({
+    get: vi.fn(),
+    post: vi.fn()
+  }
+}))
+
+vi.mock('@/generated/api', () => ({
+  WebApi: vi.fn().mockImplementation(() => ({
+    getInventoriesBffWebInventoriesGet: vi.fn().mockResolvedValue({
       data: {
-        id: 1,
+        items: [],
+        total: 0,
+        page: 1,
+        size: 10,
+        has_next: false,
+        has_previous: false
+      }
+    }),
+    createInventoryBffWebInventoryPost: vi.fn().mockResolvedValue({
+      data: {
+        id: '1',
         product_id: 'prod-123',
-        warehouse_id: 1,
+        warehouse_id: 'wh-1',
         total_quantity: 100,
         reserved_quantity: 10,
         batch_number: 'BATCH-001',
-        expiration_date: '2025-12-31'
+        expiration_date: '2025-12-31',
+        product_sku: 'SKU-001',
+        product_name: 'Product 1',
+        product_price: 10.99,
+        warehouse_name: 'Warehouse 1',
+        warehouse_city: 'City 1',
+        created_at: '2025-01-01',
+        updated_at: '2025-01-01'
       }
     })
-  }
+  }))
 }))
 
 describe('useInventory', () => {
@@ -44,23 +65,38 @@ describe('useInventory', () => {
     })
 
     expect(result.current.data).toBeDefined()
-    expect(Array.isArray(result.current.data)).toBe(true)
+    expect(result.current.data?.items).toBeDefined()
+    expect(Array.isArray(result.current.data?.items)).toBe(true)
   })
 
   it('should use mock data when NEXT_PUBLIC_MOCK_DATA is true', () => {
     process.env.NEXT_PUBLIC_MOCK_DATA = 'true'
 
-    const mockData: InventoryItem[] = [
-      {
-        id: 1,
-        product_id: 'prod-123',
-        warehouse_id: 1,
-        total_quantity: 100,
-        reserved_quantity: 10,
-        batch_number: 'BATCH-001',
-        expiration_date: '2025-12-31'
-      }
-    ]
+    const mockData = {
+      items: [
+        {
+          id: '1',
+          product_id: 'prod-123',
+          warehouse_id: 'wh-1',
+          total_quantity: 100,
+          reserved_quantity: 10,
+          batch_number: 'BATCH-001',
+          expiration_date: '2025-12-31',
+          product_sku: 'SKU-001',
+          product_name: 'Product 1',
+          product_price: 10.99,
+          warehouse_name: 'Warehouse 1',
+          warehouse_city: 'City 1',
+          created_at: '2025-01-01',
+          updated_at: '2025-01-01'
+        }
+      ],
+      total: 1,
+      page: 1,
+      size: 10,
+      has_next: false,
+      has_previous: false
+    }
 
     const { result } = renderHookWithProviders(() => useInventory(mockData))
 
@@ -70,17 +106,31 @@ describe('useInventory', () => {
   it('should not use mock data when NEXT_PUBLIC_MOCK_DATA is false', async () => {
     process.env.NEXT_PUBLIC_MOCK_DATA = 'false'
 
-    const mockData: InventoryItem[] = [
-      {
-        id: 1,
-        product_id: 'prod-123',
-        warehouse_id: 1,
-        total_quantity: 100,
-        reserved_quantity: 10,
-        batch_number: 'BATCH-001',
-        expiration_date: '2025-12-31'
-      }
-    ]
+    const mockData = {
+      items: [
+        {
+          id: '999',
+          product_id: 'mock-prod',
+          warehouse_id: 'mock-wh',
+          total_quantity: 999,
+          reserved_quantity: 999,
+          batch_number: 'MOCK-999',
+          expiration_date: '2099-12-31',
+          product_sku: 'MOCK-SKU',
+          product_name: 'Mock Product',
+          product_price: 999.99,
+          warehouse_name: 'Mock Warehouse',
+          warehouse_city: 'Mock City',
+          created_at: '2099-01-01',
+          updated_at: '2099-01-01'
+        }
+      ],
+      total: 999,
+      page: 999,
+      size: 999,
+      has_next: true,
+      has_previous: true
+    }
 
     const { result } = renderHookWithProviders(() => useInventory(mockData))
 
@@ -98,7 +148,7 @@ describe('useInventory', () => {
       expect(result.current.isSuccess).toBe(true)
     })
 
-    expect(result.current.data).toEqual([])
+    expect(result.current.data?.items).toEqual([])
   })
 })
 

@@ -14,7 +14,7 @@ vi.mock('../api-client', () => ({
 }))
 
 vi.mock('@/generated/api', () => ({
-  SalesPlansApi: vi.fn().mockImplementation(() => ({
+  WebApi: vi.fn().mockImplementation(() => ({
     getSalesPlansBffWebSalesPlansGet: vi.fn().mockResolvedValue({
       data: {
         items: [],

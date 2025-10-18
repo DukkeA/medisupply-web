@@ -1,154 +1,132 @@
-import React, { PropsWithChildren } from "react";
-import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ProvidersTable } from "./providers-table";
+import React from 'react'
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { ProvidersTable } from './providers-table'
 
 /* ───────────── Mocks tipados ───────────── */
 
-vi.mock("next-intl", async () => {
-  const actual = await vi.importActual<typeof import("next-intl")>("next-intl");
-  return {
-    ...actual,
-    useTranslations: () => (key: string) => key, // devuelve la clave (sin namespace)
-    NextIntlClientProvider: ({ children }: PropsWithChildren) => (
-      <>{children}</>
-    ),
-  };
-});
+// Modal: exponer estado de apertura
+vi.mock('@/components/proveedores/create-provider-modal', () => ({
+  CreateProviderModal: ({ open }: { open: boolean }) => (
+    <div
+      data-testid="create-provider-modal"
+      data-open={open ? 'true' : 'false'}
+    />
+  )
+}))
 
-// Stub del modal para evitar portal y validar apertura/cierre
-vi.mock("@/components/proveedores/create-provider-modal", () => ({
-  __esModule: true,
-  CreateProviderModal: ({
-    open,
-    onOpenChange,
-  }: {
-    open: boolean;
-    onOpenChange?: (open: boolean) => void;
-  }) =>
-    open ? (
-      <div data-testid="provider-modal">
-        modal abierto
-        <button type="button" onClick={() => onOpenChange?.(false)}>
-          close
-        </button>
-      </div>
-    ) : null,
-}));
+// Mock useProviders hook
+type UseQueryResult<T> = { data?: T; isLoading: boolean; isError: boolean }
+const mockUseProviders = vi.fn<() => UseQueryResult<unknown>>()
 
-/* ───────────── Utilidades tipadas ───────────── */
-
-const makeClient = () =>
-  new QueryClient({ defaultOptions: { queries: { retry: false } } });
-
-const renderWithClient = (ui: React.ReactNode) =>
-  render(<QueryClientProvider client={makeClient()}>{ui}</QueryClientProvider>);
-
-// fetch tipado
-type FetchResponse = { ok: boolean; json: () => Promise<unknown> };
-type FetchFn = (
-  input: RequestInfo | URL,
-  init?: RequestInit,
-) => Promise<FetchResponse>;
-const makeFetchMock = () => vi.fn<FetchFn>();
-
-afterEach(() => {
-  vi.clearAllMocks();
-  (globalThis as { fetch?: typeof fetch }).fetch = undefined;
-});
-
-beforeEach(() => {
-  // Asegúrate de no usar initialData del env
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _ = delete (process.env as Record<string, unknown>)
-    .NEXT_PUBLIC_MOCK_DATA;
-});
+vi.mock('@/services/hooks/use-providers', () => ({
+  useProviders: () => mockUseProviders()
+}))
 
 /* ───────────── Tests ───────────── */
 
-describe("ProvidersTable (mínimo para cobertura, sin any)", () => {
-  it("muestra Loading… y luego renderiza datos (éxito)", async () => {
-    const rows = [
-      {
-        id: "1",
-        name: "Alice",
-        company: "Acme",
-        nit: "N1",
-        email: "a@x.com",
-        phone: "111",
-        address: "Street 1",
-        country: "CO",
-      },
-      {
-        id: "2",
-        name: "Bob",
-        company: "Globex",
-        nit: "N2",
-        email: "b@y.com",
-        phone: "222",
-        address: "Street 2",
-        country: "US",
-      },
-    ];
+const origEnv = process.env
 
-    const fetchMock = makeFetchMock();
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      json: async () => rows,
-    });
-    global.fetch = fetchMock as unknown as typeof fetch;
+beforeEach(() => {
+  vi.clearAllMocks()
+  process.env = { ...origEnv }
+})
 
-    renderWithClient(<ProvidersTable />);
+afterEach(() => {
+  process.env = origEnv
+})
 
-    // estado inicial
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+/* ───────────── Tests ───────────── */
 
-    // datos cargados
-    await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledWith("/api/providers");
-      expect(screen.getByText("table.columns.name")).toBeInTheDocument();
-      expect(screen.getByText("Alice")).toBeInTheDocument();
-      expect(screen.getByText("Globex")).toBeInTheDocument();
-    });
-  });
+describe('ProvidersTable', () => {
+  it('should display loading state while fetching data', () => {
+    mockUseProviders.mockReturnValue({
+      isLoading: true,
+      isError: false,
+      data: undefined
+    })
+    render(<ProvidersTable />)
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
+  })
 
-  it('muestra "no data" cuando API retorna [] y abre el modal al click', async () => {
-    const fetchMock = makeFetchMock();
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      json: async () => [],
-    });
-    global.fetch = fetchMock as unknown as typeof fetch;
+  it('should display error message when query fails', () => {
+    mockUseProviders.mockReturnValue({
+      isLoading: false,
+      isError: true,
+      data: undefined
+    })
+    render(<ProvidersTable />)
+    expect(screen.getByText('Error loading providers.')).toBeInTheDocument()
+  })
 
-    renderWithClient(<ProvidersTable />);
+  it('should render table with empty state when data is empty', () => {
+    mockUseProviders.mockReturnValue({
+      isLoading: false,
+      isError: false,
+      data: {
+        items: [],
+        total: 0,
+        page: 1,
+        size: 10,
+        has_next: false,
+        has_previous: false
+      }
+    })
+    render(<ProvidersTable />)
+    expect(screen.getByRole('table')).toBeInTheDocument()
+    expect(screen.getByText('table.noData')).toBeInTheDocument()
+  })
 
-    // Espera directamente el contenido final (no solo la llamada a fetch)
-    expect(await screen.findByText("table.noData")).toBeInTheDocument();
+  it('should render rows and open modal when add button is clicked', async () => {
+    process.env.NEXT_PUBLIC_MOCK_DATA = 'true'
 
-    // abre el modal
-    fireEvent.click(screen.getByRole("button", { name: /table.addButton/i }));
-    expect(screen.getByTestId("provider-modal")).toBeInTheDocument();
+    mockUseProviders.mockReturnValue({
+      isLoading: false,
+      isError: false,
+      data: {
+        items: [
+          {
+            id: '1',
+            name: 'Alice',
+            contact_name: 'Acme',
+            nit: 'N1',
+            email: 'a@x.com',
+            phone: '111',
+            address: 'Street 1',
+            country: 'CO',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01'
+          }
+        ],
+        total: 1,
+        page: 1,
+        size: 10,
+        has_next: false,
+        has_previous: false
+      }
+    })
 
-    // cerrar modal desde el stub
-    fireEvent.click(screen.getByText("close"));
-    await waitFor(() => {
-      expect(screen.queryByTestId("provider-modal")).not.toBeInTheDocument();
-    });
-  });
+    render(<ProvidersTable />)
 
-  it("muestra mensaje de error cuando la consulta falla", async () => {
-    const fetchMock = makeFetchMock();
-    fetchMock.mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({}),
-    });
-    global.fetch = fetchMock as unknown as typeof fetch;
+    expect(screen.getByRole('table')).toBeInTheDocument()
+    expect(screen.getByText('Alice')).toBeInTheDocument()
+    expect(screen.getByText('Acme')).toBeInTheDocument()
+    expect(screen.getByText('N1')).toBeInTheDocument()
+    expect(screen.getByText('a@x.com')).toBeInTheDocument()
 
-    renderWithClient(<ProvidersTable />);
+    const addBtn = screen.getByRole('button')
+    expect(screen.getByTestId('create-provider-modal')).toHaveAttribute(
+      'data-open',
+      'false'
+    )
 
-    await waitFor(() => {
-      expect(screen.getByText("Error loading providers.")).toBeInTheDocument();
-    });
-  });
-});
+    const user = userEvent.setup()
+    await user.click(addBtn)
+
+    expect(screen.getByTestId('create-provider-modal')).toHaveAttribute(
+      'data-open',
+      'true'
+    )
+  })
+})

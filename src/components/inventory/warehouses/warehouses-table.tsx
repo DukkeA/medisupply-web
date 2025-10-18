@@ -12,17 +12,10 @@ import {
 } from '@/components/ui/table'
 import { CreateWarehouseModal } from '@/components/inventory/warehouses/create-warehouse-modal'
 import { Plus } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
+import { useWarehouses } from '@/services/hooks/use-warehouses'
+import { WarehouseResponse } from '@/generated/models'
 import testData from './test-data.json'
 import { useTranslations } from 'next-intl'
-
-export type Warehouse = {
-  id: number
-  name: string
-  address: string
-  country: string
-  city: string
-}
 
 export function WarehousesTable() {
   const t = useTranslations('warehouses')
@@ -30,21 +23,7 @@ export function WarehousesTable() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // fetch warehouses data
-  const { data, isLoading, isError } = useQuery<Warehouse[]>({
-    queryKey: ['warehouses'],
-    queryFn: async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/warehouses`
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: testData
-    })
-  })
+  const { data, isLoading, isError } = useWarehouses(10, 0, testData)
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -74,14 +53,14 @@ export function WarehousesTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {!data || data.length === 0 ? (
+            {!data || data.items.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="h-24 text-center">
                   {t('table.noData')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((warehouse) => (
+              data.items.map((warehouse: WarehouseResponse) => (
                 <TableRow key={warehouse.id}>
                   <TableCell className="font-medium">
                     {warehouse.name}

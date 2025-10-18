@@ -14,7 +14,8 @@
     "test:coverage": "vitest --coverage --run",
     "test:watch": "vitest --watch",
     "api:generate": "openapi-generator-cli generate",
-    "api:validate": "openapi-generator-cli validate -i http://medisupply-alb-1874203666.us-east-1.elb.amazonaws.com/bff/openapi.json"
+    "api:validate": "openapi-generator-cli validate -i http://medisupply-alb-1874203666.us-east-1.elb.amazonaws.com/bff/openapi.json",
+    "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -84,6 +85,7 @@
     "@vitest/ui": "^3.2.4",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
+    "husky": "^9.1.7",
     "jsdom": "^27.0.0",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",

@@ -14,10 +14,11 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import LocationSelector from '../ui/location-input'
+import { useCreateProvider } from '@/services/hooks/use-providers'
+import { ProviderCreate } from '@/generated/models'
 
 type CreateProviderModalProps = {
   open: boolean
@@ -28,12 +29,10 @@ export function CreateProviderModal({
   open,
   onOpenChange
 }: CreateProviderModalProps) {
-  // query client instance
-  const queryClient = useQueryClient()
   const t = useTranslations('providers')
 
   // form state
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ProviderCreate>({
     name: '',
     contact_name: '',
     nit: '',
@@ -44,39 +43,29 @@ export function CreateProviderModal({
   })
 
   // mutation to create a new provider
-  const { mutate: createProviderMutation, isPending } = useMutation({
-    mutationKey: ['create-provider'],
-    mutationFn: async (newProvider: typeof formData) => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/provider`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include',
-          body: JSON.stringify(newProvider)
-        }
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    onSuccess: () => {
-      onOpenChange(false)
-      queryClient.invalidateQueries({ queryKey: ['providers'] })
-      toast.success(t('modal.toastSuccess'))
-    },
-    onError: () => {
-      toast.error(t('modal.toastError'))
-    }
-  })
+  const { mutate: createProviderMutation, isPending } = useCreateProvider()
 
   // form handlers
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createProviderMutation(formData)
+    createProviderMutation(formData, {
+      onSuccess: () => {
+        onOpenChange(false)
+        toast.success(t('modal.toastSuccess'))
+        setFormData({
+          name: '',
+          contact_name: '',
+          nit: '',
+          email: '',
+          phone: '',
+          address: '',
+          country: ''
+        })
+      },
+      onError: () => {
+        toast.error(t('modal.toastError'))
+      }
+    })
   }
 
   const handleChange = (field: keyof typeof formData, value: string) => {
