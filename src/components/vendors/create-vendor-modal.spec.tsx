@@ -16,44 +16,6 @@ vi.mock('@/services/hooks/use-sellers', () => ({
   })
 }))
 
-// LocationSelector: expone 2 botones para disparar onCountryChange y onStateChange
-type CountryOrState = { name: string }
-vi.mock('../ui/location-input', () => ({
-  __esModule: true,
-  default: ({
-    onCountryChange,
-    onStateChange,
-    countryLabel,
-    stateLabel,
-    showStates
-  }: {
-    onCountryChange?: (c?: CountryOrState) => void
-    onStateChange?: (s?: CountryOrState) => void
-    countryLabel?: string
-    stateLabel?: string
-    showStates?: boolean
-  }) => (
-    <div>
-      <button
-        type="button"
-        aria-label={countryLabel ?? 'country'}
-        onClick={() => onCountryChange?.({ name: 'Colombia' })}
-      >
-        select-country
-      </button>
-      {showStates ? (
-        <button
-          type="button"
-          aria-label={stateLabel ?? 'state'}
-          onClick={() => onStateChange?.({ name: 'Andina' })}
-        >
-          select-state
-        </button>
-      ) : null}
-    </div>
-  )
-}))
-
 /* ─────────────────── Tests ─────────────────── */
 
 describe('CreateVendorModal', () => {

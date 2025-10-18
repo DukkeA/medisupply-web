@@ -6,8 +6,9 @@
  * ## What's Mocked Globally:
  * - **next-intl**: useTranslations returns keys as-is (e.g., t('hello') returns 'hello')
  * - **sonner**: Toast notifications (success, error, etc.)
- * - **UI components** (shadcn/ui): Button, Dialog, Input, Label, etc.
+ * - **UI components** (shadcn/ui): Button, Dialog, Input, Label, Popover, Command, Select, Form, Table, Calendar
  * - **Sidebar**: useSidebar hook with default state
+ * - **LocationSelector**: Country/state selection component with default test behavior
  *
  * ## What's NOT Mocked (uses real implementation):
  * - **lucide-react**: Uses real icon components
@@ -241,6 +242,48 @@ export function setupSidebarMocks() {
 }
 
 /**
+ * Setup LocationSelector (location-input) mock
+ * Used for country/state selection in forms
+ */
+export function setupLocationSelectorMock() {
+  vi.mock('@/components/ui/location-input', () => ({
+    __esModule: true,
+    default: ({
+      onCountryChange,
+      onStateChange,
+      countryLabel,
+      stateLabel,
+      showStates
+    }: {
+      onCountryChange?: (c?: { name: string }) => void
+      onStateChange?: (s?: { name: string }) => void
+      countryLabel?: string
+      stateLabel?: string
+      showStates?: boolean
+    }) => (
+      <div>
+        <button
+          type="button"
+          aria-label={countryLabel ?? 'country'}
+          onClick={() => onCountryChange?.({ name: 'Colombia' })}
+        >
+          select-country
+        </button>
+        {showStates && (
+          <button
+            type="button"
+            aria-label={stateLabel ?? 'state'}
+            onClick={() => onStateChange?.({ name: 'Andina' })}
+          >
+            select-state
+          </button>
+        )}
+      </div>
+    )
+  }))
+}
+
+/**
  * Apply all global mocks
  * This is called in setup.ts to automatically apply common mocks
  */
@@ -250,4 +293,5 @@ export function setupGlobalMocks() {
   setupLucideReactMocks()
   setupUIComponentMocks()
   setupSidebarMocks()
+  setupLocationSelectorMock()
 }

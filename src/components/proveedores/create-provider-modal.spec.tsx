@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react'
-import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { CreateProviderModal } from './create-provider-modal'
@@ -14,41 +14,6 @@ vi.mock('@/services/hooks/use-providers', () => ({
     isPending: false
   })
 }))
-
-type Country = { name: string }
-vi.mock('../ui/location-input', () => ({
-  __esModule: true,
-  default: ({
-    onCountryChange
-  }: {
-    onCountryChange?: (c: Country) => void
-  }) => (
-    <button
-      type="button"
-      aria-label="select-country"
-      onClick={() => onCountryChange?.({ name: 'Colombia' })}
-    >
-      select-country
-    </button>
-  )
-}))
-
-/* ──────────────── Helpers tipados ──────────────── */
-
-// ResizeObserver para jsdom
-class ResizeObserverMock implements ResizeObserver {
-  observe(): void {}
-  unobserve(): void {}
-  disconnect(): void {}
-  takeRecords(): ResizeObserverEntry[] {
-    return []
-  }
-}
-beforeAll(() => {
-  ;(
-    window as unknown as { ResizeObserver: typeof ResizeObserver }
-  ).ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver
-})
 
 const makeClient = () =>
   new QueryClient({ defaultOptions: { queries: { retry: false } } })
@@ -80,7 +45,7 @@ const fillBasics = () => {
   fireEvent.change(screen.getByLabelText('modal.fields.address'), {
     target: { value: 'Main St' }
   })
-  fireEvent.click(screen.getByRole('button', { name: /select-country/i })) // mock LocationSelector
+  fireEvent.click(screen.getByRole('button', { name: 'modal.fields.country' })) // mock LocationSelector
 }
 
 /* ──────────────── Tests ──────────────── */

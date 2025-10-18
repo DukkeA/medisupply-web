@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeAll } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { CreateProductModal } from './create-product-modal'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -14,18 +14,6 @@ vi.mock('@/services/hooks/use-products', () => ({
     isPending: false
   })
 }))
-
-// Add ResizeObserver mock
-class ResizeObserverMock {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-
-// Setup before all tests
-beforeAll(() => {
-  window.ResizeObserver = ResizeObserverMock
-})
 
 const mockMessages = {
   products: {

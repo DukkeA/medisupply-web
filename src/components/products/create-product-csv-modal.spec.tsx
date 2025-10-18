@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react'
-import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { CreateProductCSVModal } from './create-product-csv-modal'
@@ -16,22 +16,6 @@ vi.mock('@/services/hooks/use-products', () => ({
 }))
 
 /* ─────────────────── Helpers tipados ─────────────────── */
-
-// ResizeObserver (evita warnings de UI libs en jsdom)
-class ResizeObserverMock implements ResizeObserver {
-  observe(): void {}
-  unobserve(): void {}
-  disconnect(): void {}
-  takeRecords(): ResizeObserverEntry[] {
-    return []
-  }
-}
-beforeAll(() => {
-  // Tipado estricto del constructor global
-  ;(
-    window as unknown as { ResizeObserver: typeof ResizeObserver }
-  ).ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver
-})
 
 // Query Client wrapper
 const makeClient = () =>
