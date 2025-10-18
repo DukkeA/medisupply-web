@@ -44,14 +44,17 @@ export function CreateWarehouseModal({
   const { mutate: createWarehouseMutation, isPending } = useMutation({
     mutationKey: ['create-warehouse'],
     mutationFn: async (newWarehouse: typeof formData) => {
-      const response = await fetch('/api/warehouses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(newWarehouse)
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/warehouses`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(newWarehouse)
+        }
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }

@@ -40,10 +40,10 @@ interface Vendor {
 }
 
 interface VendorPlanFormData {
-  vendor_id: number
-  period: string
+  seller_id: number
+  sales_period: string
   goal: number
-  actual: number
+  accumulate?: number
   status: string
 }
 
@@ -60,40 +60,43 @@ export function CreateVendorPlanModal({
   const [openVendorSelect, setOpenVendorSelect] = useState(false)
   const [selectedVendorId, setSelectedVendorId] = useState<number | null>(null)
   const [formData, setFormData] = useState<VendorPlanFormData>({
-    vendor_id: 0,
-    period: '',
+    seller_id: 0,
+    sales_period: '',
     goal: 0,
-    actual: 0,
-    status: 'On Track'
+    accumulate: 0,
+    status: 'active'
   })
 
   const queryClient = useQueryClient()
 
-  const { data: vendors } = useQuery<Vendor[]>({
+  const { data: vendors } = useQuery<{ items: Vendor[] }>({
     queryKey: ['vendors'],
     queryFn: async () => {
-      const response = await fetch('/api/vendors')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sellers`)
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
       return response.json()
     },
     ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: testData
+      initialData: { items: testData }
     })
   })
 
   const mutation = useMutation({
     mutationKey: ['create-vendor-plan'],
     mutationFn: async (newPlan: VendorPlanFormData) => {
-      const response = await fetch('/api/vendor-plans', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(newPlan)
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/sales-plans`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(newPlan)
+        }
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -112,11 +115,11 @@ export function CreateVendorPlanModal({
 
   const resetForm = () => {
     setFormData({
-      vendor_id: 0,
-      period: '',
+      seller_id: 0,
+      sales_period: '',
       goal: 0,
-      actual: 0,
-      status: 'On Track'
+      accumulate: 0,
+      status: 'active'
     })
     setSelectedVendorId(null)
   }
@@ -134,10 +137,10 @@ export function CreateVendorPlanModal({
       toast.error(t('selectVendor'))
       return
     }
-    mutation.mutate({ ...formData, vendor_id: selectedVendorId })
+    mutation.mutate({ ...formData, seller_id: selectedVendorId })
   }
 
-  const selectedVendor = vendors?.find((v) => v.id === selectedVendorId)
+  const selectedVendor = vendors?.items.find((v) => v.id === selectedVendorId)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -172,7 +175,7 @@ export function CreateVendorPlanModal({
                     <CommandList>
                       <CommandEmpty>{t('noVendorFound')}</CommandEmpty>
                       <CommandGroup>
-                        {vendors?.map((vendor) => (
+                        {vendors?.items.map((vendor) => (
                           <CommandItem
                             key={vendor.id}
                             value={`${vendor.id} ${vendor.name}`}
@@ -203,10 +206,10 @@ export function CreateVendorPlanModal({
             <div className="grid gap-2">
               <Label htmlFor="period">{t('period')}</Label>
               <Input
-                id="period"
+                id="sales_period"
                 placeholder="Q1 2024"
-                value={formData.period}
-                onChange={(e) => handleChange('period', e.target.value)}
+                value={formData.sales_period}
+                onChange={(e) => handleChange('sales_period', e.target.value)}
                 required
               />
             </div>
@@ -222,35 +225,6 @@ export function CreateVendorPlanModal({
                 onChange={(e) => handleChange('goal', Number(e.target.value))}
                 required
               />
-            </div>
-
-            {/* Actual */}
-            <div className="grid gap-2">
-              <Label htmlFor="actual">{t('actual')}</Label>
-              <Input
-                id="actual"
-                type="number"
-                placeholder="45000"
-                value={formData.actual || ''}
-                onChange={(e) => handleChange('actual', Number(e.target.value))}
-                required
-              />
-            </div>
-
-            {/* Status */}
-            <div className="grid gap-2">
-              <Label htmlFor="status">{t('status')}</Label>
-              <select
-                id="status"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                value={formData.status}
-                onChange={(e) => handleChange('status', e.target.value)}
-                required
-              >
-                <option value="On Track">{t('onTrack')}</option>
-                <option value="Exceeded">{t('exceeded')}</option>
-                <option value="Below Target">{t('belowTarget')}</option>
-              </select>
             </div>
           </div>
 

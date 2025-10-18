@@ -28,6 +28,8 @@ export function CreateProductModal({
   open,
   onOpenChange
 }: CreateProductModalProps) {
+  // TODO - Convertir input de proveedor en un select con opciones de proveedores existentes
+  // TODO - Poner ENUM de categorías y convertir input de categoría en un select
   // query client instance
   const queryClient = useQueryClient()
   const t = useTranslations('products')
@@ -38,22 +40,24 @@ export function CreateProductModal({
     name: '',
     category: '',
     price: 0,
-    refrigerated: false,
-    provider: ''
+    provider_id: ''
   })
 
   // mutation to create a new product
   const { mutate: createProductMutation, isPending } = useMutation({
     mutationKey: ['create-product'],
     mutationFn: async (newProduct: typeof formData) => {
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(newProduct)
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/products`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(newProduct)
+        }
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -136,24 +140,12 @@ export function CreateProductModal({
                 required
               />
             </div>
-            <div className="flex flex-col justify-between gap-2">
-              <Label htmlFor="refrigerated">
-                {t('modal.fields.refrigerated')}
-              </Label>
-              <Switch
-                id="refrigerated"
-                checked={formData.refrigerated}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({ ...prev, refrigerated: checked }))
-                }
-              />
-            </div>
             <div className="grid gap-2">
               <Label htmlFor="provider">{t('modal.fields.provider')}</Label>
               <Input
                 id="provider"
-                value={formData.provider}
-                onChange={(e) => handleChange('provider', e.target.value)}
+                value={formData.provider_id}
+                onChange={(e) => handleChange('provider_id', e.target.value)}
                 placeholder="FarmaPlus"
                 required
               />

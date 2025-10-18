@@ -35,7 +35,7 @@ export function CreateProviderModal({
   // form state
   const [formData, setFormData] = useState({
     name: '',
-    company: '',
+    contact_name: '',
     nit: '',
     email: '',
     phone: '',
@@ -47,14 +47,17 @@ export function CreateProviderModal({
   const { mutate: createProviderMutation, isPending } = useMutation({
     mutationKey: ['create-provider'],
     mutationFn: async (newProvider: typeof formData) => {
-      const response = await fetch('/api/providers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(newProvider)
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/provider`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(newProvider)
+        }
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -103,8 +106,8 @@ export function CreateProviderModal({
               <Label htmlFor="company">{t('modal.fields.company')}</Label>
               <Input
                 id="company"
-                value={formData.company}
-                onChange={(e) => handleChange('company', e.target.value)}
+                value={formData.contact_name}
+                onChange={(e) => handleChange('contact_name', e.target.value)}
                 placeholder="Acme Corp"
                 required
               />

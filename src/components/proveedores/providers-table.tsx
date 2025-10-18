@@ -19,7 +19,7 @@ import { useTranslations } from 'next-intl'
 export type Provider = {
   id: string
   name: string
-  company: string
+  contact_name: string
   nit: string
   email: string
   phone: string
@@ -36,7 +36,9 @@ export function ProvidersTable() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['providers'],
     queryFn: async () => {
-      const response = await fetch('/api/providers')
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/providers`
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -78,17 +80,17 @@ export function ProvidersTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 ? (
+            {data.items.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
                   {t('table.noData')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((provider: Provider) => (
+              data.items.map((provider: Provider) => (
                 <TableRow key={provider.id}>
                   <TableCell className="font-medium">{provider.name}</TableCell>
-                  <TableCell>{provider.company}</TableCell>
+                  <TableCell>{provider.contact_name}</TableCell>
                   <TableCell>{provider.nit}</TableCell>
                   <TableCell>{provider.email}</TableCell>
                   <TableCell>{provider.phone}</TableCell>

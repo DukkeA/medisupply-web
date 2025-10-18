@@ -34,7 +34,7 @@ export function VendorsTable() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['vendors'],
     queryFn: async () => {
-      const response = await fetch('/api/vendors')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sellers`)
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -74,14 +74,14 @@ export function VendorsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 ? (
+            {data.items.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
                   {t('table.noData')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((vendor: Vendor) => (
+              data.items.map((vendor: Vendor) => (
                 <TableRow key={vendor.id}>
                   <TableCell className="font-medium">{vendor.name}</TableCell>
                   <TableCell>{vendor.email}</TableCell>

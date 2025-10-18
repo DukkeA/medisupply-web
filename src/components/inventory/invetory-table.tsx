@@ -27,22 +27,25 @@ export type InventoryItem = {
 }
 
 export function InventoryTable() {
+  // TODO Agregar filtros por producto y almacen
   const t = useTranslations('inventory')
   // modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // fetch inventory data
-  const { data, isLoading, isError } = useQuery<InventoryItem[]>({
+  const { data, isLoading, isError } = useQuery<{ items: InventoryItem[] }>({
     queryKey: ['inventory'],
     queryFn: async () => {
-      const response = await fetch('/api/inventory')
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/inventory`
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
       return response.json()
     },
     ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: testData
+      initialData: { items: testData }
     })
   })
 
@@ -76,14 +79,14 @@ export function InventoryTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {!data || data.length === 0 ? (
+            {!data || data.items.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="h-24 text-center">
                   {t('table.noData')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((item) => (
+              data.items.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">
                     {item.product_id}

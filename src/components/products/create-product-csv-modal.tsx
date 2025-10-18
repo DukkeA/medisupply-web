@@ -42,11 +42,14 @@ export function CreateProductCSVModal({
       const formData = new FormData()
       formData.append('file', csvFile)
 
-      const response = await fetch('/api/products/upload', {
-        method: 'POST',
-        credentials: 'include',
-        body: formData
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/products/batch`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        }
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }

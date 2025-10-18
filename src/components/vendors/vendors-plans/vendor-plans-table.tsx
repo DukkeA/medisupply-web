@@ -15,20 +15,16 @@ import { Plus } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import testData from './test-data.json'
-import vendorsTestData from './vendors-mock-data.json'
 
 interface VendorPlan {
-  id: number
-  vendor_id: number
-  period: string
+  id: string
+  seller_id: string
+  seller_name: string
+  sales_period: string
   goal: number
-  actual: number
+  goal_type: string
+  accumulate: number
   status: string
-}
-
-interface Vendor {
-  id: number
-  name: string
 }
 
 export function VendorPlansTable() {
@@ -39,10 +35,12 @@ export function VendorPlansTable() {
     data: vendorPlans,
     isLoading,
     isError
-  } = useQuery<VendorPlan[]>({
+  } = useQuery({
     queryKey: ['vendorPlans'],
     queryFn: async () => {
-      const response = await fetch('/api/vendor-plans')
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/sales-plans`
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
@@ -52,25 +50,6 @@ export function VendorPlansTable() {
       initialData: testData
     })
   })
-
-  const { data: vendors } = useQuery<Vendor[]>({
-    queryKey: ['vendors'],
-    queryFn: async () => {
-      const response = await fetch('/api/vendors')
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: vendorsTestData
-    })
-  })
-
-  const getVendorName = (vendorId: number) => {
-    const vendor = vendors?.find((v) => v.id === vendorId)
-    return vendor?.name || `Vendor ${vendorId}`
-  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -128,14 +107,14 @@ export function VendorPlansTable() {
                 </TableCell>
               </TableRow>
             ) : (
-              vendorPlans.map((plan) => (
+              vendorPlans.items.map((plan: VendorPlan) => (
                 <TableRow key={plan.id}>
                   <TableCell className="font-medium">
-                    {getVendorName(plan.vendor_id)}
+                    {plan.seller_name}
                   </TableCell>
-                  <TableCell>{plan.period}</TableCell>
+                  <TableCell>{plan.sales_period}</TableCell>
                   <TableCell>{formatCurrency(plan.goal)}</TableCell>
-                  <TableCell>{formatCurrency(plan.actual)}</TableCell>
+                  <TableCell>{formatCurrency(plan.accumulate)}</TableCell>
                   <TableCell className={getStatusColor(plan.status)}>
                     {plan.status}
                   </TableCell>

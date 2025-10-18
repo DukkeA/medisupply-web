@@ -33,7 +33,9 @@ export function WarehousesTable() {
   const { data, isLoading, isError } = useQuery<Warehouse[]>({
     queryKey: ['warehouses'],
     queryFn: async () => {
-      const response = await fetch('/api/warehouses')
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/warehouses`
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
