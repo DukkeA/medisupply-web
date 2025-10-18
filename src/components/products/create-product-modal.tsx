@@ -40,8 +40,7 @@ export function CreateProductModal({
     name: '',
     category: '',
     price: 0,
-    refrigerated: false,
-    provider: ''
+    provider_id: ''
   })
 
   // mutation to create a new product
@@ -141,24 +140,12 @@ export function CreateProductModal({
                 required
               />
             </div>
-            <div className="flex flex-col justify-between gap-2">
-              <Label htmlFor="refrigerated">
-                {t('modal.fields.refrigerated')}
-              </Label>
-              <Switch
-                id="refrigerated"
-                checked={formData.refrigerated}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({ ...prev, refrigerated: checked }))
-                }
-              />
-            </div>
             <div className="grid gap-2">
               <Label htmlFor="provider">{t('modal.fields.provider')}</Label>
               <Input
                 id="provider"
-                value={formData.provider}
-                onChange={(e) => handleChange('provider', e.target.value)}
+                value={formData.provider_id}
+                onChange={(e) => handleChange('provider_id', e.target.value)}
                 placeholder="FarmaPlus"
                 required
               />
