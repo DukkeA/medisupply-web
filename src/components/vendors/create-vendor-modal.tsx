@@ -38,7 +38,7 @@ export function CreateVendorModal({
     email: '',
     phone: '',
     country: '',
-    territory: ''
+    city: ''
   })
 
   // mutation to create a new vendor
@@ -130,7 +130,7 @@ export function CreateVendorModal({
                 handleChange('country', country?.name || '')
               }}
               onStateChange={(state) => {
-                handleChange('territory', state?.name || '')
+                handleChange('city', state?.name || '')
               }}
             />
           </div>

@@ -19,7 +19,7 @@ import { useTranslations } from 'next-intl'
 export type Provider = {
   id: string
   name: string
-  company: string
+  contact_name: string
   nit: string
   email: string
   phone: string
@@ -90,7 +90,7 @@ export function ProvidersTable() {
               data.items.map((provider: Provider) => (
                 <TableRow key={provider.id}>
                   <TableCell className="font-medium">{provider.name}</TableCell>
-                  <TableCell>{provider.company}</TableCell>
+                  <TableCell>{provider.contact_name}</TableCell>
                   <TableCell>{provider.nit}</TableCell>
                   <TableCell>{provider.email}</TableCell>
                   <TableCell>{provider.phone}</TableCell>

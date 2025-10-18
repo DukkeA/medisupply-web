@@ -15,7 +15,6 @@ import { Plus } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import testData from './test-data.json'
 import { useTranslations } from 'next-intl'
-import { Checkbox } from '@/components/ui/checkbox'
 import { CreateProductCSVModal } from '@/components/products/create-product-csv-modal'
 
 export type Product = {
@@ -24,7 +23,6 @@ export type Product = {
   name: string
   category: string
   price: number
-  refrigerated: boolean
   provider: string
 }
 
@@ -80,27 +78,23 @@ export function ProductsTable() {
               <TableHead>{t('table.columns.name')}</TableHead>
               <TableHead>{t('table.columns.category')}</TableHead>
               <TableHead>{t('table.columns.price')}</TableHead>
-              <TableHead>{t('table.columns.refrigerated')}</TableHead>
               <TableHead>{t('table.columns.provider')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 ? (
+            {data.items.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
                   {t('table.noData')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((product: Product) => (
+              data.items.map((product: Product) => (
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.sku}</TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
                   <TableCell>{product.price}</TableCell>
-                  <TableCell>
-                    <Checkbox checked={product.refrigerated} />
-                  </TableCell>
                   <TableCell>{product.provider}</TableCell>
                 </TableRow>
               ))
