@@ -12,20 +12,10 @@ import {
 } from '@/components/ui/table'
 import { CreateProviderModal } from '@/components/proveedores/create-provider-modal'
 import { Plus } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
+import { useProviders } from '@/services/hooks/use-providers'
+import { ProviderResponse } from '@/generated/models'
 import testData from './test-data.json'
 import { useTranslations } from 'next-intl'
-
-export type Provider = {
-  id: string
-  name: string
-  contact_name: string
-  nit: string
-  email: string
-  phone: string
-  address: string
-  country: string
-}
 
 export function ProvidersTable() {
   const t = useTranslations('providers')
@@ -33,21 +23,7 @@ export function ProvidersTable() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // fetch providers data
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['providers'],
-    queryFn: async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/providers`
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: testData
-    })
-  })
+  const { data, isLoading, isError } = useProviders(10, 0, testData)
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -80,14 +56,14 @@ export function ProvidersTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.items.length === 0 ? (
+            {!data || data.items.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
                   {t('table.noData')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.items.map((provider: Provider) => (
+              data.items.map((provider: ProviderResponse) => (
                 <TableRow key={provider.id}>
                   <TableCell className="font-medium">{provider.name}</TableCell>
                   <TableCell>{provider.contact_name}</TableCell>

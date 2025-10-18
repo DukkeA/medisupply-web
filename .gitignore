@@ -40,6 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# generated API client
+/src/generated
+
 # Use npm package-lock.json instead of yarn.lock
 !package-lock.json
 

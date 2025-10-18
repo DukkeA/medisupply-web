@@ -204,7 +204,7 @@ export function CreateVendorPlanModal({
 
             {/* Period */}
             <div className="grid gap-2">
-              <Label htmlFor="period">{t('period')}</Label>
+              <Label htmlFor="sales_period">{t('period')}</Label>
               <Input
                 id="sales_period"
                 placeholder="Q1 2024"

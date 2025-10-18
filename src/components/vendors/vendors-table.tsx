@@ -12,18 +12,10 @@ import {
 } from '@/components/ui/table'
 import { CreateVendorModal } from '@/components/vendors/create-vendor-modal'
 import { Plus } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
+import { useSellers } from '@/services/hooks/use-sellers'
+import { SellerResponse } from '@/generated/models'
 import testData from './test-data.json'
 import { useTranslations } from 'next-intl'
-
-export type Vendor = {
-  id: string
-  name: string
-  email: string
-  phone: string
-  country: string
-  territory: string
-}
 
 export function VendorsTable() {
   const t = useTranslations('vendors')
@@ -31,19 +23,7 @@ export function VendorsTable() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // fetch vendors data
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['vendors'],
-    queryFn: async () => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sellers`)
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: testData
-    })
-  })
+  const { data, isLoading, isError } = useSellers(10, 0, testData)
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -70,24 +50,24 @@ export function VendorsTable() {
               <TableHead>{t('table.columns.email')}</TableHead>
               <TableHead>{t('table.columns.phone')}</TableHead>
               <TableHead>{t('table.columns.country')}</TableHead>
-              <TableHead>{t('table.columns.territory')}</TableHead>
+              <TableHead>{t('table.columns.city')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.items.length === 0 ? (
+            {!data || data.items.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
                   {t('table.noData')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.items.map((vendor: Vendor) => (
+              data.items.map((vendor: SellerResponse) => (
                 <TableRow key={vendor.id}>
                   <TableCell className="font-medium">{vendor.name}</TableCell>
                   <TableCell>{vendor.email}</TableCell>
                   <TableCell>{vendor.phone}</TableCell>
                   <TableCell>{vendor.country}</TableCell>
-                  <TableCell>{vendor.territory}</TableCell>
+                  <TableCell>{vendor.city}</TableCell>
                 </TableRow>
               ))
             )}

@@ -35,7 +35,9 @@ export default defineConfig({
         'out/**', // Exclude Next.js static export output
         'src/__tests__/**', // Exclude test utilities
         'src/lib/**', // Exclude lib utilities (add tests if needed)
-        'src/components/layout/sidebar/index.ts', // Exclude main barrel export
+        'src/generated/**', // Exclude generated API code
+        '**/index.ts', // Exclude all index/barrel files
+        '**/index.tsx', // Exclude all index/barrel files
         '**/*.config.*',
         '**/*.d.ts'
       ],

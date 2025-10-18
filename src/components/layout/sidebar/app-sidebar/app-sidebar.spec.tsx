@@ -1,36 +1,55 @@
-import { renderWithSidebar, screen } from '@/__tests__/sidebar-test-utils'
+import { renderWithProviders } from '@/__tests__/test-utils'
+import { screen } from '@testing-library/react'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import { describe, it, expect } from 'vitest'
 import { AppSidebar } from '.'
 
 describe('AppSidebar', () => {
   it('renders the company branding', () => {
-    renderWithSidebar(<AppSidebar />)
+    renderWithProviders(<AppSidebar />, {
+      locale: 'en',
+      additionalWrappers: [SidebarProvider],
+      skipQueryClient: true
+    })
 
     expect(screen.getByText('Medisupply')).toBeInTheDocument()
     expect(screen.getByText('Uniandes')).toBeInTheDocument()
   })
 
   it('renders main navigation items', () => {
-    renderWithSidebar(<AppSidebar />)
+    renderWithProviders(<AppSidebar />, {
+      locale: 'en',
+      additionalWrappers: [SidebarProvider],
+      skipQueryClient: true
+    })
 
-    expect(screen.getByText('Providers')).toBeInTheDocument()
-    expect(screen.getByText('Products')).toBeInTheDocument()
-    expect(screen.getByText('Vendors')).toBeInTheDocument()
-    expect(screen.getByText('Reports')).toBeInTheDocument()
-    expect(screen.getByText('Inventory')).toBeInTheDocument()
-    expect(screen.getByText('Routes')).toBeInTheDocument()
+    expect(screen.getByText('providers')).toBeInTheDocument()
+    expect(screen.getByText('products')).toBeInTheDocument()
+    expect(screen.getByText('vendors')).toBeInTheDocument()
+    expect(screen.getByText('reports')).toBeInTheDocument()
+    expect(screen.getByText('inventory')).toBeInTheDocument()
+    expect(screen.getByText('routes')).toBeInTheDocument()
   })
 
   it('renders user navigation in footer', () => {
-    renderWithSidebar(<AppSidebar />)
+    renderWithProviders(<AppSidebar />, {
+      locale: 'en',
+      additionalWrappers: [SidebarProvider],
+      skipQueryClient: true
+    })
 
     expect(screen.getByText('shadcn')).toBeInTheDocument()
     expect(screen.getByText('m@example.com')).toBeInTheDocument()
   })
 
   it('applies variant and additional props correctly', () => {
-    renderWithSidebar(
-      <AppSidebar data-testid="sidebar" className="custom-class" />
+    renderWithProviders(
+      <AppSidebar data-testid="sidebar" className="custom-class" />,
+      {
+        locale: 'en',
+        additionalWrappers: [SidebarProvider],
+        skipQueryClient: true
+      }
     )
 
     const sidebar = screen.getByTestId('sidebar')

@@ -1,4 +1,6 @@
-import { renderWithSidebar, screen } from '@/__tests__/sidebar-test-utils'
+import { renderWithProviders } from '@/__tests__/test-utils'
+import { screen } from '@testing-library/react'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { Frame, PieChart } from 'lucide-react'
@@ -26,22 +28,28 @@ const mockProjects = [
   }
 ]
 
+const renderOptions = {
+  locale: 'en' as const,
+  additionalWrappers: [SidebarProvider],
+  skipQueryClient: true
+}
+
 describe('NavProjects', () => {
   it('renders Projects group label', () => {
-    renderWithSidebar(<NavProjects projects={mockProjects} />)
+    renderWithProviders(<NavProjects projects={mockProjects} />, renderOptions)
 
     expect(screen.getByText('Projects')).toBeInTheDocument()
   })
 
   it('renders all project items', () => {
-    renderWithSidebar(<NavProjects projects={mockProjects} />)
+    renderWithProviders(<NavProjects projects={mockProjects} />, renderOptions)
 
     expect(screen.getByText('Design Engineering')).toBeInTheDocument()
     expect(screen.getByText('Sales & Marketing')).toBeInTheDocument()
   })
 
   it('has correct links for project items', () => {
-    renderWithSidebar(<NavProjects projects={mockProjects} />)
+    renderWithProviders(<NavProjects projects={mockProjects} />, renderOptions)
 
     const designLink = screen.getByRole('link', { name: /design engineering/i })
     const salesLink = screen.getByRole('link', { name: /sales & marketing/i })
@@ -51,7 +59,7 @@ describe('NavProjects', () => {
   })
 
   it('renders More button at the end', () => {
-    renderWithSidebar(<NavProjects projects={mockProjects} />)
+    renderWithProviders(<NavProjects projects={mockProjects} />, renderOptions)
 
     const moreButtons = screen.getAllByText('More')
     expect(moreButtons.length).toBeGreaterThanOrEqual(1) // At least one More button
@@ -59,7 +67,7 @@ describe('NavProjects', () => {
 
   it('opens project action dropdown when more button is clicked', async () => {
     const user = userEvent.setup()
-    renderWithSidebar(<NavProjects projects={mockProjects} />)
+    renderWithProviders(<NavProjects projects={mockProjects} />, renderOptions)
 
     const moreButtons = screen.getAllByRole('button', { name: /more/i })
     await user.click(moreButtons[0])
@@ -71,7 +79,7 @@ describe('NavProjects', () => {
 
   it('renders dropdown menu items with correct structure', async () => {
     const user = userEvent.setup()
-    renderWithSidebar(<NavProjects projects={mockProjects} />)
+    renderWithProviders(<NavProjects projects={mockProjects} />, renderOptions)
 
     const moreButtons = screen.getAllByRole('button', { name: /more/i })
     await user.click(moreButtons[0])
@@ -86,7 +94,7 @@ describe('NavProjects', () => {
   })
 
   it('renders empty projects list without errors', () => {
-    renderWithSidebar(<NavProjects projects={[]} />)
+    renderWithProviders(<NavProjects projects={[]} />, renderOptions)
 
     expect(screen.getByText('Projects')).toBeInTheDocument()
     expect(screen.getByText('More')).toBeInTheDocument()
@@ -110,7 +118,7 @@ describe('NavProjects', () => {
     )
 
     const user = userEvent.setup()
-    renderWithSidebar(<NavProjects projects={mockProjects} />)
+    renderWithProviders(<NavProjects projects={mockProjects} />, renderOptions)
 
     const moreButtons = screen.getAllByRole('button', { name: /more/i })
     await user.click(moreButtons[0])

@@ -65,7 +65,6 @@ export function AddToInventoryModal({
     product_id: '',
     warehouse_id: '',
     total_quantity: '',
-    reserved_quantity: '',
     batch_number: '',
     expiration_date: ''
   })
@@ -137,7 +136,6 @@ export function AddToInventoryModal({
         product_id: '',
         warehouse_id: '',
         total_quantity: '',
-        reserved_quantity: '',
         batch_number: '',
         expiration_date: ''
       })
@@ -308,24 +306,6 @@ export function AddToInventoryModal({
                 value={formData.total_quantity}
                 onChange={(e) => handleChange('total_quantity', e.target.value)}
                 placeholder="100"
-                required
-              />
-            </div>
-
-            {/* Reserved Quantity */}
-            <div className="grid gap-2">
-              <Label htmlFor="reserved_quantity">
-                {t('modal.fields.reservedQuantity')}
-              </Label>
-              <Input
-                id="reserved_quantity"
-                type="number"
-                min="0"
-                value={formData.reserved_quantity}
-                onChange={(e) =>
-                  handleChange('reserved_quantity', e.target.value)
-                }
-                placeholder="0"
                 required
               />
             </div>
