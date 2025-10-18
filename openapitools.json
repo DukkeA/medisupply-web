@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/@openapitools/openapi-generator-cli/config.schema.json",
+  "spaces": 2,
+  "generator-cli": {
+    "version": "7.10.0",
+    "generators": {
+      "medisupply-api": {
+        "generatorName": "typescript-axios",
+        "inputSpec": "http://medisupply-alb-1874203666.us-east-1.elb.amazonaws.com/bff/openapi.json",
+        "output": "./src/generated",
+        "additionalProperties": {
+          "npmName": "@medisupply/api-client",
+          "npmVersion": "1.0.0",
+          "supportsES6": true,
+          "withSeparateModelsAndApi": true,
+          "apiPackage": "api",
+          "modelPackage": "models",
+          "useSingleRequestParameter": true,
+          "withInterfaces": true
+        }
+      }
+    }
+  }
+}

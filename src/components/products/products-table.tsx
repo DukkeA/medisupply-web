@@ -12,19 +12,11 @@ import {
 } from '@/components/ui/table'
 import { CreateProductModal } from '@/components/products/create-product-modal'
 import { Plus } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import testData from './test-data.json'
 import { useTranslations } from 'next-intl'
 import { CreateProductCSVModal } from '@/components/products/create-product-csv-modal'
-
-export type Product = {
-  id: string
-  sku: string
-  name: string
-  category: string
-  price: number
-  provider: string
-}
+import { useProducts } from '@/services/hooks/use-products'
+import { ProductResponse } from '@/generated/models'
+import testData from './test-data.json'
 
 export function ProductsTable() {
   const t = useTranslations('products')
@@ -33,27 +25,13 @@ export function ProductsTable() {
   const [isCSVModalOpen, setIsCSVModalOpen] = useState(false)
 
   // fetch products data
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['products'],
-    queryFn: async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/products`
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: testData
-    })
-  })
+  const { data, isLoading, isError } = useProducts(10, 0, testData)
 
   if (isLoading) {
     return <div>Loading...</div>
   }
 
-  if (isError) {
+  if (isError || !data) {
     return <div>Error loading products.</div>
   }
 
@@ -89,13 +67,13 @@ export function ProductsTable() {
                 </TableCell>
               </TableRow>
             ) : (
-              data.items.map((product: Product) => (
+              data.items.map((product: ProductResponse) => (
                 <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.sku}</TableCell>
+                  <TableCell className="font-medium">{product.id}</TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
                   <TableCell>{product.price}</TableCell>
-                  <TableCell>{product.provider}</TableCell>
+                  <TableCell>{product.provider_id}</TableCell>
                 </TableRow>
               ))
             )}
