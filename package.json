@@ -14,7 +14,7 @@
     "test:coverage": "vitest --coverage --run",
     "test:watch": "vitest --watch",
     "api:generate": "openapi-generator-cli generate",
-    "api:validate": "openapi-generator-cli validate -i http://medisupply-alb-1874203666.us-east-1.elb.amazonaws.com/bff/openapi.json",
+    "api:validate": "openapi-generator-cli validate -i http://medisupply-alb-2065131386.us-east-1.elb.amazonaws.com/bff/openapi.json",
     "prepare": "husky"
   },
   "dependencies": {
@@ -53,6 +53,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
+    "lightningcss": "^1.30.2",
     "lucide-react": "^0.544.0",
     "next": "15.5.4",
     "next-intl": "^4.3.9",
@@ -94,5 +95,9 @@
     "vite": "^7.1.7",
     "vitest": "^3.2.4"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "optionalDependencies": {
+    "@tailwindcss/oxide-win32-x64-msvc": "^4.1.14",
+    "lightningcss-win32-x64-msvc": "^1.30.2"
+  }
 }
