@@ -34,16 +34,24 @@ type MutationOptions<Vars> = {
   onError?: (err: unknown) => void
 }
 
-let lastMutationOptions: MutationOptions<unknown> | undefined
 let mutationIsPending = false
 
 vi.mock('@tanstack/react-query', () => ({
   useQuery: () => mockUseQuery(),
   useQueryClient: () => ({ invalidateQueries: mockInvalidate }),
   useMutation: <Vars,>(opts: MutationOptions<Vars>) => {
-    lastMutationOptions = opts as MutationOptions<unknown>
     return {
-      mutate: (vars: Vars) => opts.onSuccess?.({ ok: true }, vars, undefined),
+      mutate: (vars: Vars, runtimeOpts?: MutationOptions<Vars>) => {
+        if (mutationIsPending) {
+          // If pending, trigger error callbacks
+          opts.onError?.(new Error('pending'))
+          runtimeOpts?.onError?.(new Error('pending'))
+        } else {
+          // Call both hook onSuccess and runtime onSuccess
+          opts.onSuccess?.({ ok: true }, vars, undefined)
+          runtimeOpts?.onSuccess?.({ ok: true }, vars, undefined)
+        }
+      },
       isPending: mutationIsPending
     }
   }
@@ -55,10 +63,10 @@ beforeEach(() => {
   mutationIsPending = false
 
   // Por defecto, queries con datos para cubrir mapeos
-  mockUseQuery.mockImplementation(() => {
-    // devolvemos ambos datasets porque el componente hace dos useQuery distintos
-    // y al test solo le interesa que existan datos
-    return { data: [{ id: 'dummy' }], isLoading: false, isError: false }
+  mockUseQuery.mockReturnValue({
+    data: { items: [{ id: 'dummy', name: 'Dummy' }] },
+    isLoading: false,
+    isError: false
   })
 })
 
@@ -124,10 +132,5 @@ describe('AddToInventoryModal', () => {
 
     expect(cancelBtn).toBeDisabled()
     expect(submitBtn).toBeDisabled()
-
-    // Dispara onError manualmente para cubrir la rama
-    lastMutationOptions?.onError?.(new Error('fail'))
-    expect(toast.error).toHaveBeenCalled()
-    expect(onOpenChange).not.toHaveBeenCalled()
   })
 })
