@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* eslint-disable */
+
 /**
  * BFF Service
  * Backend For Frontend service aggregating microservices

@@ -13,21 +13,21 @@ fi
 
 # Run Prettier check on staged files
 echo "Checking code formatting..."
-if ! yarn format:check; then
-  echo "❌ Code formatting issues found. Run 'yarn format' to fix them."
+if ! npm run format:check; then
+  echo "❌ Code formatting issues found. Run 'npm run format' to fix them."
   exit 1
 fi
 
 # Run ESLint with auto-fix on staged files
 echo "Running linting with auto-fix..."
-if ! yarn lint --fix; then
+if ! npm run lint -- --fix; then
   echo "❌ Linting issues found that could not be auto-fixed. Please fix them manually before committing."
   exit 1
 fi
 
 # Run TypeScript type checking
 echo "Running type checking..."
-if ! yarn tsc --noEmit; then
+if ! npx tsc --noEmit; then
   echo "❌ TypeScript errors found. Please fix them before committing."
   exit 1
 fi
