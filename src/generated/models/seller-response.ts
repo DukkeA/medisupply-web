@@ -1,5 +1,5 @@
 /* tslint:disable */
-
+/* eslint-disable */
 /**
  * BFF Service
  * Backend For Frontend service aggregating microservices
@@ -12,58 +12,61 @@
  * Do not edit the class manually.
  */
 
+
+
 /**
- *
+ * 
  * @export
  * @interface SellerResponse
  */
 export interface SellerResponse {
-  /**
-   *
-   * @type {string}
-   * @memberof SellerResponse
-   */
-  id: string
-  /**
-   *
-   * @type {string}
-   * @memberof SellerResponse
-   */
-  name: string
-  /**
-   *
-   * @type {string}
-   * @memberof SellerResponse
-   */
-  email: string
-  /**
-   *
-   * @type {string}
-   * @memberof SellerResponse
-   */
-  phone: string
-  /**
-   *
-   * @type {string}
-   * @memberof SellerResponse
-   */
-  city: string
-  /**
-   *
-   * @type {string}
-   * @memberof SellerResponse
-   */
-  country: string
-  /**
-   *
-   * @type {string}
-   * @memberof SellerResponse
-   */
-  created_at: string
-  /**
-   *
-   * @type {string}
-   * @memberof SellerResponse
-   */
-  updated_at: string
+    /**
+     * 
+     * @type {string}
+     * @memberof SellerResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SellerResponse
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SellerResponse
+     */
+    'email': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SellerResponse
+     */
+    'phone': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SellerResponse
+     */
+    'city': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SellerResponse
+     */
+    'country': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SellerResponse
+     */
+    'created_at': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SellerResponse
+     */
+    'updated_at': string;
 }
+

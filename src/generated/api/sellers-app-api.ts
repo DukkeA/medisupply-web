@@ -12,179 +12,108 @@
  * Do not edit the class manually.
  */
 
-import type { Configuration } from '../configuration'
-import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios'
-import globalAxios from 'axios'
+
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import {
-  DUMMY_BASE_URL,
-  assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
-  createRequestFunction
-} from '../common'
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import {
-  BASE_PATH,
-  COLLECTION_FORMATS,
-  type RequestArgs,
-  BaseAPI,
-  RequiredError,
-  operationServerMap
-} from '../base'
+import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import type { HTTPValidationError } from '../models'
+import type { HTTPValidationError } from '../models';
 // @ts-ignore
-import type { OrderCreateResponse } from '../models'
+import type { OrderCreateResponse } from '../models';
 // @ts-ignore
-import type { SellersAppSchemasOrderSchemasOrderCreateInput } from '../models'
+import type { SellersAppSchemasOrderSchemasOrderCreateInput } from '../models';
 /**
  * SellersAppApi - axios parameter creator
  * @export
  */
-export const SellersAppApiAxiosParamCreator = function (
-  configuration?: Configuration
-) {
-  return {
-    /**
-     * Create a new order via sellers app.  This endpoint: 1. Accepts customer_id, seller_id, items, and optional visit_id 2. Forwards request to Order Service with metodo_creacion=\'app_vendedor\' 3. seller_id is REQUIRED (seller creating the order) 4. visit_id is OPTIONAL (can be linked to a visit or not)  Args:     order_input: Order creation input     order_port: Order port for service communication  Returns:     OrderCreateResponse with order ID and message  Raises:     HTTPException: If order creation fails
-     * @summary Create Order
-     * @param {SellersAppSchemasOrderSchemasOrderCreateInput} sellersAppSchemasOrderSchemasOrderCreateInput
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createOrderBffSellersAppOrdersPost: async (
-      sellersAppSchemasOrderSchemasOrderCreateInput: SellersAppSchemasOrderSchemasOrderCreateInput,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'sellersAppSchemasOrderSchemasOrderCreateInput' is not null or undefined
-      assertParamExists(
-        'createOrderBffSellersAppOrdersPost',
-        'sellersAppSchemasOrderSchemasOrderCreateInput',
-        sellersAppSchemasOrderSchemasOrderCreateInput
-      )
-      const localVarPath = `/bff/sellers-app/orders`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
+export const SellersAppApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Create a new order via sellers app.  This endpoint: 1. Accepts customer_id, seller_id, items, and optional visit_id 2. Forwards request to Order Service with metodo_creacion=\'app_vendedor\' 3. seller_id is REQUIRED (seller creating the order) 4. visit_id is OPTIONAL (can be linked to a visit or not)  Args:     order_input: Order creation input     order_port: Order port for service communication  Returns:     OrderCreateResponse with order ID and message  Raises:     HTTPException: If order creation fails
+         * @summary Create Order
+         * @param {SellersAppSchemasOrderSchemasOrderCreateInput} sellersAppSchemasOrderSchemasOrderCreateInput 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createOrderBffSellersAppOrdersPost: async (sellersAppSchemasOrderSchemasOrderCreateInput: SellersAppSchemasOrderSchemasOrderCreateInput, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'sellersAppSchemasOrderSchemasOrderCreateInput' is not null or undefined
+            assertParamExists('createOrderBffSellersAppOrdersPost', 'sellersAppSchemasOrderSchemasOrderCreateInput', sellersAppSchemasOrderSchemasOrderCreateInput)
+            const localVarPath = `/bff/sellers-app/orders`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
 
-      const localVarRequestOptions = {
-        method: 'POST',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
 
-      localVarHeaderParameter['Content-Type'] = 'application/json'
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        sellersAppSchemasOrderSchemasOrderCreateInput,
-        localVarRequestOptions,
-        configuration
-      )
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(sellersAppSchemasOrderSchemasOrderCreateInput, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
-  }
-}
+};
 
 /**
  * SellersAppApi - functional programming interface
  * @export
  */
-export const SellersAppApiFp = function (configuration?: Configuration) {
-  const localVarAxiosParamCreator =
-    SellersAppApiAxiosParamCreator(configuration)
-  return {
-    /**
-     * Create a new order via sellers app.  This endpoint: 1. Accepts customer_id, seller_id, items, and optional visit_id 2. Forwards request to Order Service with metodo_creacion=\'app_vendedor\' 3. seller_id is REQUIRED (seller creating the order) 4. visit_id is OPTIONAL (can be linked to a visit or not)  Args:     order_input: Order creation input     order_port: Order port for service communication  Returns:     OrderCreateResponse with order ID and message  Raises:     HTTPException: If order creation fails
-     * @summary Create Order
-     * @param {SellersAppSchemasOrderSchemasOrderCreateInput} sellersAppSchemasOrderSchemasOrderCreateInput
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async createOrderBffSellersAppOrdersPost(
-      sellersAppSchemasOrderSchemasOrderCreateInput: SellersAppSchemasOrderSchemasOrderCreateInput,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<OrderCreateResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.createOrderBffSellersAppOrdersPost(
-          sellersAppSchemasOrderSchemasOrderCreateInput,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap[
-          'SellersAppApi.createOrderBffSellersAppOrdersPost'
-        ]?.[localVarOperationServerIndex]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
+export const SellersAppApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = SellersAppApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Create a new order via sellers app.  This endpoint: 1. Accepts customer_id, seller_id, items, and optional visit_id 2. Forwards request to Order Service with metodo_creacion=\'app_vendedor\' 3. seller_id is REQUIRED (seller creating the order) 4. visit_id is OPTIONAL (can be linked to a visit or not)  Args:     order_input: Order creation input     order_port: Order port for service communication  Returns:     OrderCreateResponse with order ID and message  Raises:     HTTPException: If order creation fails
+         * @summary Create Order
+         * @param {SellersAppSchemasOrderSchemasOrderCreateInput} sellersAppSchemasOrderSchemasOrderCreateInput 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createOrderBffSellersAppOrdersPost(sellersAppSchemasOrderSchemasOrderCreateInput: SellersAppSchemasOrderSchemasOrderCreateInput, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrderCreateResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createOrderBffSellersAppOrdersPost(sellersAppSchemasOrderSchemasOrderCreateInput, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SellersAppApi.createOrderBffSellersAppOrdersPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
-  }
-}
+};
 
 /**
  * SellersAppApi - factory interface
  * @export
  */
-export const SellersAppApiFactory = function (
-  configuration?: Configuration,
-  basePath?: string,
-  axios?: AxiosInstance
-) {
-  const localVarFp = SellersAppApiFp(configuration)
-  return {
-    /**
-     * Create a new order via sellers app.  This endpoint: 1. Accepts customer_id, seller_id, items, and optional visit_id 2. Forwards request to Order Service with metodo_creacion=\'app_vendedor\' 3. seller_id is REQUIRED (seller creating the order) 4. visit_id is OPTIONAL (can be linked to a visit or not)  Args:     order_input: Order creation input     order_port: Order port for service communication  Returns:     OrderCreateResponse with order ID and message  Raises:     HTTPException: If order creation fails
-     * @summary Create Order
-     * @param {SellersAppApiCreateOrderBffSellersAppOrdersPostRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createOrderBffSellersAppOrdersPost(
-      requestParameters: SellersAppApiCreateOrderBffSellersAppOrdersPostRequest,
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<OrderCreateResponse> {
-      return localVarFp
-        .createOrderBffSellersAppOrdersPost(
-          requestParameters.sellersAppSchemasOrderSchemasOrderCreateInput,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    }
-  }
-}
+export const SellersAppApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = SellersAppApiFp(configuration)
+    return {
+        /**
+         * Create a new order via sellers app.  This endpoint: 1. Accepts customer_id, seller_id, items, and optional visit_id 2. Forwards request to Order Service with metodo_creacion=\'app_vendedor\' 3. seller_id is REQUIRED (seller creating the order) 4. visit_id is OPTIONAL (can be linked to a visit or not)  Args:     order_input: Order creation input     order_port: Order port for service communication  Returns:     OrderCreateResponse with order ID and message  Raises:     HTTPException: If order creation fails
+         * @summary Create Order
+         * @param {SellersAppApiCreateOrderBffSellersAppOrdersPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createOrderBffSellersAppOrdersPost(requestParameters: SellersAppApiCreateOrderBffSellersAppOrdersPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<OrderCreateResponse> {
+            return localVarFp.createOrderBffSellersAppOrdersPost(requestParameters.sellersAppSchemasOrderSchemasOrderCreateInput, options).then((request) => request(axios, basePath));
+        },
+    };
+};
 
 /**
  * SellersAppApi - interface
@@ -192,18 +121,16 @@ export const SellersAppApiFactory = function (
  * @interface SellersAppApi
  */
 export interface SellersAppApiInterface {
-  /**
-   * Create a new order via sellers app.  This endpoint: 1. Accepts customer_id, seller_id, items, and optional visit_id 2. Forwards request to Order Service with metodo_creacion=\'app_vendedor\' 3. seller_id is REQUIRED (seller creating the order) 4. visit_id is OPTIONAL (can be linked to a visit or not)  Args:     order_input: Order creation input     order_port: Order port for service communication  Returns:     OrderCreateResponse with order ID and message  Raises:     HTTPException: If order creation fails
-   * @summary Create Order
-   * @param {SellersAppApiCreateOrderBffSellersAppOrdersPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof SellersAppApiInterface
-   */
-  createOrderBffSellersAppOrdersPost(
-    requestParameters: SellersAppApiCreateOrderBffSellersAppOrdersPostRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<OrderCreateResponse>
+    /**
+     * Create a new order via sellers app.  This endpoint: 1. Accepts customer_id, seller_id, items, and optional visit_id 2. Forwards request to Order Service with metodo_creacion=\'app_vendedor\' 3. seller_id is REQUIRED (seller creating the order) 4. visit_id is OPTIONAL (can be linked to a visit or not)  Args:     order_input: Order creation input     order_port: Order port for service communication  Returns:     OrderCreateResponse with order ID and message  Raises:     HTTPException: If order creation fails
+     * @summary Create Order
+     * @param {SellersAppApiCreateOrderBffSellersAppOrdersPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SellersAppApiInterface
+     */
+    createOrderBffSellersAppOrdersPost(requestParameters: SellersAppApiCreateOrderBffSellersAppOrdersPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<OrderCreateResponse>;
+
 }
 
 /**
@@ -212,12 +139,12 @@ export interface SellersAppApiInterface {
  * @interface SellersAppApiCreateOrderBffSellersAppOrdersPostRequest
  */
 export interface SellersAppApiCreateOrderBffSellersAppOrdersPostRequest {
-  /**
-   *
-   * @type {SellersAppSchemasOrderSchemasOrderCreateInput}
-   * @memberof SellersAppApiCreateOrderBffSellersAppOrdersPost
-   */
-  readonly sellersAppSchemasOrderSchemasOrderCreateInput: SellersAppSchemasOrderSchemasOrderCreateInput
+    /**
+     * 
+     * @type {SellersAppSchemasOrderSchemasOrderCreateInput}
+     * @memberof SellersAppApiCreateOrderBffSellersAppOrdersPost
+     */
+    readonly sellersAppSchemasOrderSchemasOrderCreateInput: SellersAppSchemasOrderSchemasOrderCreateInput
 }
 
 /**
@@ -227,23 +154,16 @@ export interface SellersAppApiCreateOrderBffSellersAppOrdersPostRequest {
  * @extends {BaseAPI}
  */
 export class SellersAppApi extends BaseAPI implements SellersAppApiInterface {
-  /**
-   * Create a new order via sellers app.  This endpoint: 1. Accepts customer_id, seller_id, items, and optional visit_id 2. Forwards request to Order Service with metodo_creacion=\'app_vendedor\' 3. seller_id is REQUIRED (seller creating the order) 4. visit_id is OPTIONAL (can be linked to a visit or not)  Args:     order_input: Order creation input     order_port: Order port for service communication  Returns:     OrderCreateResponse with order ID and message  Raises:     HTTPException: If order creation fails
-   * @summary Create Order
-   * @param {SellersAppApiCreateOrderBffSellersAppOrdersPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof SellersAppApi
-   */
-  public createOrderBffSellersAppOrdersPost(
-    requestParameters: SellersAppApiCreateOrderBffSellersAppOrdersPostRequest,
-    options?: RawAxiosRequestConfig
-  ) {
-    return SellersAppApiFp(this.configuration)
-      .createOrderBffSellersAppOrdersPost(
-        requestParameters.sellersAppSchemasOrderSchemasOrderCreateInput,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Create a new order via sellers app.  This endpoint: 1. Accepts customer_id, seller_id, items, and optional visit_id 2. Forwards request to Order Service with metodo_creacion=\'app_vendedor\' 3. seller_id is REQUIRED (seller creating the order) 4. visit_id is OPTIONAL (can be linked to a visit or not)  Args:     order_input: Order creation input     order_port: Order port for service communication  Returns:     OrderCreateResponse with order ID and message  Raises:     HTTPException: If order creation fails
+     * @summary Create Order
+     * @param {SellersAppApiCreateOrderBffSellersAppOrdersPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SellersAppApi
+     */
+    public createOrderBffSellersAppOrdersPost(requestParameters: SellersAppApiCreateOrderBffSellersAppOrdersPostRequest, options?: RawAxiosRequestConfig) {
+        return SellersAppApiFp(this.configuration).createOrderBffSellersAppOrdersPost(requestParameters.sellersAppSchemasOrderSchemasOrderCreateInput, options).then((request) => request(this.axios, this.basePath));
+    }
 }
+

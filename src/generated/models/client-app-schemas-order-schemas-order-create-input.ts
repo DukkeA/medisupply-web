@@ -12,9 +12,10 @@
  * Do not edit the class manually.
  */
 
+
 // May contain unused imports in some cases
 // @ts-ignore
-import type { OrderItemInput } from './order-item-input'
+import type { OrderItemInput } from './order-item-input';
 
 /**
  * Input schema for creating an order via client app.  Business rules: - metodo_creacion is automatically set to \'app_cliente\' - No seller_id or visit_id required (client app orders)
@@ -22,16 +23,17 @@ import type { OrderItemInput } from './order-item-input'
  * @interface ClientAppSchemasOrderSchemasOrderCreateInput
  */
 export interface ClientAppSchemasOrderSchemasOrderCreateInput {
-  /**
-   *
-   * @type {string}
-   * @memberof ClientAppSchemasOrderSchemasOrderCreateInput
-   */
-  customer_id: string
-  /**
-   *
-   * @type {Array<OrderItemInput>}
-   * @memberof ClientAppSchemasOrderSchemasOrderCreateInput
-   */
-  items: Array<OrderItemInput>
+    /**
+     * 
+     * @type {string}
+     * @memberof ClientAppSchemasOrderSchemasOrderCreateInput
+     */
+    'customer_id': string;
+    /**
+     * 
+     * @type {Array<OrderItemInput>}
+     * @memberof ClientAppSchemasOrderSchemasOrderCreateInput
+     */
+    'items': Array<OrderItemInput>;
 }
+

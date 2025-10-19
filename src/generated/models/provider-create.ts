@@ -1,5 +1,5 @@
 /* tslint:disable */
-
+/* eslint-disable */
 /**
  * BFF Service
  * Backend For Frontend service aggregating microservices
@@ -12,52 +12,55 @@
  * Do not edit the class manually.
  */
 
+
+
 /**
- *
+ * 
  * @export
  * @interface ProviderCreate
  */
 export interface ProviderCreate {
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderCreate
-   */
-  name: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderCreate
-   */
-  nit: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderCreate
-   */
-  contact_name: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderCreate
-   */
-  email: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderCreate
-   */
-  phone: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderCreate
-   */
-  address: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderCreate
-   */
-  country: string
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderCreate
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderCreate
+     */
+    'nit': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderCreate
+     */
+    'contact_name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderCreate
+     */
+    'email': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderCreate
+     */
+    'phone': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderCreate
+     */
+    'address': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderCreate
+     */
+    'country': string;
 }
+

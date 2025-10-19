@@ -12,53 +12,55 @@
  * Do not edit the class manually.
  */
 
+
 // May contain unused imports in some cases
 // @ts-ignore
-import type { PaginatedSellersResponse } from './paginated-sellers-response'
+import type { PaginatedSellersResponse } from './paginated-sellers-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { SellerResponse } from './seller-response'
+import type { SellerResponse } from './seller-response';
 
 /**
- *
+ * 
  * @export
  * @interface ResponseGetSellersBffWebSellersGet
  */
 export interface ResponseGetSellersBffWebSellersGet {
-  /**
-   *
-   * @type {Array<SellerResponse>}
-   * @memberof ResponseGetSellersBffWebSellersGet
-   */
-  items: Array<SellerResponse>
-  /**
-   *
-   * @type {number}
-   * @memberof ResponseGetSellersBffWebSellersGet
-   */
-  total: number
-  /**
-   *
-   * @type {number}
-   * @memberof ResponseGetSellersBffWebSellersGet
-   */
-  page: number
-  /**
-   *
-   * @type {number}
-   * @memberof ResponseGetSellersBffWebSellersGet
-   */
-  size: number
-  /**
-   *
-   * @type {boolean}
-   * @memberof ResponseGetSellersBffWebSellersGet
-   */
-  has_next: boolean
-  /**
-   *
-   * @type {boolean}
-   * @memberof ResponseGetSellersBffWebSellersGet
-   */
-  has_previous: boolean
+    /**
+     * 
+     * @type {Array<SellerResponse>}
+     * @memberof ResponseGetSellersBffWebSellersGet
+     */
+    'items': Array<SellerResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof ResponseGetSellersBffWebSellersGet
+     */
+    'total': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ResponseGetSellersBffWebSellersGet
+     */
+    'page': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ResponseGetSellersBffWebSellersGet
+     */
+    'size': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ResponseGetSellersBffWebSellersGet
+     */
+    'has_next': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ResponseGetSellersBffWebSellersGet
+     */
+    'has_previous': boolean;
 }
+

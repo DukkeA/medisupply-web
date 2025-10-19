@@ -5,7 +5,10 @@ import {
   UseQueryOptions
 } from '@tanstack/react-query'
 import { WebApi } from '@/generated/api'
-import { PaginatedInventoriesResponse } from '@/generated/models'
+import {
+  PaginatedInventoriesResponse,
+  InventoryCreateRequest
+} from '@/generated/models'
 import { apiClient } from '../api-client'
 
 const webApi = new WebApi(undefined, '', apiClient)
@@ -33,19 +36,9 @@ export const useAddToInventory = () => {
 
   return useMutation({
     mutationKey: ['add-to-inventory'],
-    mutationFn: async (params: {
-      product_id: string
-      warehouse_id: string
-      total_quantity: number
-      batch_number: string
-      expiration_date: string
-    }) => {
+    mutationFn: async (newInventory: InventoryCreateRequest) => {
       const response = await webApi.createInventoryBffWebInventoryPost({
-        productId: params.product_id,
-        warehouseId: params.warehouse_id,
-        totalQuantity: params.total_quantity,
-        batchNumber: params.batch_number,
-        expirationDate: params.expiration_date
+        inventoryCreateRequest: newInventory
       })
       return response.data
     },

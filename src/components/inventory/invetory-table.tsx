@@ -74,7 +74,7 @@ export function InventoryTable() {
                   <TableCell>{item.total_quantity}</TableCell>
                   <TableCell>{item.reserved_quantity}</TableCell>
                   <TableCell>{item.batch_number}</TableCell>
-                  <TableCell>{item.expiration_date}</TableCell>
+                  <TableCell>{item.expiration_date.slice(0, 10)}</TableCell>
                 </TableRow>
               ))
             )}

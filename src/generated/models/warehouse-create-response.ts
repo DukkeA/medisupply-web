@@ -1,5 +1,5 @@
 /* tslint:disable */
-
+/* eslint-disable */
 /**
  * BFF Service
  * Backend For Frontend service aggregating microservices
@@ -12,22 +12,25 @@
  * Do not edit the class manually.
  */
 
+
+
 /**
- *
+ * 
  * @export
  * @interface WarehouseCreateResponse
  */
 export interface WarehouseCreateResponse {
-  /**
-   *
-   * @type {string}
-   * @memberof WarehouseCreateResponse
-   */
-  id: string
-  /**
-   *
-   * @type {string}
-   * @memberof WarehouseCreateResponse
-   */
-  message: string
+    /**
+     * 
+     * @type {string}
+     * @memberof WarehouseCreateResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof WarehouseCreateResponse
+     */
+    'message': string;
 }
+

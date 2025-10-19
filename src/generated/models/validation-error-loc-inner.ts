@@ -12,9 +12,13 @@
  * Do not edit the class manually.
  */
 
+
+
 /**
- *
+ * 
  * @export
  * @interface ValidationErrorLocInner
  */
-export interface ValidationErrorLocInner {}
+export interface ValidationErrorLocInner {
+}
+

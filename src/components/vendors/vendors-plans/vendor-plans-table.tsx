@@ -89,8 +89,8 @@ export function VendorPlansTable() {
                     {plan.seller.name}
                   </TableCell>
                   <TableCell>{plan.sales_period}</TableCell>
-                  <TableCell>{formatCurrency(plan.goal)}</TableCell>
-                  <TableCell>{formatCurrency(plan.accumulate)}</TableCell>
+                  <TableCell>{formatCurrency(`${plan.goal}`)}</TableCell>
+                  <TableCell>{formatCurrency(`${plan.accumulate}`)}</TableCell>
                   <TableCell className={getStatusColor(plan.status)}>
                     {plan.status}
                   </TableCell>

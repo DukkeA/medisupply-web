@@ -14,10 +14,18 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import { useCreateProduct } from '@/services/hooks/use-products'
 import { ProductCreate, ProductCategory } from '@/generated/models'
+import { useProviders } from '@/services/hooks/use-providers'
 
 type CreateProductModalProps = {
   open: boolean
@@ -28,8 +36,6 @@ export function CreateProductModal({
   open,
   onOpenChange
 }: CreateProductModalProps) {
-  // TODO - Convertir input de proveedor en un select con opciones de proveedores existentes
-  // TODO - Poner ENUM de categorías y convertir input de categoría en un select
   const t = useTranslations('products')
 
   // form state
@@ -45,6 +51,9 @@ export function CreateProductModal({
 
   // mutation to create a new product
   const { mutate: createProductMutation, isPending } = useCreateProduct()
+
+  // query providers to populate provider select
+  const { data: providers } = useProviders()
 
   // form handlers
   const handleSubmit = (e: React.FormEvent) => {
@@ -105,17 +114,38 @@ export function CreateProductModal({
                 required
               />
             </div>
-            <div className="grid gap-2">
+            <div className="grid gap-2 w-full">
               <Label htmlFor="category">{t('modal.fields.category')}</Label>
-              <Input
-                id="category"
+              <Select
                 value={formData.category}
-                onChange={(e) =>
-                  handleChange('category', e.target.value as ProductCategory)
+                onValueChange={(value) =>
+                  handleChange('category', value as ProductCategory)
                 }
-                placeholder="otros"
                 required
-              />
+              >
+                <SelectTrigger id="category">
+                  <SelectValue
+                    placeholder={t('modal.fields.categoryPlaceholder')}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ProductCategory.MedicamentosEspeciales}>
+                    {t('modal.categories.medicamentosEspeciales')}
+                  </SelectItem>
+                  <SelectItem value={ProductCategory.InsumosQuirurgicos}>
+                    {t('modal.categories.insumosQuirurgicos')}
+                  </SelectItem>
+                  <SelectItem value={ProductCategory.ReactivosDiagnosticos}>
+                    {t('modal.categories.reactivosDiagnosticos')}
+                  </SelectItem>
+                  <SelectItem value={ProductCategory.EquiposBiomedicos}>
+                    {t('modal.categories.equiposBiomedicos')}
+                  </SelectItem>
+                  <SelectItem value={ProductCategory.Otros}>
+                    {t('modal.categories.otros')}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="price">{t('modal.fields.price')}</Label>
@@ -137,13 +167,24 @@ export function CreateProductModal({
             </div>
             <div className="grid gap-2">
               <Label htmlFor="provider">{t('modal.fields.provider')}</Label>
-              <Input
-                id="provider"
+              <Select
                 value={formData.provider_id}
-                onChange={(e) => handleChange('provider_id', e.target.value)}
-                placeholder="Provider UUID"
+                onValueChange={(value) => handleChange('provider_id', value)}
                 required
-              />
+              >
+                <SelectTrigger id="provider">
+                  <SelectValue
+                    placeholder={t('modal.fields.providerPlaceholder')}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {providers?.items?.map((provider) => (
+                    <SelectItem key={provider.id} value={provider.id}>
+                      {provider.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>

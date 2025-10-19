@@ -17,50 +17,56 @@
 /**
  * 
  * @export
- * @interface WarehouseResponse
+ * @interface InventoryCreate
  */
-export interface WarehouseResponse {
+export interface InventoryCreate {
     /**
      * 
      * @type {string}
-     * @memberof WarehouseResponse
+     * @memberof InventoryCreate
      */
-    'id': string;
+    'product_id': string;
     /**
      * 
      * @type {string}
-     * @memberof WarehouseResponse
+     * @memberof InventoryCreate
      */
-    'name': string;
+    'warehouse_id': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof InventoryCreate
+     */
+    'total_quantity': number;
     /**
      * 
      * @type {string}
-     * @memberof WarehouseResponse
+     * @memberof InventoryCreate
      */
-    'country': string;
+    'batch_number': string;
     /**
      * 
      * @type {string}
-     * @memberof WarehouseResponse
+     * @memberof InventoryCreate
      */
-    'city': string;
+    'expiration_date': string;
     /**
      * 
      * @type {string}
-     * @memberof WarehouseResponse
+     * @memberof InventoryCreate
      */
-    'address': string;
+    'product_sku': string;
     /**
      * 
      * @type {string}
-     * @memberof WarehouseResponse
+     * @memberof InventoryCreate
      */
-    'created_at': string;
+    'product_name': string;
     /**
      * 
-     * @type {string}
-     * @memberof WarehouseResponse
+     * @type {number}
+     * @memberof InventoryCreate
      */
-    'updated_at': string;
+    'product_price': number;
 }
 

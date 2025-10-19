@@ -50,7 +50,7 @@ export function VendorsTable() {
               <TableHead>{t('table.columns.email')}</TableHead>
               <TableHead>{t('table.columns.phone')}</TableHead>
               <TableHead>{t('table.columns.country')}</TableHead>
-              <TableHead>{t('table.columns.city')}</TableHead>
+              {/* <TableHead>{t('table.columns.city')}</TableHead> */}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -67,7 +67,7 @@ export function VendorsTable() {
                   <TableCell>{vendor.email}</TableCell>
                   <TableCell>{vendor.phone}</TableCell>
                   <TableCell>{vendor.country}</TableCell>
-                  <TableCell>{vendor.city}</TableCell>
+                  {/* <TableCell>{vendor.city}</TableCell> */}
                 </TableRow>
               ))
             )}

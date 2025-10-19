@@ -87,9 +87,18 @@
         "sku": "SKU",
         "name": "Name",
         "category": "Category",
+        "categoryPlaceholder": "Select a category",
         "price": "Price",
         "refrigerated": "Refrigerated",
-        "provider": "Provider"
+        "provider": "Provider",
+        "providerPlaceholder": "Select a provider"
+      },
+      "categories": {
+        "medicamentosEspeciales": "Special Medicines",
+        "insumosQuirurgicos": "Surgical Supplies",
+        "reactivosDiagnosticos": "Diagnostic Reagents",
+        "equiposBiomedicos": "Biomedical Equipment",
+        "otros": "Others"
       },
       "buttons": {
         "cancel": "Cancel",
@@ -111,7 +120,8 @@
       "buttons": {
         "cancel": "Cancel",
         "upload": "Upload",
-        "uploading": "Uploading..."
+        "uploading": "Uploading...",
+        "downloadTemplate": "Download Template"
       }
     }
   },
@@ -127,7 +137,7 @@
         "email": "Email",
         "phone": "Phone",
         "country": "Country",
-        "territory": "Territory"
+        "city": "City"
       },
       "loading": "Loading vendors...",
       "error": "Error loading vendors.",
@@ -195,8 +205,9 @@
     "table": {
       "addButton": "Add to Inventory",
       "columns": {
-        "productId": "Product ID",
-        "warehouseId": "Warehouse ID",
+        "productSKU": "Product SKU",
+        "productName": "Product Name",
+        "warehouseName": "Warehouse Name",
         "totalQuantity": "Total Quantity",
         "reservedQuantity": "Reserved",
         "batchNumber": "Batch Number",

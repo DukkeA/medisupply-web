@@ -12,32 +12,34 @@
  * Do not edit the class manually.
  */
 
+
 // May contain unused imports in some cases
 // @ts-ignore
-import type { ValidationErrorLocInner } from './validation-error-loc-inner'
+import type { ValidationErrorLocInner } from './validation-error-loc-inner';
 
 /**
- *
+ * 
  * @export
  * @interface ValidationError
  */
 export interface ValidationError {
-  /**
-   *
-   * @type {Array<ValidationErrorLocInner>}
-   * @memberof ValidationError
-   */
-  loc: Array<ValidationErrorLocInner>
-  /**
-   *
-   * @type {string}
-   * @memberof ValidationError
-   */
-  msg: string
-  /**
-   *
-   * @type {string}
-   * @memberof ValidationError
-   */
-  type: string
+    /**
+     * 
+     * @type {Array<ValidationErrorLocInner>}
+     * @memberof ValidationError
+     */
+    'loc': Array<ValidationErrorLocInner>;
+    /**
+     * 
+     * @type {string}
+     * @memberof ValidationError
+     */
+    'msg': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ValidationError
+     */
+    'type': string;
 }
+

@@ -15,28 +15,28 @@
 
 
 /**
- * 
+ * Not found error response (404).
  * @export
- * @interface SalesPlanCreate
+ * @interface NotFoundErrorResponse
  */
-export interface SalesPlanCreate {
+export interface NotFoundErrorResponse {
+    /**
+     * Machine-readable error code
+     * @type {string}
+     * @memberof NotFoundErrorResponse
+     */
+    'error_code': string;
+    /**
+     * Human-readable error message
+     * @type {string}
+     * @memberof NotFoundErrorResponse
+     */
+    'message': string;
     /**
      * 
      * @type {string}
-     * @memberof SalesPlanCreate
+     * @memberof NotFoundErrorResponse
      */
-    'seller_id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SalesPlanCreate
-     */
-    'sales_period': string;
-    /**
-     * Sales goal amount
-     * @type {number}
-     * @memberof SalesPlanCreate
-     */
-    'goal': number;
+    'type'?: string;
 }
 

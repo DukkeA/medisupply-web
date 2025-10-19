@@ -12,50 +12,52 @@
  * Do not edit the class manually.
  */
 
+
 // May contain unused imports in some cases
 // @ts-ignore
-import type { WarehouseResponse } from './warehouse-response'
+import type { WarehouseResponse } from './warehouse-response';
 
 /**
- *
+ * 
  * @export
  * @interface PaginatedWarehousesResponse
  */
 export interface PaginatedWarehousesResponse {
-  /**
-   *
-   * @type {Array<WarehouseResponse>}
-   * @memberof PaginatedWarehousesResponse
-   */
-  items: Array<WarehouseResponse>
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedWarehousesResponse
-   */
-  total: number
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedWarehousesResponse
-   */
-  page: number
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedWarehousesResponse
-   */
-  size: number
-  /**
-   *
-   * @type {boolean}
-   * @memberof PaginatedWarehousesResponse
-   */
-  has_next: boolean
-  /**
-   *
-   * @type {boolean}
-   * @memberof PaginatedWarehousesResponse
-   */
-  has_previous: boolean
+    /**
+     * 
+     * @type {Array<WarehouseResponse>}
+     * @memberof PaginatedWarehousesResponse
+     */
+    'items': Array<WarehouseResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedWarehousesResponse
+     */
+    'total': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedWarehousesResponse
+     */
+    'page': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedWarehousesResponse
+     */
+    'size': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PaginatedWarehousesResponse
+     */
+    'has_next': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PaginatedWarehousesResponse
+     */
+    'has_previous': boolean;
 }
+

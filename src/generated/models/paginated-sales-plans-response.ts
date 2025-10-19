@@ -12,50 +12,52 @@
  * Do not edit the class manually.
  */
 
+
 // May contain unused imports in some cases
 // @ts-ignore
-import type { SalesPlanResponse } from './sales-plan-response'
+import type { SalesPlanResponse } from './sales-plan-response';
 
 /**
- *
+ * 
  * @export
  * @interface PaginatedSalesPlansResponse
  */
 export interface PaginatedSalesPlansResponse {
-  /**
-   *
-   * @type {Array<SalesPlanResponse>}
-   * @memberof PaginatedSalesPlansResponse
-   */
-  items: Array<SalesPlanResponse>
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedSalesPlansResponse
-   */
-  total: number
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedSalesPlansResponse
-   */
-  page: number
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedSalesPlansResponse
-   */
-  size: number
-  /**
-   *
-   * @type {boolean}
-   * @memberof PaginatedSalesPlansResponse
-   */
-  has_next: boolean
-  /**
-   *
-   * @type {boolean}
-   * @memberof PaginatedSalesPlansResponse
-   */
-  has_previous: boolean
+    /**
+     * 
+     * @type {Array<SalesPlanResponse>}
+     * @memberof PaginatedSalesPlansResponse
+     */
+    'items': Array<SalesPlanResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedSalesPlansResponse
+     */
+    'total': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedSalesPlansResponse
+     */
+    'page': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedSalesPlansResponse
+     */
+    'size': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PaginatedSalesPlansResponse
+     */
+    'has_next': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PaginatedSalesPlansResponse
+     */
+    'has_previous': boolean;
 }
+

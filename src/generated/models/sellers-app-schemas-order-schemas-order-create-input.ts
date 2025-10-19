@@ -12,9 +12,10 @@
  * Do not edit the class manually.
  */
 
+
 // May contain unused imports in some cases
 // @ts-ignore
-import type { OrderItemInput } from './order-item-input'
+import type { OrderItemInput } from './order-item-input';
 
 /**
  * Input schema for creating an order via sellers app.  Business rules: - metodo_creacion is automatically set to \'app_vendedor\' - seller_id is REQUIRED (seller creating the order) - visit_id is OPTIONAL (can be associated with a visit or not)
@@ -22,28 +23,29 @@ import type { OrderItemInput } from './order-item-input'
  * @interface SellersAppSchemasOrderSchemasOrderCreateInput
  */
 export interface SellersAppSchemasOrderSchemasOrderCreateInput {
-  /**
-   *
-   * @type {string}
-   * @memberof SellersAppSchemasOrderSchemasOrderCreateInput
-   */
-  customer_id: string
-  /**
-   *
-   * @type {string}
-   * @memberof SellersAppSchemasOrderSchemasOrderCreateInput
-   */
-  seller_id: string
-  /**
-   *
-   * @type {Array<OrderItemInput>}
-   * @memberof SellersAppSchemasOrderSchemasOrderCreateInput
-   */
-  items: Array<OrderItemInput>
-  /**
-   *
-   * @type {string}
-   * @memberof SellersAppSchemasOrderSchemasOrderCreateInput
-   */
-  visit_id?: string | null
+    /**
+     * 
+     * @type {string}
+     * @memberof SellersAppSchemasOrderSchemasOrderCreateInput
+     */
+    'customer_id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SellersAppSchemasOrderSchemasOrderCreateInput
+     */
+    'seller_id': string;
+    /**
+     * 
+     * @type {Array<OrderItemInput>}
+     * @memberof SellersAppSchemasOrderSchemasOrderCreateInput
+     */
+    'items': Array<OrderItemInput>;
+    /**
+     * 
+     * @type {string}
+     * @memberof SellersAppSchemasOrderSchemasOrderCreateInput
+     */
+    'visit_id'?: string | null;
 }
+

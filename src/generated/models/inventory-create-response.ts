@@ -1,5 +1,5 @@
 /* tslint:disable */
-
+/* eslint-disable */
 /**
  * BFF Service
  * Backend For Frontend service aggregating microservices
@@ -12,22 +12,25 @@
  * Do not edit the class manually.
  */
 
+
+
 /**
- *
+ * 
  * @export
  * @interface InventoryCreateResponse
  */
 export interface InventoryCreateResponse {
-  /**
-   *
-   * @type {string}
-   * @memberof InventoryCreateResponse
-   */
-  id: string
-  /**
-   *
-   * @type {string}
-   * @memberof InventoryCreateResponse
-   */
-  message: string
+    /**
+     * 
+     * @type {string}
+     * @memberof InventoryCreateResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof InventoryCreateResponse
+     */
+    'message': string;
 }
+

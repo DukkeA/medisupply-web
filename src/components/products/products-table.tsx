@@ -25,7 +25,7 @@ export function ProductsTable() {
   const [isCSVModalOpen, setIsCSVModalOpen] = useState(false)
 
   // fetch products data
-  const { data, isLoading, isError } = useProducts(10, 0, testData)
+  const { data, isLoading, isError } = useProducts(100, 0, testData)
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -80,7 +80,7 @@ export function ProductsTable() {
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
                   <TableCell>{product.price}</TableCell>
-                  <TableCell>{product.provider_id}</TableCell>
+                  <TableCell>{product.provider_name}</TableCell>
                 </TableRow>
               ))
             )}

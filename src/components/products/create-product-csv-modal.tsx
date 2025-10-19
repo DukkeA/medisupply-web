@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
-import { Upload } from 'lucide-react'
+import { Upload, Download } from 'lucide-react'
 import { useUploadProductsCSV } from '@/services/hooks/use-products'
 
 type CreateProductCSVModalProps = {
@@ -67,6 +67,15 @@ export function CreateProductCSVModal({
     }
   }
 
+  const handleDownloadTemplate = () => {
+    const link = document.createElement('a')
+    link.href = '/bash-upload.csv'
+    link.download = 'products-template.csv'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg ">
@@ -77,7 +86,19 @@ export function CreateProductCSVModal({
         <form data-testid="csv-form" onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="file">{t('csvModal.fields.file')}</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="file">{t('csvModal.fields.file')}</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownloadTemplate}
+                  className="gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  {t('csvModal.buttons.downloadTemplate')}
+                </Button>
+              </div>
               <div className="flex items-center gap-2">
                 <Input
                   id="file"

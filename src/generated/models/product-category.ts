@@ -1,5 +1,5 @@
 /* tslint:disable */
-
+/* eslint-disable */
 /**
  * BFF Service
  * Backend For Frontend service aggregating microservices
@@ -12,6 +12,8 @@
  * Do not edit the class manually.
  */
 
+
+
 /**
  * Product category options according to ER diagram
  * @export
@@ -19,12 +21,14 @@
  */
 
 export const ProductCategory = {
-  MedicamentosEspeciales: 'medicamentos_especiales',
-  InsumosQuirurgicos: 'insumos_quirurgicos',
-  ReactivosDiagnosticos: 'reactivos_diagnosticos',
-  EquiposBiomedicos: 'equipos_biomedicos',
-  Otros: 'otros'
-} as const
+    MedicamentosEspeciales: 'medicamentos_especiales',
+    InsumosQuirurgicos: 'insumos_quirurgicos',
+    ReactivosDiagnosticos: 'reactivos_diagnosticos',
+    EquiposBiomedicos: 'equipos_biomedicos',
+    Otros: 'otros'
+} as const;
 
-export type ProductCategory =
-  (typeof ProductCategory)[keyof typeof ProductCategory]
+export type ProductCategory = typeof ProductCategory[keyof typeof ProductCategory];
+
+
+

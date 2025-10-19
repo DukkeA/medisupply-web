@@ -87,9 +87,18 @@
         "sku": "SKU",
         "name": "Nombre",
         "category": "Categoría",
+        "categoryPlaceholder": "Selecciona una categoría",
         "price": "Precio",
         "refrigerated": "Refrigerado",
-        "provider": "Proveedor"
+        "provider": "Proveedor",
+        "providerPlaceholder": "Selecciona un proveedor"
+      },
+      "categories": {
+        "medicamentosEspeciales": "Medicamentos Especiales",
+        "insumosQuirurgicos": "Insumos Quirúrgicos",
+        "reactivosDiagnosticos": "Reactivos Diagnósticos",
+        "equiposBiomedicos": "Equipos Biomédicos",
+        "otros": "Otros"
       },
       "buttons": {
         "cancel": "Cancelar",
@@ -111,7 +120,8 @@
       "buttons": {
         "cancel": "Cancelar",
         "upload": "Cargar",
-        "uploading": "Cargando..."
+        "uploading": "Cargando...",
+        "downloadTemplate": "Descargar Plantilla"
       }
     }
   },
@@ -127,7 +137,7 @@
         "email": "Correo Electrónico",
         "phone": "Teléfono",
         "country": "País",
-        "territory": "Territorio"
+        "city": "Ciudad"
       },
       "loading": "Cargando vendedores...",
       "error": "Error al cargar vendedores.",
@@ -195,8 +205,9 @@
     "table": {
       "addButton": "Agregar al Inventario",
       "columns": {
-        "productId": "ID del Producto",
-        "warehouseId": "ID del Almacén",
+        "productSku": "SKU del Producto",
+        "productName": "Nombre del Producto",
+        "warehouseName": "Nombre del Almacén",
         "totalQuantity": "Cantidad Total",
         "reservedQuantity": "Reservada",
         "batchNumber": "Número de Lote",

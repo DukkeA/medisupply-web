@@ -1,6 +1,5 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 README.md
 api.ts
 api/client-app-api.ts
@@ -14,11 +13,12 @@ git_push.sh
 index.ts
 models/batch-products-response.ts
 models/client-app-schemas-order-schemas-order-create-input.ts
-models/goal.ts
 models/httpvalidation-error.ts
 models/index.ts
+models/inventory-create-request.ts
 models/inventory-create-response.ts
 models/inventory-response.ts
+models/not-found-error-response.ts
 models/order-create-response.ts
 models/order-item-input.ts
 models/paginated-inventories-response.ts
@@ -27,7 +27,6 @@ models/paginated-providers-response.ts
 models/paginated-sales-plans-response.ts
 models/paginated-sellers-response.ts
 models/paginated-warehouses-response.ts
-models/price.ts
 models/product-category.ts
 models/product-create.ts
 models/product-response.ts
@@ -43,6 +42,7 @@ models/seller-create.ts
 models/seller-response.ts
 models/sellers-app-schemas-order-schemas-order-create-input.ts
 models/validation-error-loc-inner.ts
+models/validation-error-response.ts
 models/validation-error.ts
 models/warehouse-create-response.ts
 models/warehouse-create.ts

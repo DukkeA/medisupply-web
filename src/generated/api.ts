@@ -1,5 +1,5 @@
 /* tslint:disable */
-
+/* eslint-disable */
 /**
  * BFF Service
  * Backend For Frontend service aggregating microservices
@@ -12,7 +12,10 @@
  * Do not edit the class manually.
  */
 
-export * from './api/client-app-api'
-export * from './api/health-api'
-export * from './api/sellers-app-api'
-export * from './api/web-api'
+
+
+export * from './api/client-app-api';
+export * from './api/health-api';
+export * from './api/sellers-app-api';
+export * from './api/web-api';
+

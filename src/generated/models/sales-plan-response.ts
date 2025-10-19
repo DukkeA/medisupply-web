@@ -12,62 +12,64 @@
  * Do not edit the class manually.
  */
 
+
 // May contain unused imports in some cases
 // @ts-ignore
-import type { SellerResponse } from './seller-response'
+import type { SellerResponse } from './seller-response';
 
 /**
- *
+ * 
  * @export
  * @interface SalesPlanResponse
  */
 export interface SalesPlanResponse {
-  /**
-   *
-   * @type {string}
-   * @memberof SalesPlanResponse
-   */
-  id: string
-  /**
-   *
-   * @type {SellerResponse}
-   * @memberof SalesPlanResponse
-   */
-  seller: SellerResponse
-  /**
-   *
-   * @type {string}
-   * @memberof SalesPlanResponse
-   */
-  sales_period: string
-  /**
-   *
-   * @type {string}
-   * @memberof SalesPlanResponse
-   */
-  goal: string
-  /**
-   *
-   * @type {string}
-   * @memberof SalesPlanResponse
-   */
-  accumulate: string
-  /**
-   *
-   * @type {string}
-   * @memberof SalesPlanResponse
-   */
-  status: string
-  /**
-   *
-   * @type {string}
-   * @memberof SalesPlanResponse
-   */
-  created_at: string
-  /**
-   *
-   * @type {string}
-   * @memberof SalesPlanResponse
-   */
-  updated_at: string
+    /**
+     * 
+     * @type {string}
+     * @memberof SalesPlanResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {SellerResponse}
+     * @memberof SalesPlanResponse
+     */
+    'seller': SellerResponse;
+    /**
+     * 
+     * @type {string}
+     * @memberof SalesPlanResponse
+     */
+    'sales_period': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof SalesPlanResponse
+     */
+    'goal': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof SalesPlanResponse
+     */
+    'accumulate': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof SalesPlanResponse
+     */
+    'status': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SalesPlanResponse
+     */
+    'created_at': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SalesPlanResponse
+     */
+    'updated_at': string;
 }
+

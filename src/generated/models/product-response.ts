@@ -1,5 +1,5 @@
 /* tslint:disable */
-
+/* eslint-disable */
 /**
  * BFF Service
  * Backend For Frontend service aggregating microservices
@@ -12,58 +12,67 @@
  * Do not edit the class manually.
  */
 
+
+
 /**
- *
+ * 
  * @export
  * @interface ProductResponse
  */
 export interface ProductResponse {
-  /**
-   *
-   * @type {string}
-   * @memberof ProductResponse
-   */
-  id: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProductResponse
-   */
-  provider_id: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProductResponse
-   */
-  name: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProductResponse
-   */
-  category: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProductResponse
-   */
-  sku: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProductResponse
-   */
-  price: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProductResponse
-   */
-  created_at: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProductResponse
-   */
-  updated_at: string
+    /**
+     * 
+     * @type {string}
+     * @memberof ProductResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProductResponse
+     */
+    'provider_id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProductResponse
+     */
+    'provider_name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProductResponse
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProductResponse
+     */
+    'category': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProductResponse
+     */
+    'sku': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ProductResponse
+     */
+    'price': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProductResponse
+     */
+    'created_at': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProductResponse
+     */
+    'updated_at': string;
 }
+

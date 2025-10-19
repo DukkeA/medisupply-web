@@ -1,5 +1,5 @@
 /* tslint:disable */
-
+/* eslint-disable */
 /**
  * BFF Service
  * Backend For Frontend service aggregating microservices
@@ -12,22 +12,25 @@
  * Do not edit the class manually.
  */
 
+
+
 /**
  * Input schema for a single order item.
  * @export
  * @interface OrderItemInput
  */
 export interface OrderItemInput {
-  /**
-   *
-   * @type {string}
-   * @memberof OrderItemInput
-   */
-  producto_id: string
-  /**
-   *
-   * @type {number}
-   * @memberof OrderItemInput
-   */
-  cantidad: number
+    /**
+     * 
+     * @type {string}
+     * @memberof OrderItemInput
+     */
+    'producto_id': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof OrderItemInput
+     */
+    'cantidad': number;
 }
+

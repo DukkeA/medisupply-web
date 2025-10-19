@@ -12,26 +12,28 @@
  * Do not edit the class manually.
  */
 
+
 // May contain unused imports in some cases
 // @ts-ignore
-import type { ProductResponse } from './product-response'
+import type { ProductResponse } from './product-response';
 
 /**
- *
+ * 
  * @export
  * @interface BatchProductsResponse
  */
 export interface BatchProductsResponse {
-  /**
-   *
-   * @type {Array<ProductResponse>}
-   * @memberof BatchProductsResponse
-   */
-  created: Array<ProductResponse>
-  /**
-   *
-   * @type {number}
-   * @memberof BatchProductsResponse
-   */
-  count: number
+    /**
+     * 
+     * @type {Array<ProductResponse>}
+     * @memberof BatchProductsResponse
+     */
+    'created': Array<ProductResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof BatchProductsResponse
+     */
+    'count': number;
 }
+

@@ -12,50 +12,52 @@
  * Do not edit the class manually.
  */
 
+
 // May contain unused imports in some cases
 // @ts-ignore
-import type { ProviderResponse } from './provider-response'
+import type { ProviderResponse } from './provider-response';
 
 /**
- *
+ * 
  * @export
  * @interface PaginatedProvidersResponse
  */
 export interface PaginatedProvidersResponse {
-  /**
-   *
-   * @type {Array<ProviderResponse>}
-   * @memberof PaginatedProvidersResponse
-   */
-  items: Array<ProviderResponse>
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedProvidersResponse
-   */
-  total: number
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedProvidersResponse
-   */
-  page: number
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedProvidersResponse
-   */
-  size: number
-  /**
-   *
-   * @type {boolean}
-   * @memberof PaginatedProvidersResponse
-   */
-  has_next: boolean
-  /**
-   *
-   * @type {boolean}
-   * @memberof PaginatedProvidersResponse
-   */
-  has_previous: boolean
+    /**
+     * 
+     * @type {Array<ProviderResponse>}
+     * @memberof PaginatedProvidersResponse
+     */
+    'items': Array<ProviderResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedProvidersResponse
+     */
+    'total': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedProvidersResponse
+     */
+    'page': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedProvidersResponse
+     */
+    'size': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PaginatedProvidersResponse
+     */
+    'has_next': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PaginatedProvidersResponse
+     */
+    'has_previous': boolean;
 }
+

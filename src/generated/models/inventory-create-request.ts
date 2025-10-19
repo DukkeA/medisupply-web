@@ -15,40 +15,40 @@
 
 
 /**
- * 
+ * Client request schema for creating inventory - does NOT include denormalized fields
  * @export
- * @interface SellerCreate
+ * @interface InventoryCreateRequest
  */
-export interface SellerCreate {
+export interface InventoryCreateRequest {
     /**
      * 
      * @type {string}
-     * @memberof SellerCreate
+     * @memberof InventoryCreateRequest
      */
-    'name': string;
+    'product_id': string;
     /**
      * 
      * @type {string}
-     * @memberof SellerCreate
+     * @memberof InventoryCreateRequest
      */
-    'email': string;
+    'warehouse_id': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof InventoryCreateRequest
+     */
+    'total_quantity': number;
     /**
      * 
      * @type {string}
-     * @memberof SellerCreate
+     * @memberof InventoryCreateRequest
      */
-    'phone': string;
+    'batch_number': string;
     /**
      * 
      * @type {string}
-     * @memberof SellerCreate
+     * @memberof InventoryCreateRequest
      */
-    'city': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SellerCreate
-     */
-    'country': string;
+    'expiration_date': string;
 }
 

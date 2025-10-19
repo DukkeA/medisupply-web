@@ -14,7 +14,7 @@
     "test:coverage": "vitest --coverage --run",
     "test:watch": "vitest --watch",
     "api:generate": "openapi-generator-cli generate",
-    "api:validate": "openapi-generator-cli validate -i http://medisupply-alb-2065131386.us-east-1.elb.amazonaws.com/bff/openapi.json",
+    "api:validate": "openapi-generator-cli validate -i https://bffproyecto.juanandresdeveloper.com/bff/openapi.json",
     "prepare": "husky"
   },
   "dependencies": {

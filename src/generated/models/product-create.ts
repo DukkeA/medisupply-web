@@ -12,47 +12,48 @@
  * Do not edit the class manually.
  */
 
+
 // May contain unused imports in some cases
 // @ts-ignore
-import type { Price } from './price'
-// May contain unused imports in some cases
-// @ts-ignore
-import type { ProductCategory } from './product-category'
+import type { ProductCategory } from './product-category';
 
 /**
- *
+ * 
  * @export
  * @interface ProductCreate
  */
 export interface ProductCreate {
-  /**
-   * ID of the provider
-   * @type {string}
-   * @memberof ProductCreate
-   */
-  provider_id: string
-  /**
-   * Product name
-   * @type {string}
-   * @memberof ProductCreate
-   */
-  name: string
-  /**
-   * Product category
-   * @type {ProductCategory}
-   * @memberof ProductCreate
-   */
-  category: ProductCategory
-  /**
-   * Product SKU (unique identifier)
-   * @type {string}
-   * @memberof ProductCreate
-   */
-  sku: string
-  /**
-   *
-   * @type {Price}
-   * @memberof ProductCreate
-   */
-  price: Price
+    /**
+     * ID of the provider
+     * @type {string}
+     * @memberof ProductCreate
+     */
+    'provider_id': string;
+    /**
+     * Product name
+     * @type {string}
+     * @memberof ProductCreate
+     */
+    'name': string;
+    /**
+     * Product category
+     * @type {ProductCategory}
+     * @memberof ProductCreate
+     */
+    'category': ProductCategory;
+    /**
+     * Product SKU (unique identifier)
+     * @type {string}
+     * @memberof ProductCreate
+     */
+    'sku': string;
+    /**
+     * Product price (must be greater than 0)
+     * @type {number}
+     * @memberof ProductCreate
+     */
+    'price': number;
 }
+
+
+

@@ -12,1689 +12,968 @@
  * Do not edit the class manually.
  */
 
-import type { Configuration } from '../configuration'
-import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios'
-import globalAxios from 'axios'
+
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import {
-  DUMMY_BASE_URL,
-  assertParamExists,
-  setApiKeyToObject,
-  setBasicAuthToObject,
-  setBearerAuthToObject,
-  setOAuthToObject,
-  setSearchParams,
-  serializeDataIfNeeded,
-  toPathString,
-  createRequestFunction
-} from '../common'
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import {
-  BASE_PATH,
-  COLLECTION_FORMATS,
-  type RequestArgs,
-  BaseAPI,
-  RequiredError,
-  operationServerMap
-} from '../base'
+import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import type { BatchProductsResponse } from '../models'
+import type { BatchProductsResponse } from '../models';
 // @ts-ignore
-import type { HTTPValidationError } from '../models'
+import type { HTTPValidationError } from '../models';
 // @ts-ignore
-import type { InventoryCreateResponse } from '../models'
+import type { InventoryCreateRequest } from '../models';
 // @ts-ignore
-import type { PaginatedInventoriesResponse } from '../models'
+import type { InventoryCreateResponse } from '../models';
 // @ts-ignore
-import type { PaginatedProductsResponse } from '../models'
+import type { NotFoundErrorResponse } from '../models';
 // @ts-ignore
-import type { PaginatedProvidersResponse } from '../models'
+import type { PaginatedInventoriesResponse } from '../models';
 // @ts-ignore
-import type { PaginatedSalesPlansResponse } from '../models'
+import type { PaginatedProductsResponse } from '../models';
 // @ts-ignore
-import type { PaginatedWarehousesResponse } from '../models'
+import type { PaginatedProvidersResponse } from '../models';
 // @ts-ignore
-import type { ProductCreate } from '../models'
+import type { PaginatedSalesPlansResponse } from '../models';
 // @ts-ignore
-import type { ProviderCreate } from '../models'
+import type { PaginatedWarehousesResponse } from '../models';
 // @ts-ignore
-import type { ProviderCreateResponse } from '../models'
+import type { ProductCreate } from '../models';
 // @ts-ignore
-import type { ResponseGetSellersBffWebSellersGet } from '../models'
+import type { ProviderCreate } from '../models';
 // @ts-ignore
-import type { SalesPlanCreate } from '../models'
+import type { ProviderCreateResponse } from '../models';
 // @ts-ignore
-import type { SalesPlanCreateResponse } from '../models'
+import type { ResponseGetSellersBffWebSellersGet } from '../models';
 // @ts-ignore
-import type { SellerCreate } from '../models'
+import type { SalesPlanCreate } from '../models';
 // @ts-ignore
-import type { SellerCreateResponse } from '../models'
+import type { SalesPlanCreateResponse } from '../models';
 // @ts-ignore
-import type { WarehouseCreate } from '../models'
+import type { SellerCreate } from '../models';
 // @ts-ignore
-import type { WarehouseCreateResponse } from '../models'
+import type { SellerCreateResponse } from '../models';
+// @ts-ignore
+import type { ValidationErrorResponse } from '../models';
+// @ts-ignore
+import type { WarehouseCreate } from '../models';
+// @ts-ignore
+import type { WarehouseCreateResponse } from '../models';
 /**
  * WebApi - axios parameter creator
  * @export
  */
-export const WebApiAxiosParamCreator = function (
-  configuration?: Configuration
-) {
-  return {
-    /**
-     * Create a new inventory entry.  This endpoint orchestrates between catalog and inventory microservices: 1. Fetches product data from catalog service 2. Validates product exists 3. Creates inventory with denormalized product data  Args:     product_id: ID of the product     warehouse_id: ID of the warehouse     total_quantity: Total quantity in inventory     reserved_quantity: Reserved quantity (must be 0 at creation)     batch_number: Batch number for this inventory     expiration_date: Expiration date (ISO format)     catalog: Catalog port for service communication     inventory: Inventory port for service communication  Returns:     Created inventory id and success message  Raises:     HTTPException: 404 if product not found
-     * @summary Create Inventory
-     * @param {string} productId
-     * @param {string} warehouseId
-     * @param {number} totalQuantity
-     * @param {string} batchNumber
-     * @param {string} expirationDate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createInventoryBffWebInventoryPost: async (
-      productId: string,
-      warehouseId: string,
-      totalQuantity: number,
-      batchNumber: string,
-      expirationDate: string,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'productId' is not null or undefined
-      assertParamExists(
-        'createInventoryBffWebInventoryPost',
-        'productId',
-        productId
-      )
-      // verify required parameter 'warehouseId' is not null or undefined
-      assertParamExists(
-        'createInventoryBffWebInventoryPost',
-        'warehouseId',
-        warehouseId
-      )
-      // verify required parameter 'totalQuantity' is not null or undefined
-      assertParamExists(
-        'createInventoryBffWebInventoryPost',
-        'totalQuantity',
-        totalQuantity
-      )
-      // verify required parameter 'batchNumber' is not null or undefined
-      assertParamExists(
-        'createInventoryBffWebInventoryPost',
-        'batchNumber',
-        batchNumber
-      )
-      // verify required parameter 'expirationDate' is not null or undefined
-      assertParamExists(
-        'createInventoryBffWebInventoryPost',
-        'expirationDate',
-        expirationDate
-      )
-      const localVarPath = `/bff/web/inventory`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'POST',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      if (productId !== undefined) {
-        localVarQueryParameter['product_id'] = productId
-      }
-
-      if (warehouseId !== undefined) {
-        localVarQueryParameter['warehouse_id'] = warehouseId
-      }
-
-      if (totalQuantity !== undefined) {
-        localVarQueryParameter['total_quantity'] = totalQuantity
-      }
-
-      if (batchNumber !== undefined) {
-        localVarQueryParameter['batch_number'] = batchNumber
-      }
-
-      if (expirationDate !== undefined) {
-        localVarQueryParameter['expiration_date'] = expirationDate
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Create a single product.  This endpoint accepts a single product and sends it as a batch of size 1 to the catalog microservice.  Args:     product: Product data to create     catalog: Catalog port for service communication  Returns:     Response with the created product
-     * @summary Create Product
-     * @param {ProductCreate} productCreate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createProductBffWebProductsPost: async (
-      productCreate: ProductCreate,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'productCreate' is not null or undefined
-      assertParamExists(
-        'createProductBffWebProductsPost',
-        'productCreate',
-        productCreate
-      )
-      const localVarPath = `/bff/web/products`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'POST',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      localVarHeaderParameter['Content-Type'] = 'application/json'
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        productCreate,
-        localVarRequestOptions,
-        configuration
-      )
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Create multiple products from a CSV file.  The CSV file must have the following columns: - provider_id (UUID) - name (string) - category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros) - sku (string - unique identifier) - price (decimal)  All products are created in a single transaction in the catalog service. If any product fails validation or creation, all products are rolled back.  Args:     file: CSV file with product data     catalog: Catalog port for service communication  Returns:     Response with all created products
-     * @summary Create Products From Csv
-     * @param {File} file
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createProductsFromCsvBffWebProductsBatchPost: async (
-      file: File,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'file' is not null or undefined
-      assertParamExists(
-        'createProductsFromCsvBffWebProductsBatchPost',
-        'file',
-        file
-      )
-      const localVarPath = `/bff/web/products/batch`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'POST',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-      const localVarFormParams = new ((configuration &&
-        configuration.formDataCtor) ||
-        FormData)()
-
-      if (file !== undefined) {
-        localVarFormParams.append('file', file as any)
-      }
-
-      localVarHeaderParameter['Content-Type'] = 'multipart/form-data'
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-      localVarRequestOptions.data = localVarFormParams
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Create a new provider in the catalog microservice.  Args:     provider: Provider data to create     catalog: Catalog port for service communication  Returns:     Created provider id and success message
-     * @summary Create Provider
-     * @param {ProviderCreate} providerCreate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createProviderBffWebProviderPost: async (
-      providerCreate: ProviderCreate,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'providerCreate' is not null or undefined
-      assertParamExists(
-        'createProviderBffWebProviderPost',
-        'providerCreate',
-        providerCreate
-      )
-      const localVarPath = `/bff/web/provider`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'POST',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      localVarHeaderParameter['Content-Type'] = 'application/json'
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        providerCreate,
-        localVarRequestOptions,
-        configuration
-      )
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
-     * @summary Create Sales Plan
-     * @param {SalesPlanCreate} salesPlanCreate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createSalesPlanBffWebSalesPlansPost: async (
-      salesPlanCreate: SalesPlanCreate,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'salesPlanCreate' is not null or undefined
-      assertParamExists(
-        'createSalesPlanBffWebSalesPlansPost',
-        'salesPlanCreate',
-        salesPlanCreate
-      )
-      const localVarPath = `/bff/web/sales-plans`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'POST',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      localVarHeaderParameter['Content-Type'] = 'application/json'
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        salesPlanCreate,
-        localVarRequestOptions,
-        configuration
-      )
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Create a new seller.  Args:     seller: Seller data to create     seller_port: Seller port for service communication  Returns:     Created seller id and success message
-     * @summary Create Seller
-     * @param {SellerCreate} sellerCreate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createSellerBffWebSellersPost: async (
-      sellerCreate: SellerCreate,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'sellerCreate' is not null or undefined
-      assertParamExists(
-        'createSellerBffWebSellersPost',
-        'sellerCreate',
-        sellerCreate
-      )
-      const localVarPath = `/bff/web/sellers`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'POST',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      localVarHeaderParameter['Content-Type'] = 'application/json'
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        sellerCreate,
-        localVarRequestOptions,
-        configuration
-      )
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Create a new warehouse in the inventory microservice.  Args:     warehouse: Warehouse data to create     inventory: Inventory port for service communication  Returns:     Created warehouse id and success message
-     * @summary Create Warehouse
-     * @param {WarehouseCreate} warehouseCreate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createWarehouseBffWebWarehousePost: async (
-      warehouseCreate: WarehouseCreate,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'warehouseCreate' is not null or undefined
-      assertParamExists(
-        'createWarehouseBffWebWarehousePost',
-        'warehouseCreate',
-        warehouseCreate
-      )
-      const localVarPath = `/bff/web/warehouse`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'POST',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      localVarHeaderParameter['Content-Type'] = 'application/json'
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        warehouseCreate,
-        localVarRequestOptions,
-        configuration
-      )
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Retrieve inventories from the inventory microservice with optional filters.  Args:     limit: Maximum number of inventories to return (1-100)     offset: Number of inventories to skip     sku: Optional product SKU filter     warehouse_id: Optional warehouse ID filter     inventory: Inventory port for service communication  Returns:     Paginated list of inventories (with denormalized product and warehouse data)
-     * @summary Get Inventories
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {string | null} [sku]
-     * @param {string | null} [warehouseId]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getInventoriesBffWebInventoriesGet: async (
-      limit?: number,
-      offset?: number,
-      sku?: string | null,
-      warehouseId?: string | null,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/bff/web/inventories`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'GET',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      if (limit !== undefined) {
-        localVarQueryParameter['limit'] = limit
-      }
-
-      if (offset !== undefined) {
-        localVarQueryParameter['offset'] = offset
-      }
-
-      if (sku !== undefined) {
-        localVarQueryParameter['sku'] = sku
-      }
-
-      if (warehouseId !== undefined) {
-        localVarQueryParameter['warehouse_id'] = warehouseId
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Retrieve products from the catalog microservice.  Args:     limit: Maximum number of products to return (1-100)     offset: Number of products to skip     catalog: Catalog port for service communication  Returns:     Paginated list of products
-     * @summary Get Products
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getProductsBffWebProductsGet: async (
-      limit?: number,
-      offset?: number,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/bff/web/products`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'GET',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      if (limit !== undefined) {
-        localVarQueryParameter['limit'] = limit
-      }
-
-      if (offset !== undefined) {
-        localVarQueryParameter['offset'] = offset
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Retrieve providers from the catalog microservice.  Args:     limit: Maximum number of providers to return (1-100)     offset: Number of providers to skip     catalog: Catalog port for service communication  Returns:     Paginated list of providers
-     * @summary Get Providers
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getProvidersBffWebProvidersGet: async (
-      limit?: number,
-      offset?: number,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/bff/web/providers`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'GET',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      if (limit !== undefined) {
-        localVarQueryParameter['limit'] = limit
-      }
-
-      if (offset !== undefined) {
-        localVarQueryParameter['offset'] = offset
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
-     * @summary Get Sales Plans
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getSalesPlansBffWebSalesPlansGet: async (
-      limit?: number,
-      offset?: number,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/bff/web/sales-plans`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'GET',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      if (limit !== undefined) {
-        localVarQueryParameter['limit'] = limit
-      }
-
-      if (offset !== undefined) {
-        localVarQueryParameter['offset'] = offset
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Get sales plans for a specific seller with pagination.  Args:     seller_id: UUID of the seller     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans for the seller
-     * @summary Get Seller Sales Plans
-     * @param {string} sellerId
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet: async (
-      sellerId: string,
-      limit?: number,
-      offset?: number,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'sellerId' is not null or undefined
-      assertParamExists(
-        'getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet',
-        'sellerId',
-        sellerId
-      )
-      const localVarPath = `/bff/web/sellers/{seller_id}/sales-plans`.replace(
-        `{${'seller_id'}}`,
-        encodeURIComponent(String(sellerId))
-      )
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'GET',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      if (limit !== undefined) {
-        localVarQueryParameter['limit'] = limit
-      }
-
-      if (offset !== undefined) {
-        localVarQueryParameter['offset'] = offset
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Get sellers with pagination.  Args:     limit: Maximum number of sellers to return (1-100)     offset: Number of sellers to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sellers
-     * @summary Get Sellers
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getSellersBffWebSellersGet: async (
-      limit?: number,
-      offset?: number,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/bff/web/sellers`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'GET',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      if (limit !== undefined) {
-        localVarQueryParameter['limit'] = limit
-      }
-
-      if (offset !== undefined) {
-        localVarQueryParameter['offset'] = offset
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
-    },
-    /**
-     * Retrieve warehouses from the inventory microservice.  Args:     limit: Maximum number of warehouses to return (1-100)     offset: Number of warehouses to skip     inventory: Inventory port for service communication  Returns:     Paginated list of warehouses
-     * @summary Get Warehouses
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getWarehousesBffWebWarehousesGet: async (
-      limit?: number,
-      offset?: number,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/bff/web/warehouses`
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL)
-      let baseOptions
-      if (configuration) {
-        baseOptions = configuration.baseOptions
-      }
-
-      const localVarRequestOptions = {
-        method: 'GET',
-        ...baseOptions,
-        ...options
-      }
-      const localVarHeaderParameter = {} as any
-      const localVarQueryParameter = {} as any
-
-      if (limit !== undefined) {
-        localVarQueryParameter['limit'] = limit
-      }
-
-      if (offset !== undefined) {
-        localVarQueryParameter['offset'] = offset
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter)
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {}
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers
-      }
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions
-      }
+export const WebApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Create a new inventory entry.  This endpoint orchestrates between catalog and inventory microservices: 1. Fetches product data from catalog service 2. Validates product exists 3. Creates inventory with denormalized product data  Args:     request_data: Inventory creation data from client (JSON body) - does NOT include denormalized fields     catalog: Catalog port for service communication     inventory: Inventory port for service communication  Returns:     Created inventory id and success message  Raises:     HTTPException: 404 if product not found
+         * @summary Create Inventory
+         * @param {InventoryCreateRequest} inventoryCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createInventoryBffWebInventoryPost: async (inventoryCreateRequest: InventoryCreateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'inventoryCreateRequest' is not null or undefined
+            assertParamExists('createInventoryBffWebInventoryPost', 'inventoryCreateRequest', inventoryCreateRequest)
+            const localVarPath = `/bff/web/inventory`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(inventoryCreateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Create a single product.  This endpoint accepts a single product and sends it as a batch of size 1 to the catalog microservice.  Args:     product: Product data to create     catalog: Catalog port for service communication  Returns:     Response with the created product
+         * @summary Create Product
+         * @param {ProductCreate} productCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createProductBffWebProductsPost: async (productCreate: ProductCreate, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'productCreate' is not null or undefined
+            assertParamExists('createProductBffWebProductsPost', 'productCreate', productCreate)
+            const localVarPath = `/bff/web/products`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(productCreate, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Create multiple products from a CSV file.  The CSV file must have the following columns: - provider_id (UUID) - name (string) - category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros) - sku (string - unique identifier) - price (decimal)  All products are created in a single transaction in the catalog service. If any product fails validation or creation, all products are rolled back.  Args:     file: CSV file with product data     catalog: Catalog port for service communication  Returns:     Response with all created products
+         * @summary Create Products From Csv
+         * @param {File} file 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createProductsFromCsvBffWebProductsBatchPost: async (file: File, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('createProductsFromCsvBffWebProductsBatchPost', 'file', file)
+            const localVarPath = `/bff/web/products/batch`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Create a new provider in the catalog microservice.  Args:     provider: Provider data to create     catalog: Catalog port for service communication  Returns:     Created provider id and success message
+         * @summary Create Provider
+         * @param {ProviderCreate} providerCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createProviderBffWebProviderPost: async (providerCreate: ProviderCreate, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'providerCreate' is not null or undefined
+            assertParamExists('createProviderBffWebProviderPost', 'providerCreate', providerCreate)
+            const localVarPath = `/bff/web/provider`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(providerCreate, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
+         * @summary Create Sales Plan
+         * @param {SalesPlanCreate} salesPlanCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSalesPlanBffWebSalesPlansPost: async (salesPlanCreate: SalesPlanCreate, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'salesPlanCreate' is not null or undefined
+            assertParamExists('createSalesPlanBffWebSalesPlansPost', 'salesPlanCreate', salesPlanCreate)
+            const localVarPath = `/bff/web/sales-plans`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(salesPlanCreate, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Create a new seller.  Args:     seller: Seller data to create     seller_port: Seller port for service communication  Returns:     Created seller id and success message
+         * @summary Create Seller
+         * @param {SellerCreate} sellerCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSellerBffWebSellersPost: async (sellerCreate: SellerCreate, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'sellerCreate' is not null or undefined
+            assertParamExists('createSellerBffWebSellersPost', 'sellerCreate', sellerCreate)
+            const localVarPath = `/bff/web/sellers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(sellerCreate, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Create a new warehouse in the inventory microservice.  Args:     warehouse: Warehouse data to create     inventory: Inventory port for service communication  Returns:     Created warehouse id and success message
+         * @summary Create Warehouse
+         * @param {WarehouseCreate} warehouseCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createWarehouseBffWebWarehousePost: async (warehouseCreate: WarehouseCreate, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'warehouseCreate' is not null or undefined
+            assertParamExists('createWarehouseBffWebWarehousePost', 'warehouseCreate', warehouseCreate)
+            const localVarPath = `/bff/web/warehouse`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(warehouseCreate, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieve inventories from the inventory microservice with optional filters.  Args:     limit: Maximum number of inventories to return (1-100)     offset: Number of inventories to skip     sku: Optional product SKU filter     warehouse_id: Optional warehouse ID filter     inventory: Inventory port for service communication  Returns:     Paginated list of inventories (with denormalized product and warehouse data)
+         * @summary Get Inventories
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {string | null} [sku] 
+         * @param {string | null} [warehouseId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getInventoriesBffWebInventoriesGet: async (limit?: number, offset?: number, sku?: string | null, warehouseId?: string | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/bff/web/inventories`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+            if (sku !== undefined) {
+                localVarQueryParameter['sku'] = sku;
+            }
+
+            if (warehouseId !== undefined) {
+                localVarQueryParameter['warehouse_id'] = warehouseId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieve products from the catalog microservice.  Args:     limit: Maximum number of products to return (1-100)     offset: Number of products to skip     catalog: Catalog port for service communication  Returns:     Paginated list of products
+         * @summary Get Products
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProductsBffWebProductsGet: async (limit?: number, offset?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/bff/web/products`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieve providers from the catalog microservice.  Args:     limit: Maximum number of providers to return (1-100)     offset: Number of providers to skip     catalog: Catalog port for service communication  Returns:     Paginated list of providers
+         * @summary Get Providers
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProvidersBffWebProvidersGet: async (limit?: number, offset?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/bff/web/providers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
+         * @summary Get Sales Plans
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSalesPlansBffWebSalesPlansGet: async (limit?: number, offset?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/bff/web/sales-plans`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get sales plans for a specific seller with pagination.  Args:     seller_id: UUID of the seller     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans for the seller
+         * @summary Get Seller Sales Plans
+         * @param {string} sellerId 
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet: async (sellerId: string, limit?: number, offset?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'sellerId' is not null or undefined
+            assertParamExists('getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet', 'sellerId', sellerId)
+            const localVarPath = `/bff/web/sellers/{seller_id}/sales-plans`
+                .replace(`{${"seller_id"}}`, encodeURIComponent(String(sellerId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get sellers with pagination.  Args:     limit: Maximum number of sellers to return (1-100)     offset: Number of sellers to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sellers
+         * @summary Get Sellers
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSellersBffWebSellersGet: async (limit?: number, offset?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/bff/web/sellers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieve warehouses from the inventory microservice.  Args:     limit: Maximum number of warehouses to return (1-100)     offset: Number of warehouses to skip     inventory: Inventory port for service communication  Returns:     Paginated list of warehouses
+         * @summary Get Warehouses
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWarehousesBffWebWarehousesGet: async (limit?: number, offset?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/bff/web/warehouses`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
-  }
-}
+};
 
 /**
  * WebApi - functional programming interface
  * @export
  */
-export const WebApiFp = function (configuration?: Configuration) {
-  const localVarAxiosParamCreator = WebApiAxiosParamCreator(configuration)
-  return {
-    /**
-     * Create a new inventory entry.  This endpoint orchestrates between catalog and inventory microservices: 1. Fetches product data from catalog service 2. Validates product exists 3. Creates inventory with denormalized product data  Args:     product_id: ID of the product     warehouse_id: ID of the warehouse     total_quantity: Total quantity in inventory     reserved_quantity: Reserved quantity (must be 0 at creation)     batch_number: Batch number for this inventory     expiration_date: Expiration date (ISO format)     catalog: Catalog port for service communication     inventory: Inventory port for service communication  Returns:     Created inventory id and success message  Raises:     HTTPException: 404 if product not found
-     * @summary Create Inventory
-     * @param {string} productId
-     * @param {string} warehouseId
-     * @param {number} totalQuantity
-     * @param {string} batchNumber
-     * @param {string} expirationDate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async createInventoryBffWebInventoryPost(
-      productId: string,
-      warehouseId: string,
-      totalQuantity: number,
-      batchNumber: string,
-      expirationDate: string,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<InventoryCreateResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.createInventoryBffWebInventoryPost(
-          productId,
-          warehouseId,
-          totalQuantity,
-          batchNumber,
-          expirationDate,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.createInventoryBffWebInventoryPost']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Create a single product.  This endpoint accepts a single product and sends it as a batch of size 1 to the catalog microservice.  Args:     product: Product data to create     catalog: Catalog port for service communication  Returns:     Response with the created product
-     * @summary Create Product
-     * @param {ProductCreate} productCreate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async createProductBffWebProductsPost(
-      productCreate: ProductCreate,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<BatchProductsResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.createProductBffWebProductsPost(
-          productCreate,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.createProductBffWebProductsPost']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Create multiple products from a CSV file.  The CSV file must have the following columns: - provider_id (UUID) - name (string) - category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros) - sku (string - unique identifier) - price (decimal)  All products are created in a single transaction in the catalog service. If any product fails validation or creation, all products are rolled back.  Args:     file: CSV file with product data     catalog: Catalog port for service communication  Returns:     Response with all created products
-     * @summary Create Products From Csv
-     * @param {File} file
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async createProductsFromCsvBffWebProductsBatchPost(
-      file: File,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<BatchProductsResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.createProductsFromCsvBffWebProductsBatchPost(
-          file,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap[
-          'WebApi.createProductsFromCsvBffWebProductsBatchPost'
-        ]?.[localVarOperationServerIndex]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Create a new provider in the catalog microservice.  Args:     provider: Provider data to create     catalog: Catalog port for service communication  Returns:     Created provider id and success message
-     * @summary Create Provider
-     * @param {ProviderCreate} providerCreate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async createProviderBffWebProviderPost(
-      providerCreate: ProviderCreate,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<ProviderCreateResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.createProviderBffWebProviderPost(
-          providerCreate,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.createProviderBffWebProviderPost']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
-     * @summary Create Sales Plan
-     * @param {SalesPlanCreate} salesPlanCreate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async createSalesPlanBffWebSalesPlansPost(
-      salesPlanCreate: SalesPlanCreate,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<SalesPlanCreateResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.createSalesPlanBffWebSalesPlansPost(
-          salesPlanCreate,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.createSalesPlanBffWebSalesPlansPost']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Create a new seller.  Args:     seller: Seller data to create     seller_port: Seller port for service communication  Returns:     Created seller id and success message
-     * @summary Create Seller
-     * @param {SellerCreate} sellerCreate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async createSellerBffWebSellersPost(
-      sellerCreate: SellerCreate,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<SellerCreateResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.createSellerBffWebSellersPost(
-          sellerCreate,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.createSellerBffWebSellersPost']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Create a new warehouse in the inventory microservice.  Args:     warehouse: Warehouse data to create     inventory: Inventory port for service communication  Returns:     Created warehouse id and success message
-     * @summary Create Warehouse
-     * @param {WarehouseCreate} warehouseCreate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async createWarehouseBffWebWarehousePost(
-      warehouseCreate: WarehouseCreate,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<WarehouseCreateResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.createWarehouseBffWebWarehousePost(
-          warehouseCreate,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.createWarehouseBffWebWarehousePost']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Retrieve inventories from the inventory microservice with optional filters.  Args:     limit: Maximum number of inventories to return (1-100)     offset: Number of inventories to skip     sku: Optional product SKU filter     warehouse_id: Optional warehouse ID filter     inventory: Inventory port for service communication  Returns:     Paginated list of inventories (with denormalized product and warehouse data)
-     * @summary Get Inventories
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {string | null} [sku]
-     * @param {string | null} [warehouseId]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getInventoriesBffWebInventoriesGet(
-      limit?: number,
-      offset?: number,
-      sku?: string | null,
-      warehouseId?: string | null,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<PaginatedInventoriesResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getInventoriesBffWebInventoriesGet(
-          limit,
-          offset,
-          sku,
-          warehouseId,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.getInventoriesBffWebInventoriesGet']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Retrieve products from the catalog microservice.  Args:     limit: Maximum number of products to return (1-100)     offset: Number of products to skip     catalog: Catalog port for service communication  Returns:     Paginated list of products
-     * @summary Get Products
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getProductsBffWebProductsGet(
-      limit?: number,
-      offset?: number,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<PaginatedProductsResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getProductsBffWebProductsGet(
-          limit,
-          offset,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.getProductsBffWebProductsGet']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Retrieve providers from the catalog microservice.  Args:     limit: Maximum number of providers to return (1-100)     offset: Number of providers to skip     catalog: Catalog port for service communication  Returns:     Paginated list of providers
-     * @summary Get Providers
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getProvidersBffWebProvidersGet(
-      limit?: number,
-      offset?: number,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<PaginatedProvidersResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getProvidersBffWebProvidersGet(
-          limit,
-          offset,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.getProvidersBffWebProvidersGet']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
-     * @summary Get Sales Plans
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getSalesPlansBffWebSalesPlansGet(
-      limit?: number,
-      offset?: number,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<PaginatedSalesPlansResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getSalesPlansBffWebSalesPlansGet(
-          limit,
-          offset,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.getSalesPlansBffWebSalesPlansGet']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Get sales plans for a specific seller with pagination.  Args:     seller_id: UUID of the seller     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans for the seller
-     * @summary Get Seller Sales Plans
-     * @param {string} sellerId
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(
-      sellerId: string,
-      limit?: number,
-      offset?: number,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<PaginatedSalesPlansResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(
-          sellerId,
-          limit,
-          offset,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap[
-          'WebApi.getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet'
-        ]?.[localVarOperationServerIndex]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Get sellers with pagination.  Args:     limit: Maximum number of sellers to return (1-100)     offset: Number of sellers to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sellers
-     * @summary Get Sellers
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getSellersBffWebSellersGet(
-      limit?: number,
-      offset?: number,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<ResponseGetSellersBffWebSellersGet>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getSellersBffWebSellersGet(
-          limit,
-          offset,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.getSellersBffWebSellersGet']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
-    },
-    /**
-     * Retrieve warehouses from the inventory microservice.  Args:     limit: Maximum number of warehouses to return (1-100)     offset: Number of warehouses to skip     inventory: Inventory port for service communication  Returns:     Paginated list of warehouses
-     * @summary Get Warehouses
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getWarehousesBffWebWarehousesGet(
-      limit?: number,
-      offset?: number,
-      options?: RawAxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<PaginatedWarehousesResponse>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getWarehousesBffWebWarehousesGet(
-          limit,
-          offset,
-          options
-        )
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0
-      const localVarOperationServerBasePath =
-        operationServerMap['WebApi.getWarehousesBffWebWarehousesGet']?.[
-          localVarOperationServerIndex
-        ]?.url
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, localVarOperationServerBasePath || basePath)
+export const WebApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = WebApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Create a new inventory entry.  This endpoint orchestrates between catalog and inventory microservices: 1. Fetches product data from catalog service 2. Validates product exists 3. Creates inventory with denormalized product data  Args:     request_data: Inventory creation data from client (JSON body) - does NOT include denormalized fields     catalog: Catalog port for service communication     inventory: Inventory port for service communication  Returns:     Created inventory id and success message  Raises:     HTTPException: 404 if product not found
+         * @summary Create Inventory
+         * @param {InventoryCreateRequest} inventoryCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createInventoryBffWebInventoryPost(inventoryCreateRequest: InventoryCreateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryCreateResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createInventoryBffWebInventoryPost(inventoryCreateRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.createInventoryBffWebInventoryPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Create a single product.  This endpoint accepts a single product and sends it as a batch of size 1 to the catalog microservice.  Args:     product: Product data to create     catalog: Catalog port for service communication  Returns:     Response with the created product
+         * @summary Create Product
+         * @param {ProductCreate} productCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createProductBffWebProductsPost(productCreate: ProductCreate, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BatchProductsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createProductBffWebProductsPost(productCreate, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.createProductBffWebProductsPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Create multiple products from a CSV file.  The CSV file must have the following columns: - provider_id (UUID) - name (string) - category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros) - sku (string - unique identifier) - price (decimal)  All products are created in a single transaction in the catalog service. If any product fails validation or creation, all products are rolled back.  Args:     file: CSV file with product data     catalog: Catalog port for service communication  Returns:     Response with all created products
+         * @summary Create Products From Csv
+         * @param {File} file 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createProductsFromCsvBffWebProductsBatchPost(file: File, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BatchProductsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createProductsFromCsvBffWebProductsBatchPost(file, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.createProductsFromCsvBffWebProductsBatchPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Create a new provider in the catalog microservice.  Args:     provider: Provider data to create     catalog: Catalog port for service communication  Returns:     Created provider id and success message
+         * @summary Create Provider
+         * @param {ProviderCreate} providerCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createProviderBffWebProviderPost(providerCreate: ProviderCreate, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProviderCreateResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createProviderBffWebProviderPost(providerCreate, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.createProviderBffWebProviderPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
+         * @summary Create Sales Plan
+         * @param {SalesPlanCreate} salesPlanCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createSalesPlanBffWebSalesPlansPost(salesPlanCreate: SalesPlanCreate, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SalesPlanCreateResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createSalesPlanBffWebSalesPlansPost(salesPlanCreate, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.createSalesPlanBffWebSalesPlansPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Create a new seller.  Args:     seller: Seller data to create     seller_port: Seller port for service communication  Returns:     Created seller id and success message
+         * @summary Create Seller
+         * @param {SellerCreate} sellerCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createSellerBffWebSellersPost(sellerCreate: SellerCreate, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SellerCreateResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createSellerBffWebSellersPost(sellerCreate, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.createSellerBffWebSellersPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Create a new warehouse in the inventory microservice.  Args:     warehouse: Warehouse data to create     inventory: Inventory port for service communication  Returns:     Created warehouse id and success message
+         * @summary Create Warehouse
+         * @param {WarehouseCreate} warehouseCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createWarehouseBffWebWarehousePost(warehouseCreate: WarehouseCreate, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WarehouseCreateResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createWarehouseBffWebWarehousePost(warehouseCreate, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.createWarehouseBffWebWarehousePost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Retrieve inventories from the inventory microservice with optional filters.  Args:     limit: Maximum number of inventories to return (1-100)     offset: Number of inventories to skip     sku: Optional product SKU filter     warehouse_id: Optional warehouse ID filter     inventory: Inventory port for service communication  Returns:     Paginated list of inventories (with denormalized product and warehouse data)
+         * @summary Get Inventories
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {string | null} [sku] 
+         * @param {string | null} [warehouseId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getInventoriesBffWebInventoriesGet(limit?: number, offset?: number, sku?: string | null, warehouseId?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedInventoriesResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getInventoriesBffWebInventoriesGet(limit, offset, sku, warehouseId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.getInventoriesBffWebInventoriesGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Retrieve products from the catalog microservice.  Args:     limit: Maximum number of products to return (1-100)     offset: Number of products to skip     catalog: Catalog port for service communication  Returns:     Paginated list of products
+         * @summary Get Products
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getProductsBffWebProductsGet(limit?: number, offset?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedProductsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProductsBffWebProductsGet(limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.getProductsBffWebProductsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Retrieve providers from the catalog microservice.  Args:     limit: Maximum number of providers to return (1-100)     offset: Number of providers to skip     catalog: Catalog port for service communication  Returns:     Paginated list of providers
+         * @summary Get Providers
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getProvidersBffWebProvidersGet(limit?: number, offset?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedProvidersResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProvidersBffWebProvidersGet(limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.getProvidersBffWebProvidersGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
+         * @summary Get Sales Plans
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSalesPlansBffWebSalesPlansGet(limit?: number, offset?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedSalesPlansResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSalesPlansBffWebSalesPlansGet(limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.getSalesPlansBffWebSalesPlansGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get sales plans for a specific seller with pagination.  Args:     seller_id: UUID of the seller     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans for the seller
+         * @summary Get Seller Sales Plans
+         * @param {string} sellerId 
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(sellerId: string, limit?: number, offset?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedSalesPlansResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(sellerId, limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get sellers with pagination.  Args:     limit: Maximum number of sellers to return (1-100)     offset: Number of sellers to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sellers
+         * @summary Get Sellers
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSellersBffWebSellersGet(limit?: number, offset?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResponseGetSellersBffWebSellersGet>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSellersBffWebSellersGet(limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.getSellersBffWebSellersGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Retrieve warehouses from the inventory microservice.  Args:     limit: Maximum number of warehouses to return (1-100)     offset: Number of warehouses to skip     inventory: Inventory port for service communication  Returns:     Paginated list of warehouses
+         * @summary Get Warehouses
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getWarehousesBffWebWarehousesGet(limit?: number, offset?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedWarehousesResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWarehousesBffWebWarehousesGet(limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.getWarehousesBffWebWarehousesGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
-  }
-}
+};
 
 /**
  * WebApi - factory interface
  * @export
  */
-export const WebApiFactory = function (
-  configuration?: Configuration,
-  basePath?: string,
-  axios?: AxiosInstance
-) {
-  const localVarFp = WebApiFp(configuration)
-  return {
-    /**
-     * Create a new inventory entry.  This endpoint orchestrates between catalog and inventory microservices: 1. Fetches product data from catalog service 2. Validates product exists 3. Creates inventory with denormalized product data  Args:     product_id: ID of the product     warehouse_id: ID of the warehouse     total_quantity: Total quantity in inventory     reserved_quantity: Reserved quantity (must be 0 at creation)     batch_number: Batch number for this inventory     expiration_date: Expiration date (ISO format)     catalog: Catalog port for service communication     inventory: Inventory port for service communication  Returns:     Created inventory id and success message  Raises:     HTTPException: 404 if product not found
-     * @summary Create Inventory
-     * @param {WebApiCreateInventoryBffWebInventoryPostRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createInventoryBffWebInventoryPost(
-      requestParameters: WebApiCreateInventoryBffWebInventoryPostRequest,
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<InventoryCreateResponse> {
-      return localVarFp
-        .createInventoryBffWebInventoryPost(
-          requestParameters.productId,
-          requestParameters.warehouseId,
-          requestParameters.totalQuantity,
-          requestParameters.batchNumber,
-          requestParameters.expirationDate,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Create a single product.  This endpoint accepts a single product and sends it as a batch of size 1 to the catalog microservice.  Args:     product: Product data to create     catalog: Catalog port for service communication  Returns:     Response with the created product
-     * @summary Create Product
-     * @param {WebApiCreateProductBffWebProductsPostRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createProductBffWebProductsPost(
-      requestParameters: WebApiCreateProductBffWebProductsPostRequest,
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<BatchProductsResponse> {
-      return localVarFp
-        .createProductBffWebProductsPost(
-          requestParameters.productCreate,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Create multiple products from a CSV file.  The CSV file must have the following columns: - provider_id (UUID) - name (string) - category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros) - sku (string - unique identifier) - price (decimal)  All products are created in a single transaction in the catalog service. If any product fails validation or creation, all products are rolled back.  Args:     file: CSV file with product data     catalog: Catalog port for service communication  Returns:     Response with all created products
-     * @summary Create Products From Csv
-     * @param {WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createProductsFromCsvBffWebProductsBatchPost(
-      requestParameters: WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest,
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<BatchProductsResponse> {
-      return localVarFp
-        .createProductsFromCsvBffWebProductsBatchPost(
-          requestParameters.file,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Create a new provider in the catalog microservice.  Args:     provider: Provider data to create     catalog: Catalog port for service communication  Returns:     Created provider id and success message
-     * @summary Create Provider
-     * @param {WebApiCreateProviderBffWebProviderPostRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createProviderBffWebProviderPost(
-      requestParameters: WebApiCreateProviderBffWebProviderPostRequest,
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<ProviderCreateResponse> {
-      return localVarFp
-        .createProviderBffWebProviderPost(
-          requestParameters.providerCreate,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
-     * @summary Create Sales Plan
-     * @param {WebApiCreateSalesPlanBffWebSalesPlansPostRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createSalesPlanBffWebSalesPlansPost(
-      requestParameters: WebApiCreateSalesPlanBffWebSalesPlansPostRequest,
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<SalesPlanCreateResponse> {
-      return localVarFp
-        .createSalesPlanBffWebSalesPlansPost(
-          requestParameters.salesPlanCreate,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Create a new seller.  Args:     seller: Seller data to create     seller_port: Seller port for service communication  Returns:     Created seller id and success message
-     * @summary Create Seller
-     * @param {WebApiCreateSellerBffWebSellersPostRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createSellerBffWebSellersPost(
-      requestParameters: WebApiCreateSellerBffWebSellersPostRequest,
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<SellerCreateResponse> {
-      return localVarFp
-        .createSellerBffWebSellersPost(requestParameters.sellerCreate, options)
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Create a new warehouse in the inventory microservice.  Args:     warehouse: Warehouse data to create     inventory: Inventory port for service communication  Returns:     Created warehouse id and success message
-     * @summary Create Warehouse
-     * @param {WebApiCreateWarehouseBffWebWarehousePostRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    createWarehouseBffWebWarehousePost(
-      requestParameters: WebApiCreateWarehouseBffWebWarehousePostRequest,
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<WarehouseCreateResponse> {
-      return localVarFp
-        .createWarehouseBffWebWarehousePost(
-          requestParameters.warehouseCreate,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Retrieve inventories from the inventory microservice with optional filters.  Args:     limit: Maximum number of inventories to return (1-100)     offset: Number of inventories to skip     sku: Optional product SKU filter     warehouse_id: Optional warehouse ID filter     inventory: Inventory port for service communication  Returns:     Paginated list of inventories (with denormalized product and warehouse data)
-     * @summary Get Inventories
-     * @param {WebApiGetInventoriesBffWebInventoriesGetRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getInventoriesBffWebInventoriesGet(
-      requestParameters: WebApiGetInventoriesBffWebInventoriesGetRequest = {},
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<PaginatedInventoriesResponse> {
-      return localVarFp
-        .getInventoriesBffWebInventoriesGet(
-          requestParameters.limit,
-          requestParameters.offset,
-          requestParameters.sku,
-          requestParameters.warehouseId,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Retrieve products from the catalog microservice.  Args:     limit: Maximum number of products to return (1-100)     offset: Number of products to skip     catalog: Catalog port for service communication  Returns:     Paginated list of products
-     * @summary Get Products
-     * @param {WebApiGetProductsBffWebProductsGetRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getProductsBffWebProductsGet(
-      requestParameters: WebApiGetProductsBffWebProductsGetRequest = {},
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<PaginatedProductsResponse> {
-      return localVarFp
-        .getProductsBffWebProductsGet(
-          requestParameters.limit,
-          requestParameters.offset,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Retrieve providers from the catalog microservice.  Args:     limit: Maximum number of providers to return (1-100)     offset: Number of providers to skip     catalog: Catalog port for service communication  Returns:     Paginated list of providers
-     * @summary Get Providers
-     * @param {WebApiGetProvidersBffWebProvidersGetRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getProvidersBffWebProvidersGet(
-      requestParameters: WebApiGetProvidersBffWebProvidersGetRequest = {},
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<PaginatedProvidersResponse> {
-      return localVarFp
-        .getProvidersBffWebProvidersGet(
-          requestParameters.limit,
-          requestParameters.offset,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
-     * @summary Get Sales Plans
-     * @param {WebApiGetSalesPlansBffWebSalesPlansGetRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getSalesPlansBffWebSalesPlansGet(
-      requestParameters: WebApiGetSalesPlansBffWebSalesPlansGetRequest = {},
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<PaginatedSalesPlansResponse> {
-      return localVarFp
-        .getSalesPlansBffWebSalesPlansGet(
-          requestParameters.limit,
-          requestParameters.offset,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Get sales plans for a specific seller with pagination.  Args:     seller_id: UUID of the seller     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans for the seller
-     * @summary Get Seller Sales Plans
-     * @param {WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(
-      requestParameters: WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest,
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<PaginatedSalesPlansResponse> {
-      return localVarFp
-        .getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(
-          requestParameters.sellerId,
-          requestParameters.limit,
-          requestParameters.offset,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Get sellers with pagination.  Args:     limit: Maximum number of sellers to return (1-100)     offset: Number of sellers to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sellers
-     * @summary Get Sellers
-     * @param {WebApiGetSellersBffWebSellersGetRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getSellersBffWebSellersGet(
-      requestParameters: WebApiGetSellersBffWebSellersGetRequest = {},
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<ResponseGetSellersBffWebSellersGet> {
-      return localVarFp
-        .getSellersBffWebSellersGet(
-          requestParameters.limit,
-          requestParameters.offset,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    },
-    /**
-     * Retrieve warehouses from the inventory microservice.  Args:     limit: Maximum number of warehouses to return (1-100)     offset: Number of warehouses to skip     inventory: Inventory port for service communication  Returns:     Paginated list of warehouses
-     * @summary Get Warehouses
-     * @param {WebApiGetWarehousesBffWebWarehousesGetRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getWarehousesBffWebWarehousesGet(
-      requestParameters: WebApiGetWarehousesBffWebWarehousesGetRequest = {},
-      options?: RawAxiosRequestConfig
-    ): AxiosPromise<PaginatedWarehousesResponse> {
-      return localVarFp
-        .getWarehousesBffWebWarehousesGet(
-          requestParameters.limit,
-          requestParameters.offset,
-          options
-        )
-        .then((request) => request(axios, basePath))
-    }
-  }
-}
+export const WebApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = WebApiFp(configuration)
+    return {
+        /**
+         * Create a new inventory entry.  This endpoint orchestrates between catalog and inventory microservices: 1. Fetches product data from catalog service 2. Validates product exists 3. Creates inventory with denormalized product data  Args:     request_data: Inventory creation data from client (JSON body) - does NOT include denormalized fields     catalog: Catalog port for service communication     inventory: Inventory port for service communication  Returns:     Created inventory id and success message  Raises:     HTTPException: 404 if product not found
+         * @summary Create Inventory
+         * @param {WebApiCreateInventoryBffWebInventoryPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createInventoryBffWebInventoryPost(requestParameters: WebApiCreateInventoryBffWebInventoryPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<InventoryCreateResponse> {
+            return localVarFp.createInventoryBffWebInventoryPost(requestParameters.inventoryCreateRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create a single product.  This endpoint accepts a single product and sends it as a batch of size 1 to the catalog microservice.  Args:     product: Product data to create     catalog: Catalog port for service communication  Returns:     Response with the created product
+         * @summary Create Product
+         * @param {WebApiCreateProductBffWebProductsPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createProductBffWebProductsPost(requestParameters: WebApiCreateProductBffWebProductsPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<BatchProductsResponse> {
+            return localVarFp.createProductBffWebProductsPost(requestParameters.productCreate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create multiple products from a CSV file.  The CSV file must have the following columns: - provider_id (UUID) - name (string) - category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros) - sku (string - unique identifier) - price (decimal)  All products are created in a single transaction in the catalog service. If any product fails validation or creation, all products are rolled back.  Args:     file: CSV file with product data     catalog: Catalog port for service communication  Returns:     Response with all created products
+         * @summary Create Products From Csv
+         * @param {WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createProductsFromCsvBffWebProductsBatchPost(requestParameters: WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<BatchProductsResponse> {
+            return localVarFp.createProductsFromCsvBffWebProductsBatchPost(requestParameters.file, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create a new provider in the catalog microservice.  Args:     provider: Provider data to create     catalog: Catalog port for service communication  Returns:     Created provider id and success message
+         * @summary Create Provider
+         * @param {WebApiCreateProviderBffWebProviderPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createProviderBffWebProviderPost(requestParameters: WebApiCreateProviderBffWebProviderPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<ProviderCreateResponse> {
+            return localVarFp.createProviderBffWebProviderPost(requestParameters.providerCreate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
+         * @summary Create Sales Plan
+         * @param {WebApiCreateSalesPlanBffWebSalesPlansPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSalesPlanBffWebSalesPlansPost(requestParameters: WebApiCreateSalesPlanBffWebSalesPlansPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<SalesPlanCreateResponse> {
+            return localVarFp.createSalesPlanBffWebSalesPlansPost(requestParameters.salesPlanCreate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create a new seller.  Args:     seller: Seller data to create     seller_port: Seller port for service communication  Returns:     Created seller id and success message
+         * @summary Create Seller
+         * @param {WebApiCreateSellerBffWebSellersPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSellerBffWebSellersPost(requestParameters: WebApiCreateSellerBffWebSellersPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<SellerCreateResponse> {
+            return localVarFp.createSellerBffWebSellersPost(requestParameters.sellerCreate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create a new warehouse in the inventory microservice.  Args:     warehouse: Warehouse data to create     inventory: Inventory port for service communication  Returns:     Created warehouse id and success message
+         * @summary Create Warehouse
+         * @param {WebApiCreateWarehouseBffWebWarehousePostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createWarehouseBffWebWarehousePost(requestParameters: WebApiCreateWarehouseBffWebWarehousePostRequest, options?: RawAxiosRequestConfig): AxiosPromise<WarehouseCreateResponse> {
+            return localVarFp.createWarehouseBffWebWarehousePost(requestParameters.warehouseCreate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieve inventories from the inventory microservice with optional filters.  Args:     limit: Maximum number of inventories to return (1-100)     offset: Number of inventories to skip     sku: Optional product SKU filter     warehouse_id: Optional warehouse ID filter     inventory: Inventory port for service communication  Returns:     Paginated list of inventories (with denormalized product and warehouse data)
+         * @summary Get Inventories
+         * @param {WebApiGetInventoriesBffWebInventoriesGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getInventoriesBffWebInventoriesGet(requestParameters: WebApiGetInventoriesBffWebInventoriesGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedInventoriesResponse> {
+            return localVarFp.getInventoriesBffWebInventoriesGet(requestParameters.limit, requestParameters.offset, requestParameters.sku, requestParameters.warehouseId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieve products from the catalog microservice.  Args:     limit: Maximum number of products to return (1-100)     offset: Number of products to skip     catalog: Catalog port for service communication  Returns:     Paginated list of products
+         * @summary Get Products
+         * @param {WebApiGetProductsBffWebProductsGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProductsBffWebProductsGet(requestParameters: WebApiGetProductsBffWebProductsGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedProductsResponse> {
+            return localVarFp.getProductsBffWebProductsGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieve providers from the catalog microservice.  Args:     limit: Maximum number of providers to return (1-100)     offset: Number of providers to skip     catalog: Catalog port for service communication  Returns:     Paginated list of providers
+         * @summary Get Providers
+         * @param {WebApiGetProvidersBffWebProvidersGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProvidersBffWebProvidersGet(requestParameters: WebApiGetProvidersBffWebProvidersGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedProvidersResponse> {
+            return localVarFp.getProvidersBffWebProvidersGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
+         * @summary Get Sales Plans
+         * @param {WebApiGetSalesPlansBffWebSalesPlansGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSalesPlansBffWebSalesPlansGet(requestParameters: WebApiGetSalesPlansBffWebSalesPlansGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedSalesPlansResponse> {
+            return localVarFp.getSalesPlansBffWebSalesPlansGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get sales plans for a specific seller with pagination.  Args:     seller_id: UUID of the seller     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans for the seller
+         * @summary Get Seller Sales Plans
+         * @param {WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(requestParameters: WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedSalesPlansResponse> {
+            return localVarFp.getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(requestParameters.sellerId, requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get sellers with pagination.  Args:     limit: Maximum number of sellers to return (1-100)     offset: Number of sellers to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sellers
+         * @summary Get Sellers
+         * @param {WebApiGetSellersBffWebSellersGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSellersBffWebSellersGet(requestParameters: WebApiGetSellersBffWebSellersGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<ResponseGetSellersBffWebSellersGet> {
+            return localVarFp.getSellersBffWebSellersGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieve warehouses from the inventory microservice.  Args:     limit: Maximum number of warehouses to return (1-100)     offset: Number of warehouses to skip     inventory: Inventory port for service communication  Returns:     Paginated list of warehouses
+         * @summary Get Warehouses
+         * @param {WebApiGetWarehousesBffWebWarehousesGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWarehousesBffWebWarehousesGet(requestParameters: WebApiGetWarehousesBffWebWarehousesGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedWarehousesResponse> {
+            return localVarFp.getWarehousesBffWebWarehousesGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
+        },
+    };
+};
 
 /**
  * WebApi - interface
@@ -1702,187 +981,146 @@ export const WebApiFactory = function (
  * @interface WebApi
  */
 export interface WebApiInterface {
-  /**
-   * Create a new inventory entry.  This endpoint orchestrates between catalog and inventory microservices: 1. Fetches product data from catalog service 2. Validates product exists 3. Creates inventory with denormalized product data  Args:     product_id: ID of the product     warehouse_id: ID of the warehouse     total_quantity: Total quantity in inventory     reserved_quantity: Reserved quantity (must be 0 at creation)     batch_number: Batch number for this inventory     expiration_date: Expiration date (ISO format)     catalog: Catalog port for service communication     inventory: Inventory port for service communication  Returns:     Created inventory id and success message  Raises:     HTTPException: 404 if product not found
-   * @summary Create Inventory
-   * @param {WebApiCreateInventoryBffWebInventoryPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  createInventoryBffWebInventoryPost(
-    requestParameters: WebApiCreateInventoryBffWebInventoryPostRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<InventoryCreateResponse>
+    /**
+     * Create a new inventory entry.  This endpoint orchestrates between catalog and inventory microservices: 1. Fetches product data from catalog service 2. Validates product exists 3. Creates inventory with denormalized product data  Args:     request_data: Inventory creation data from client (JSON body) - does NOT include denormalized fields     catalog: Catalog port for service communication     inventory: Inventory port for service communication  Returns:     Created inventory id and success message  Raises:     HTTPException: 404 if product not found
+     * @summary Create Inventory
+     * @param {WebApiCreateInventoryBffWebInventoryPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    createInventoryBffWebInventoryPost(requestParameters: WebApiCreateInventoryBffWebInventoryPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<InventoryCreateResponse>;
 
-  /**
-   * Create a single product.  This endpoint accepts a single product and sends it as a batch of size 1 to the catalog microservice.  Args:     product: Product data to create     catalog: Catalog port for service communication  Returns:     Response with the created product
-   * @summary Create Product
-   * @param {WebApiCreateProductBffWebProductsPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  createProductBffWebProductsPost(
-    requestParameters: WebApiCreateProductBffWebProductsPostRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<BatchProductsResponse>
+    /**
+     * Create a single product.  This endpoint accepts a single product and sends it as a batch of size 1 to the catalog microservice.  Args:     product: Product data to create     catalog: Catalog port for service communication  Returns:     Response with the created product
+     * @summary Create Product
+     * @param {WebApiCreateProductBffWebProductsPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    createProductBffWebProductsPost(requestParameters: WebApiCreateProductBffWebProductsPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<BatchProductsResponse>;
 
-  /**
-   * Create multiple products from a CSV file.  The CSV file must have the following columns: - provider_id (UUID) - name (string) - category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros) - sku (string - unique identifier) - price (decimal)  All products are created in a single transaction in the catalog service. If any product fails validation or creation, all products are rolled back.  Args:     file: CSV file with product data     catalog: Catalog port for service communication  Returns:     Response with all created products
-   * @summary Create Products From Csv
-   * @param {WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  createProductsFromCsvBffWebProductsBatchPost(
-    requestParameters: WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<BatchProductsResponse>
+    /**
+     * Create multiple products from a CSV file.  The CSV file must have the following columns: - provider_id (UUID) - name (string) - category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros) - sku (string - unique identifier) - price (decimal)  All products are created in a single transaction in the catalog service. If any product fails validation or creation, all products are rolled back.  Args:     file: CSV file with product data     catalog: Catalog port for service communication  Returns:     Response with all created products
+     * @summary Create Products From Csv
+     * @param {WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    createProductsFromCsvBffWebProductsBatchPost(requestParameters: WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<BatchProductsResponse>;
 
-  /**
-   * Create a new provider in the catalog microservice.  Args:     provider: Provider data to create     catalog: Catalog port for service communication  Returns:     Created provider id and success message
-   * @summary Create Provider
-   * @param {WebApiCreateProviderBffWebProviderPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  createProviderBffWebProviderPost(
-    requestParameters: WebApiCreateProviderBffWebProviderPostRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<ProviderCreateResponse>
+    /**
+     * Create a new provider in the catalog microservice.  Args:     provider: Provider data to create     catalog: Catalog port for service communication  Returns:     Created provider id and success message
+     * @summary Create Provider
+     * @param {WebApiCreateProviderBffWebProviderPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    createProviderBffWebProviderPost(requestParameters: WebApiCreateProviderBffWebProviderPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<ProviderCreateResponse>;
 
-  /**
-   * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
-   * @summary Create Sales Plan
-   * @param {WebApiCreateSalesPlanBffWebSalesPlansPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  createSalesPlanBffWebSalesPlansPost(
-    requestParameters: WebApiCreateSalesPlanBffWebSalesPlansPostRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<SalesPlanCreateResponse>
+    /**
+     * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
+     * @summary Create Sales Plan
+     * @param {WebApiCreateSalesPlanBffWebSalesPlansPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    createSalesPlanBffWebSalesPlansPost(requestParameters: WebApiCreateSalesPlanBffWebSalesPlansPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<SalesPlanCreateResponse>;
 
-  /**
-   * Create a new seller.  Args:     seller: Seller data to create     seller_port: Seller port for service communication  Returns:     Created seller id and success message
-   * @summary Create Seller
-   * @param {WebApiCreateSellerBffWebSellersPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  createSellerBffWebSellersPost(
-    requestParameters: WebApiCreateSellerBffWebSellersPostRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<SellerCreateResponse>
+    /**
+     * Create a new seller.  Args:     seller: Seller data to create     seller_port: Seller port for service communication  Returns:     Created seller id and success message
+     * @summary Create Seller
+     * @param {WebApiCreateSellerBffWebSellersPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    createSellerBffWebSellersPost(requestParameters: WebApiCreateSellerBffWebSellersPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<SellerCreateResponse>;
 
-  /**
-   * Create a new warehouse in the inventory microservice.  Args:     warehouse: Warehouse data to create     inventory: Inventory port for service communication  Returns:     Created warehouse id and success message
-   * @summary Create Warehouse
-   * @param {WebApiCreateWarehouseBffWebWarehousePostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  createWarehouseBffWebWarehousePost(
-    requestParameters: WebApiCreateWarehouseBffWebWarehousePostRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<WarehouseCreateResponse>
+    /**
+     * Create a new warehouse in the inventory microservice.  Args:     warehouse: Warehouse data to create     inventory: Inventory port for service communication  Returns:     Created warehouse id and success message
+     * @summary Create Warehouse
+     * @param {WebApiCreateWarehouseBffWebWarehousePostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    createWarehouseBffWebWarehousePost(requestParameters: WebApiCreateWarehouseBffWebWarehousePostRequest, options?: RawAxiosRequestConfig): AxiosPromise<WarehouseCreateResponse>;
 
-  /**
-   * Retrieve inventories from the inventory microservice with optional filters.  Args:     limit: Maximum number of inventories to return (1-100)     offset: Number of inventories to skip     sku: Optional product SKU filter     warehouse_id: Optional warehouse ID filter     inventory: Inventory port for service communication  Returns:     Paginated list of inventories (with denormalized product and warehouse data)
-   * @summary Get Inventories
-   * @param {WebApiGetInventoriesBffWebInventoriesGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  getInventoriesBffWebInventoriesGet(
-    requestParameters?: WebApiGetInventoriesBffWebInventoriesGetRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<PaginatedInventoriesResponse>
+    /**
+     * Retrieve inventories from the inventory microservice with optional filters.  Args:     limit: Maximum number of inventories to return (1-100)     offset: Number of inventories to skip     sku: Optional product SKU filter     warehouse_id: Optional warehouse ID filter     inventory: Inventory port for service communication  Returns:     Paginated list of inventories (with denormalized product and warehouse data)
+     * @summary Get Inventories
+     * @param {WebApiGetInventoriesBffWebInventoriesGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    getInventoriesBffWebInventoriesGet(requestParameters?: WebApiGetInventoriesBffWebInventoriesGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedInventoriesResponse>;
 
-  /**
-   * Retrieve products from the catalog microservice.  Args:     limit: Maximum number of products to return (1-100)     offset: Number of products to skip     catalog: Catalog port for service communication  Returns:     Paginated list of products
-   * @summary Get Products
-   * @param {WebApiGetProductsBffWebProductsGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  getProductsBffWebProductsGet(
-    requestParameters?: WebApiGetProductsBffWebProductsGetRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<PaginatedProductsResponse>
+    /**
+     * Retrieve products from the catalog microservice.  Args:     limit: Maximum number of products to return (1-100)     offset: Number of products to skip     catalog: Catalog port for service communication  Returns:     Paginated list of products
+     * @summary Get Products
+     * @param {WebApiGetProductsBffWebProductsGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    getProductsBffWebProductsGet(requestParameters?: WebApiGetProductsBffWebProductsGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedProductsResponse>;
 
-  /**
-   * Retrieve providers from the catalog microservice.  Args:     limit: Maximum number of providers to return (1-100)     offset: Number of providers to skip     catalog: Catalog port for service communication  Returns:     Paginated list of providers
-   * @summary Get Providers
-   * @param {WebApiGetProvidersBffWebProvidersGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  getProvidersBffWebProvidersGet(
-    requestParameters?: WebApiGetProvidersBffWebProvidersGetRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<PaginatedProvidersResponse>
+    /**
+     * Retrieve providers from the catalog microservice.  Args:     limit: Maximum number of providers to return (1-100)     offset: Number of providers to skip     catalog: Catalog port for service communication  Returns:     Paginated list of providers
+     * @summary Get Providers
+     * @param {WebApiGetProvidersBffWebProvidersGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    getProvidersBffWebProvidersGet(requestParameters?: WebApiGetProvidersBffWebProvidersGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedProvidersResponse>;
 
-  /**
-   * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
-   * @summary Get Sales Plans
-   * @param {WebApiGetSalesPlansBffWebSalesPlansGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  getSalesPlansBffWebSalesPlansGet(
-    requestParameters?: WebApiGetSalesPlansBffWebSalesPlansGetRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<PaginatedSalesPlansResponse>
+    /**
+     * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
+     * @summary Get Sales Plans
+     * @param {WebApiGetSalesPlansBffWebSalesPlansGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    getSalesPlansBffWebSalesPlansGet(requestParameters?: WebApiGetSalesPlansBffWebSalesPlansGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedSalesPlansResponse>;
 
-  /**
-   * Get sales plans for a specific seller with pagination.  Args:     seller_id: UUID of the seller     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans for the seller
-   * @summary Get Seller Sales Plans
-   * @param {WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(
-    requestParameters: WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<PaginatedSalesPlansResponse>
+    /**
+     * Get sales plans for a specific seller with pagination.  Args:     seller_id: UUID of the seller     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans for the seller
+     * @summary Get Seller Sales Plans
+     * @param {WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(requestParameters: WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedSalesPlansResponse>;
 
-  /**
-   * Get sellers with pagination.  Args:     limit: Maximum number of sellers to return (1-100)     offset: Number of sellers to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sellers
-   * @summary Get Sellers
-   * @param {WebApiGetSellersBffWebSellersGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  getSellersBffWebSellersGet(
-    requestParameters?: WebApiGetSellersBffWebSellersGetRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<ResponseGetSellersBffWebSellersGet>
+    /**
+     * Get sellers with pagination.  Args:     limit: Maximum number of sellers to return (1-100)     offset: Number of sellers to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sellers
+     * @summary Get Sellers
+     * @param {WebApiGetSellersBffWebSellersGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    getSellersBffWebSellersGet(requestParameters?: WebApiGetSellersBffWebSellersGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<ResponseGetSellersBffWebSellersGet>;
 
-  /**
-   * Retrieve warehouses from the inventory microservice.  Args:     limit: Maximum number of warehouses to return (1-100)     offset: Number of warehouses to skip     inventory: Inventory port for service communication  Returns:     Paginated list of warehouses
-   * @summary Get Warehouses
-   * @param {WebApiGetWarehousesBffWebWarehousesGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApiInterface
-   */
-  getWarehousesBffWebWarehousesGet(
-    requestParameters?: WebApiGetWarehousesBffWebWarehousesGetRequest,
-    options?: RawAxiosRequestConfig
-  ): AxiosPromise<PaginatedWarehousesResponse>
+    /**
+     * Retrieve warehouses from the inventory microservice.  Args:     limit: Maximum number of warehouses to return (1-100)     offset: Number of warehouses to skip     inventory: Inventory port for service communication  Returns:     Paginated list of warehouses
+     * @summary Get Warehouses
+     * @param {WebApiGetWarehousesBffWebWarehousesGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    getWarehousesBffWebWarehousesGet(requestParameters?: WebApiGetWarehousesBffWebWarehousesGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedWarehousesResponse>;
+
 }
 
 /**
@@ -1891,40 +1129,12 @@ export interface WebApiInterface {
  * @interface WebApiCreateInventoryBffWebInventoryPostRequest
  */
 export interface WebApiCreateInventoryBffWebInventoryPostRequest {
-  /**
-   *
-   * @type {string}
-   * @memberof WebApiCreateInventoryBffWebInventoryPost
-   */
-  readonly productId: string
-
-  /**
-   *
-   * @type {string}
-   * @memberof WebApiCreateInventoryBffWebInventoryPost
-   */
-  readonly warehouseId: string
-
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiCreateInventoryBffWebInventoryPost
-   */
-  readonly totalQuantity: number
-
-  /**
-   *
-   * @type {string}
-   * @memberof WebApiCreateInventoryBffWebInventoryPost
-   */
-  readonly batchNumber: string
-
-  /**
-   *
-   * @type {string}
-   * @memberof WebApiCreateInventoryBffWebInventoryPost
-   */
-  readonly expirationDate: string
+    /**
+     * 
+     * @type {InventoryCreateRequest}
+     * @memberof WebApiCreateInventoryBffWebInventoryPost
+     */
+    readonly inventoryCreateRequest: InventoryCreateRequest
 }
 
 /**
@@ -1933,12 +1143,12 @@ export interface WebApiCreateInventoryBffWebInventoryPostRequest {
  * @interface WebApiCreateProductBffWebProductsPostRequest
  */
 export interface WebApiCreateProductBffWebProductsPostRequest {
-  /**
-   *
-   * @type {ProductCreate}
-   * @memberof WebApiCreateProductBffWebProductsPost
-   */
-  readonly productCreate: ProductCreate
+    /**
+     * 
+     * @type {ProductCreate}
+     * @memberof WebApiCreateProductBffWebProductsPost
+     */
+    readonly productCreate: ProductCreate
 }
 
 /**
@@ -1947,12 +1157,12 @@ export interface WebApiCreateProductBffWebProductsPostRequest {
  * @interface WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest
  */
 export interface WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest {
-  /**
-   *
-   * @type {File}
-   * @memberof WebApiCreateProductsFromCsvBffWebProductsBatchPost
-   */
-  readonly file: File
+    /**
+     * 
+     * @type {File}
+     * @memberof WebApiCreateProductsFromCsvBffWebProductsBatchPost
+     */
+    readonly file: File
 }
 
 /**
@@ -1961,12 +1171,12 @@ export interface WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest {
  * @interface WebApiCreateProviderBffWebProviderPostRequest
  */
 export interface WebApiCreateProviderBffWebProviderPostRequest {
-  /**
-   *
-   * @type {ProviderCreate}
-   * @memberof WebApiCreateProviderBffWebProviderPost
-   */
-  readonly providerCreate: ProviderCreate
+    /**
+     * 
+     * @type {ProviderCreate}
+     * @memberof WebApiCreateProviderBffWebProviderPost
+     */
+    readonly providerCreate: ProviderCreate
 }
 
 /**
@@ -1975,12 +1185,12 @@ export interface WebApiCreateProviderBffWebProviderPostRequest {
  * @interface WebApiCreateSalesPlanBffWebSalesPlansPostRequest
  */
 export interface WebApiCreateSalesPlanBffWebSalesPlansPostRequest {
-  /**
-   *
-   * @type {SalesPlanCreate}
-   * @memberof WebApiCreateSalesPlanBffWebSalesPlansPost
-   */
-  readonly salesPlanCreate: SalesPlanCreate
+    /**
+     * 
+     * @type {SalesPlanCreate}
+     * @memberof WebApiCreateSalesPlanBffWebSalesPlansPost
+     */
+    readonly salesPlanCreate: SalesPlanCreate
 }
 
 /**
@@ -1989,12 +1199,12 @@ export interface WebApiCreateSalesPlanBffWebSalesPlansPostRequest {
  * @interface WebApiCreateSellerBffWebSellersPostRequest
  */
 export interface WebApiCreateSellerBffWebSellersPostRequest {
-  /**
-   *
-   * @type {SellerCreate}
-   * @memberof WebApiCreateSellerBffWebSellersPost
-   */
-  readonly sellerCreate: SellerCreate
+    /**
+     * 
+     * @type {SellerCreate}
+     * @memberof WebApiCreateSellerBffWebSellersPost
+     */
+    readonly sellerCreate: SellerCreate
 }
 
 /**
@@ -2003,12 +1213,12 @@ export interface WebApiCreateSellerBffWebSellersPostRequest {
  * @interface WebApiCreateWarehouseBffWebWarehousePostRequest
  */
 export interface WebApiCreateWarehouseBffWebWarehousePostRequest {
-  /**
-   *
-   * @type {WarehouseCreate}
-   * @memberof WebApiCreateWarehouseBffWebWarehousePost
-   */
-  readonly warehouseCreate: WarehouseCreate
+    /**
+     * 
+     * @type {WarehouseCreate}
+     * @memberof WebApiCreateWarehouseBffWebWarehousePost
+     */
+    readonly warehouseCreate: WarehouseCreate
 }
 
 /**
@@ -2017,33 +1227,33 @@ export interface WebApiCreateWarehouseBffWebWarehousePostRequest {
  * @interface WebApiGetInventoriesBffWebInventoriesGetRequest
  */
 export interface WebApiGetInventoriesBffWebInventoriesGetRequest {
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetInventoriesBffWebInventoriesGet
-   */
-  readonly limit?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetInventoriesBffWebInventoriesGet
+     */
+    readonly limit?: number
 
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetInventoriesBffWebInventoriesGet
-   */
-  readonly offset?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetInventoriesBffWebInventoriesGet
+     */
+    readonly offset?: number
 
-  /**
-   *
-   * @type {string}
-   * @memberof WebApiGetInventoriesBffWebInventoriesGet
-   */
-  readonly sku?: string | null
+    /**
+     * 
+     * @type {string}
+     * @memberof WebApiGetInventoriesBffWebInventoriesGet
+     */
+    readonly sku?: string | null
 
-  /**
-   *
-   * @type {string}
-   * @memberof WebApiGetInventoriesBffWebInventoriesGet
-   */
-  readonly warehouseId?: string | null
+    /**
+     * 
+     * @type {string}
+     * @memberof WebApiGetInventoriesBffWebInventoriesGet
+     */
+    readonly warehouseId?: string | null
 }
 
 /**
@@ -2052,19 +1262,19 @@ export interface WebApiGetInventoriesBffWebInventoriesGetRequest {
  * @interface WebApiGetProductsBffWebProductsGetRequest
  */
 export interface WebApiGetProductsBffWebProductsGetRequest {
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetProductsBffWebProductsGet
-   */
-  readonly limit?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetProductsBffWebProductsGet
+     */
+    readonly limit?: number
 
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetProductsBffWebProductsGet
-   */
-  readonly offset?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetProductsBffWebProductsGet
+     */
+    readonly offset?: number
 }
 
 /**
@@ -2073,19 +1283,19 @@ export interface WebApiGetProductsBffWebProductsGetRequest {
  * @interface WebApiGetProvidersBffWebProvidersGetRequest
  */
 export interface WebApiGetProvidersBffWebProvidersGetRequest {
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetProvidersBffWebProvidersGet
-   */
-  readonly limit?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetProvidersBffWebProvidersGet
+     */
+    readonly limit?: number
 
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetProvidersBffWebProvidersGet
-   */
-  readonly offset?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetProvidersBffWebProvidersGet
+     */
+    readonly offset?: number
 }
 
 /**
@@ -2094,19 +1304,19 @@ export interface WebApiGetProvidersBffWebProvidersGetRequest {
  * @interface WebApiGetSalesPlansBffWebSalesPlansGetRequest
  */
 export interface WebApiGetSalesPlansBffWebSalesPlansGetRequest {
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetSalesPlansBffWebSalesPlansGet
-   */
-  readonly limit?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetSalesPlansBffWebSalesPlansGet
+     */
+    readonly limit?: number
 
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetSalesPlansBffWebSalesPlansGet
-   */
-  readonly offset?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetSalesPlansBffWebSalesPlansGet
+     */
+    readonly offset?: number
 }
 
 /**
@@ -2115,26 +1325,26 @@ export interface WebApiGetSalesPlansBffWebSalesPlansGetRequest {
  * @interface WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest
  */
 export interface WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest {
-  /**
-   *
-   * @type {string}
-   * @memberof WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGet
-   */
-  readonly sellerId: string
+    /**
+     * 
+     * @type {string}
+     * @memberof WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGet
+     */
+    readonly sellerId: string
 
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGet
-   */
-  readonly limit?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGet
+     */
+    readonly limit?: number
 
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGet
-   */
-  readonly offset?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGet
+     */
+    readonly offset?: number
 }
 
 /**
@@ -2143,19 +1353,19 @@ export interface WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequ
  * @interface WebApiGetSellersBffWebSellersGetRequest
  */
 export interface WebApiGetSellersBffWebSellersGetRequest {
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetSellersBffWebSellersGet
-   */
-  readonly limit?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetSellersBffWebSellersGet
+     */
+    readonly limit?: number
 
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetSellersBffWebSellersGet
-   */
-  readonly offset?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetSellersBffWebSellersGet
+     */
+    readonly offset?: number
 }
 
 /**
@@ -2164,19 +1374,19 @@ export interface WebApiGetSellersBffWebSellersGetRequest {
  * @interface WebApiGetWarehousesBffWebWarehousesGetRequest
  */
 export interface WebApiGetWarehousesBffWebWarehousesGetRequest {
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetWarehousesBffWebWarehousesGet
-   */
-  readonly limit?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetWarehousesBffWebWarehousesGet
+     */
+    readonly limit?: number
 
-  /**
-   *
-   * @type {number}
-   * @memberof WebApiGetWarehousesBffWebWarehousesGet
-   */
-  readonly offset?: number
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiGetWarehousesBffWebWarehousesGet
+     */
+    readonly offset?: number
 }
 
 /**
@@ -2186,291 +1396,172 @@ export interface WebApiGetWarehousesBffWebWarehousesGetRequest {
  * @extends {BaseAPI}
  */
 export class WebApi extends BaseAPI implements WebApiInterface {
-  /**
-   * Create a new inventory entry.  This endpoint orchestrates between catalog and inventory microservices: 1. Fetches product data from catalog service 2. Validates product exists 3. Creates inventory with denormalized product data  Args:     product_id: ID of the product     warehouse_id: ID of the warehouse     total_quantity: Total quantity in inventory     reserved_quantity: Reserved quantity (must be 0 at creation)     batch_number: Batch number for this inventory     expiration_date: Expiration date (ISO format)     catalog: Catalog port for service communication     inventory: Inventory port for service communication  Returns:     Created inventory id and success message  Raises:     HTTPException: 404 if product not found
-   * @summary Create Inventory
-   * @param {WebApiCreateInventoryBffWebInventoryPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public createInventoryBffWebInventoryPost(
-    requestParameters: WebApiCreateInventoryBffWebInventoryPostRequest,
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .createInventoryBffWebInventoryPost(
-        requestParameters.productId,
-        requestParameters.warehouseId,
-        requestParameters.totalQuantity,
-        requestParameters.batchNumber,
-        requestParameters.expirationDate,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Create a new inventory entry.  This endpoint orchestrates between catalog and inventory microservices: 1. Fetches product data from catalog service 2. Validates product exists 3. Creates inventory with denormalized product data  Args:     request_data: Inventory creation data from client (JSON body) - does NOT include denormalized fields     catalog: Catalog port for service communication     inventory: Inventory port for service communication  Returns:     Created inventory id and success message  Raises:     HTTPException: 404 if product not found
+     * @summary Create Inventory
+     * @param {WebApiCreateInventoryBffWebInventoryPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public createInventoryBffWebInventoryPost(requestParameters: WebApiCreateInventoryBffWebInventoryPostRequest, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).createInventoryBffWebInventoryPost(requestParameters.inventoryCreateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Create a single product.  This endpoint accepts a single product and sends it as a batch of size 1 to the catalog microservice.  Args:     product: Product data to create     catalog: Catalog port for service communication  Returns:     Response with the created product
-   * @summary Create Product
-   * @param {WebApiCreateProductBffWebProductsPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public createProductBffWebProductsPost(
-    requestParameters: WebApiCreateProductBffWebProductsPostRequest,
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .createProductBffWebProductsPost(requestParameters.productCreate, options)
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Create a single product.  This endpoint accepts a single product and sends it as a batch of size 1 to the catalog microservice.  Args:     product: Product data to create     catalog: Catalog port for service communication  Returns:     Response with the created product
+     * @summary Create Product
+     * @param {WebApiCreateProductBffWebProductsPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public createProductBffWebProductsPost(requestParameters: WebApiCreateProductBffWebProductsPostRequest, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).createProductBffWebProductsPost(requestParameters.productCreate, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Create multiple products from a CSV file.  The CSV file must have the following columns: - provider_id (UUID) - name (string) - category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros) - sku (string - unique identifier) - price (decimal)  All products are created in a single transaction in the catalog service. If any product fails validation or creation, all products are rolled back.  Args:     file: CSV file with product data     catalog: Catalog port for service communication  Returns:     Response with all created products
-   * @summary Create Products From Csv
-   * @param {WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public createProductsFromCsvBffWebProductsBatchPost(
-    requestParameters: WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest,
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .createProductsFromCsvBffWebProductsBatchPost(
-        requestParameters.file,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Create multiple products from a CSV file.  The CSV file must have the following columns: - provider_id (UUID) - name (string) - category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros) - sku (string - unique identifier) - price (decimal)  All products are created in a single transaction in the catalog service. If any product fails validation or creation, all products are rolled back.  Args:     file: CSV file with product data     catalog: Catalog port for service communication  Returns:     Response with all created products
+     * @summary Create Products From Csv
+     * @param {WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public createProductsFromCsvBffWebProductsBatchPost(requestParameters: WebApiCreateProductsFromCsvBffWebProductsBatchPostRequest, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).createProductsFromCsvBffWebProductsBatchPost(requestParameters.file, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Create a new provider in the catalog microservice.  Args:     provider: Provider data to create     catalog: Catalog port for service communication  Returns:     Created provider id and success message
-   * @summary Create Provider
-   * @param {WebApiCreateProviderBffWebProviderPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public createProviderBffWebProviderPost(
-    requestParameters: WebApiCreateProviderBffWebProviderPostRequest,
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .createProviderBffWebProviderPost(
-        requestParameters.providerCreate,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Create a new provider in the catalog microservice.  Args:     provider: Provider data to create     catalog: Catalog port for service communication  Returns:     Created provider id and success message
+     * @summary Create Provider
+     * @param {WebApiCreateProviderBffWebProviderPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public createProviderBffWebProviderPost(requestParameters: WebApiCreateProviderBffWebProviderPostRequest, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).createProviderBffWebProviderPost(requestParameters.providerCreate, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
-   * @summary Create Sales Plan
-   * @param {WebApiCreateSalesPlanBffWebSalesPlansPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public createSalesPlanBffWebSalesPlansPost(
-    requestParameters: WebApiCreateSalesPlanBffWebSalesPlansPostRequest,
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .createSalesPlanBffWebSalesPlansPost(
-        requestParameters.salesPlanCreate,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
+     * @summary Create Sales Plan
+     * @param {WebApiCreateSalesPlanBffWebSalesPlansPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public createSalesPlanBffWebSalesPlansPost(requestParameters: WebApiCreateSalesPlanBffWebSalesPlansPostRequest, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).createSalesPlanBffWebSalesPlansPost(requestParameters.salesPlanCreate, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Create a new seller.  Args:     seller: Seller data to create     seller_port: Seller port for service communication  Returns:     Created seller id and success message
-   * @summary Create Seller
-   * @param {WebApiCreateSellerBffWebSellersPostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public createSellerBffWebSellersPost(
-    requestParameters: WebApiCreateSellerBffWebSellersPostRequest,
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .createSellerBffWebSellersPost(requestParameters.sellerCreate, options)
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Create a new seller.  Args:     seller: Seller data to create     seller_port: Seller port for service communication  Returns:     Created seller id and success message
+     * @summary Create Seller
+     * @param {WebApiCreateSellerBffWebSellersPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public createSellerBffWebSellersPost(requestParameters: WebApiCreateSellerBffWebSellersPostRequest, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).createSellerBffWebSellersPost(requestParameters.sellerCreate, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Create a new warehouse in the inventory microservice.  Args:     warehouse: Warehouse data to create     inventory: Inventory port for service communication  Returns:     Created warehouse id and success message
-   * @summary Create Warehouse
-   * @param {WebApiCreateWarehouseBffWebWarehousePostRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public createWarehouseBffWebWarehousePost(
-    requestParameters: WebApiCreateWarehouseBffWebWarehousePostRequest,
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .createWarehouseBffWebWarehousePost(
-        requestParameters.warehouseCreate,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Create a new warehouse in the inventory microservice.  Args:     warehouse: Warehouse data to create     inventory: Inventory port for service communication  Returns:     Created warehouse id and success message
+     * @summary Create Warehouse
+     * @param {WebApiCreateWarehouseBffWebWarehousePostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public createWarehouseBffWebWarehousePost(requestParameters: WebApiCreateWarehouseBffWebWarehousePostRequest, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).createWarehouseBffWebWarehousePost(requestParameters.warehouseCreate, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Retrieve inventories from the inventory microservice with optional filters.  Args:     limit: Maximum number of inventories to return (1-100)     offset: Number of inventories to skip     sku: Optional product SKU filter     warehouse_id: Optional warehouse ID filter     inventory: Inventory port for service communication  Returns:     Paginated list of inventories (with denormalized product and warehouse data)
-   * @summary Get Inventories
-   * @param {WebApiGetInventoriesBffWebInventoriesGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public getInventoriesBffWebInventoriesGet(
-    requestParameters: WebApiGetInventoriesBffWebInventoriesGetRequest = {},
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .getInventoriesBffWebInventoriesGet(
-        requestParameters.limit,
-        requestParameters.offset,
-        requestParameters.sku,
-        requestParameters.warehouseId,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Retrieve inventories from the inventory microservice with optional filters.  Args:     limit: Maximum number of inventories to return (1-100)     offset: Number of inventories to skip     sku: Optional product SKU filter     warehouse_id: Optional warehouse ID filter     inventory: Inventory port for service communication  Returns:     Paginated list of inventories (with denormalized product and warehouse data)
+     * @summary Get Inventories
+     * @param {WebApiGetInventoriesBffWebInventoriesGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public getInventoriesBffWebInventoriesGet(requestParameters: WebApiGetInventoriesBffWebInventoriesGetRequest = {}, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).getInventoriesBffWebInventoriesGet(requestParameters.limit, requestParameters.offset, requestParameters.sku, requestParameters.warehouseId, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Retrieve products from the catalog microservice.  Args:     limit: Maximum number of products to return (1-100)     offset: Number of products to skip     catalog: Catalog port for service communication  Returns:     Paginated list of products
-   * @summary Get Products
-   * @param {WebApiGetProductsBffWebProductsGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public getProductsBffWebProductsGet(
-    requestParameters: WebApiGetProductsBffWebProductsGetRequest = {},
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .getProductsBffWebProductsGet(
-        requestParameters.limit,
-        requestParameters.offset,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Retrieve products from the catalog microservice.  Args:     limit: Maximum number of products to return (1-100)     offset: Number of products to skip     catalog: Catalog port for service communication  Returns:     Paginated list of products
+     * @summary Get Products
+     * @param {WebApiGetProductsBffWebProductsGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public getProductsBffWebProductsGet(requestParameters: WebApiGetProductsBffWebProductsGetRequest = {}, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).getProductsBffWebProductsGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Retrieve providers from the catalog microservice.  Args:     limit: Maximum number of providers to return (1-100)     offset: Number of providers to skip     catalog: Catalog port for service communication  Returns:     Paginated list of providers
-   * @summary Get Providers
-   * @param {WebApiGetProvidersBffWebProvidersGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public getProvidersBffWebProvidersGet(
-    requestParameters: WebApiGetProvidersBffWebProvidersGetRequest = {},
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .getProvidersBffWebProvidersGet(
-        requestParameters.limit,
-        requestParameters.offset,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Retrieve providers from the catalog microservice.  Args:     limit: Maximum number of providers to return (1-100)     offset: Number of providers to skip     catalog: Catalog port for service communication  Returns:     Paginated list of providers
+     * @summary Get Providers
+     * @param {WebApiGetProvidersBffWebProvidersGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public getProvidersBffWebProvidersGet(requestParameters: WebApiGetProvidersBffWebProvidersGetRequest = {}, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).getProvidersBffWebProvidersGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
-   * @summary Get Sales Plans
-   * @param {WebApiGetSalesPlansBffWebSalesPlansGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public getSalesPlansBffWebSalesPlansGet(
-    requestParameters: WebApiGetSalesPlansBffWebSalesPlansGetRequest = {},
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .getSalesPlansBffWebSalesPlansGet(
-        requestParameters.limit,
-        requestParameters.offset,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
+     * @summary Get Sales Plans
+     * @param {WebApiGetSalesPlansBffWebSalesPlansGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public getSalesPlansBffWebSalesPlansGet(requestParameters: WebApiGetSalesPlansBffWebSalesPlansGetRequest = {}, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).getSalesPlansBffWebSalesPlansGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Get sales plans for a specific seller with pagination.  Args:     seller_id: UUID of the seller     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans for the seller
-   * @summary Get Seller Sales Plans
-   * @param {WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(
-    requestParameters: WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest,
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(
-        requestParameters.sellerId,
-        requestParameters.limit,
-        requestParameters.offset,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Get sales plans for a specific seller with pagination.  Args:     seller_id: UUID of the seller     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans for the seller
+     * @summary Get Seller Sales Plans
+     * @param {WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(requestParameters: WebApiGetSellerSalesPlansBffWebSellersSellerIdSalesPlansGetRequest, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).getSellerSalesPlansBffWebSellersSellerIdSalesPlansGet(requestParameters.sellerId, requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Get sellers with pagination.  Args:     limit: Maximum number of sellers to return (1-100)     offset: Number of sellers to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sellers
-   * @summary Get Sellers
-   * @param {WebApiGetSellersBffWebSellersGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public getSellersBffWebSellersGet(
-    requestParameters: WebApiGetSellersBffWebSellersGetRequest = {},
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .getSellersBffWebSellersGet(
-        requestParameters.limit,
-        requestParameters.offset,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Get sellers with pagination.  Args:     limit: Maximum number of sellers to return (1-100)     offset: Number of sellers to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sellers
+     * @summary Get Sellers
+     * @param {WebApiGetSellersBffWebSellersGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public getSellersBffWebSellersGet(requestParameters: WebApiGetSellersBffWebSellersGetRequest = {}, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).getSellersBffWebSellersGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
+    }
 
-  /**
-   * Retrieve warehouses from the inventory microservice.  Args:     limit: Maximum number of warehouses to return (1-100)     offset: Number of warehouses to skip     inventory: Inventory port for service communication  Returns:     Paginated list of warehouses
-   * @summary Get Warehouses
-   * @param {WebApiGetWarehousesBffWebWarehousesGetRequest} requestParameters Request parameters.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof WebApi
-   */
-  public getWarehousesBffWebWarehousesGet(
-    requestParameters: WebApiGetWarehousesBffWebWarehousesGetRequest = {},
-    options?: RawAxiosRequestConfig
-  ) {
-    return WebApiFp(this.configuration)
-      .getWarehousesBffWebWarehousesGet(
-        requestParameters.limit,
-        requestParameters.offset,
-        options
-      )
-      .then((request) => request(this.axios, this.basePath))
-  }
+    /**
+     * Retrieve warehouses from the inventory microservice.  Args:     limit: Maximum number of warehouses to return (1-100)     offset: Number of warehouses to skip     inventory: Inventory port for service communication  Returns:     Paginated list of warehouses
+     * @summary Get Warehouses
+     * @param {WebApiGetWarehousesBffWebWarehousesGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public getWarehousesBffWebWarehousesGet(requestParameters: WebApiGetWarehousesBffWebWarehousesGetRequest = {}, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).getWarehousesBffWebWarehousesGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
+    }
 }
+

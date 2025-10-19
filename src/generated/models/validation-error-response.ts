@@ -15,28 +15,28 @@
 
 
 /**
- * 
+ * Validation error response (422).
  * @export
- * @interface SalesPlanCreate
+ * @interface ValidationErrorResponse
  */
-export interface SalesPlanCreate {
+export interface ValidationErrorResponse {
     /**
      * 
      * @type {string}
-     * @memberof SalesPlanCreate
+     * @memberof ValidationErrorResponse
      */
-    'seller_id': string;
+    'error_code'?: string;
+    /**
+     * Human-readable error message
+     * @type {string}
+     * @memberof ValidationErrorResponse
+     */
+    'message': string;
     /**
      * 
      * @type {string}
-     * @memberof SalesPlanCreate
+     * @memberof ValidationErrorResponse
      */
-    'sales_period': string;
-    /**
-     * Sales goal amount
-     * @type {number}
-     * @memberof SalesPlanCreate
-     */
-    'goal': number;
+    'type'?: string;
 }
 

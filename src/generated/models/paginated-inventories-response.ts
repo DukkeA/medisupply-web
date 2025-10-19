@@ -12,50 +12,52 @@
  * Do not edit the class manually.
  */
 
+
 // May contain unused imports in some cases
 // @ts-ignore
-import type { InventoryResponse } from './inventory-response'
+import type { InventoryResponse } from './inventory-response';
 
 /**
- *
+ * 
  * @export
  * @interface PaginatedInventoriesResponse
  */
 export interface PaginatedInventoriesResponse {
-  /**
-   *
-   * @type {Array<InventoryResponse>}
-   * @memberof PaginatedInventoriesResponse
-   */
-  items: Array<InventoryResponse>
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedInventoriesResponse
-   */
-  total: number
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedInventoriesResponse
-   */
-  page: number
-  /**
-   *
-   * @type {number}
-   * @memberof PaginatedInventoriesResponse
-   */
-  size: number
-  /**
-   *
-   * @type {boolean}
-   * @memberof PaginatedInventoriesResponse
-   */
-  has_next: boolean
-  /**
-   *
-   * @type {boolean}
-   * @memberof PaginatedInventoriesResponse
-   */
-  has_previous: boolean
+    /**
+     * 
+     * @type {Array<InventoryResponse>}
+     * @memberof PaginatedInventoriesResponse
+     */
+    'items': Array<InventoryResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedInventoriesResponse
+     */
+    'total': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedInventoriesResponse
+     */
+    'page': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedInventoriesResponse
+     */
+    'size': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PaginatedInventoriesResponse
+     */
+    'has_next': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PaginatedInventoriesResponse
+     */
+    'has_previous': boolean;
 }
+

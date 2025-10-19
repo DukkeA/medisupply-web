@@ -1,5 +1,5 @@
 /* tslint:disable */
-
+/* eslint-disable */
 /**
  * BFF Service
  * Backend For Frontend service aggregating microservices
@@ -12,70 +12,73 @@
  * Do not edit the class manually.
  */
 
+
+
 /**
- *
+ * 
  * @export
  * @interface ProviderResponse
  */
 export interface ProviderResponse {
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderResponse
-   */
-  id: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderResponse
-   */
-  name: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderResponse
-   */
-  nit: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderResponse
-   */
-  contact_name: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderResponse
-   */
-  email: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderResponse
-   */
-  phone: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderResponse
-   */
-  address: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderResponse
-   */
-  country: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderResponse
-   */
-  created_at: string
-  /**
-   *
-   * @type {string}
-   * @memberof ProviderResponse
-   */
-  updated_at: string
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderResponse
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderResponse
+     */
+    'nit': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderResponse
+     */
+    'contact_name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderResponse
+     */
+    'email': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderResponse
+     */
+    'phone': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderResponse
+     */
+    'address': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderResponse
+     */
+    'country': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderResponse
+     */
+    'created_at': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProviderResponse
+     */
+    'updated_at': string;
 }
+
