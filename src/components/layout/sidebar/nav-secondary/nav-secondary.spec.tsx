@@ -1,4 +1,6 @@
-import { renderWithSidebar, screen } from '@/__tests__/sidebar-test-utils'
+import { renderWithProviders } from '@/__tests__/test-utils'
+import { screen } from '@testing-library/react'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import { describe, it, expect } from 'vitest'
 import { LifeBuoy, Send } from 'lucide-react'
 import { NavSecondary } from '.'
@@ -16,16 +18,22 @@ const mockItems = [
   }
 ]
 
+const renderOptions = {
+  locale: 'en' as const,
+  additionalWrappers: [SidebarProvider],
+  skipQueryClient: true
+}
+
 describe('NavSecondary', () => {
   it('renders all navigation items', () => {
-    renderWithSidebar(<NavSecondary items={mockItems} />)
+    renderWithProviders(<NavSecondary items={mockItems} />, renderOptions)
 
     expect(screen.getByText('Support')).toBeInTheDocument()
     expect(screen.getByText('Feedback')).toBeInTheDocument()
   })
 
   it('has correct links for navigation items', () => {
-    renderWithSidebar(<NavSecondary items={mockItems} />)
+    renderWithProviders(<NavSecondary items={mockItems} />, renderOptions)
 
     const supportLink = screen.getByRole('link', { name: /support/i })
     const feedbackLink = screen.getByRole('link', { name: /feedback/i })
@@ -35,7 +43,7 @@ describe('NavSecondary', () => {
   })
 
   it('renders items with small size buttons', () => {
-    renderWithSidebar(<NavSecondary items={mockItems} />)
+    renderWithProviders(<NavSecondary items={mockItems} />, renderOptions)
 
     const supportButton = screen.getByRole('link', { name: /support/i })
     const feedbackButton = screen.getByRole('link', { name: /feedback/i })
@@ -45,12 +53,13 @@ describe('NavSecondary', () => {
   })
 
   it('forwards additional props to SidebarGroup', () => {
-    renderWithSidebar(
+    renderWithProviders(
       <NavSecondary
         items={mockItems}
         data-testid="nav-secondary"
         className="custom-class"
-      />
+      />,
+      renderOptions
     )
 
     const navGroup = screen.getByTestId('nav-secondary')
@@ -58,13 +67,13 @@ describe('NavSecondary', () => {
   })
 
   it('renders empty items list without errors', () => {
-    renderWithSidebar(<NavSecondary items={[]} />)
+    renderWithProviders(<NavSecondary items={[]} />, renderOptions)
 
     expect(screen.queryByRole('link')).not.toBeInTheDocument()
   })
 
   it('renders correct number of menu items', () => {
-    renderWithSidebar(<NavSecondary items={mockItems} />)
+    renderWithProviders(<NavSecondary items={mockItems} />, renderOptions)
 
     const links = screen.getAllByRole('link')
     expect(links).toHaveLength(2)

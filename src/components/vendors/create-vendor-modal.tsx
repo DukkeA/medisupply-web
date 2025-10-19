@@ -14,10 +14,11 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import LocationSelector from '../ui/location-input'
+import { useCreateSeller } from '@/services/hooks/use-sellers'
+import { SellerCreate } from '@/generated/models'
 
 type CreateVendorModalProps = {
   open: boolean
@@ -28,12 +29,10 @@ export function CreateVendorModal({
   open,
   onOpenChange
 }: CreateVendorModalProps) {
-  // query client instance
-  const queryClient = useQueryClient()
   const t = useTranslations('vendors')
 
   // form state
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<SellerCreate>({
     name: '',
     email: '',
     phone: '',
@@ -42,39 +41,27 @@ export function CreateVendorModal({
   })
 
   // mutation to create a new vendor
-  const { mutate: createVendorMutation, isPending } = useMutation({
-    mutationKey: ['create-vendor'],
-    mutationFn: async (newVendor: typeof formData) => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/sellers`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include',
-          body: JSON.stringify(newVendor)
-        }
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    onSuccess: () => {
-      onOpenChange(false)
-      queryClient.invalidateQueries({ queryKey: ['vendors'] })
-      toast.success(t('modal.toastSuccess'))
-    },
-    onError: () => {
-      toast.error(t('modal.toastError'))
-    }
-  })
+  const { mutate: createVendorMutation, isPending } = useCreateSeller()
 
   // form handlers
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createVendorMutation(formData)
+    createVendorMutation(formData, {
+      onSuccess: () => {
+        onOpenChange(false)
+        toast.success(t('modal.toastSuccess'))
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          country: '',
+          city: ''
+        })
+      },
+      onError: () => {
+        toast.error(t('modal.toastError'))
+      }
+    })
   }
 
   const handleChange = (field: keyof typeof formData, value: string) => {
