@@ -12,20 +12,10 @@ import {
 } from '@/components/ui/table'
 import { CreateVendorPlanModal } from './create-vendor-plan-modal'
 import { Plus } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
+import { useSalesPlans } from '@/services/hooks/use-sales-plans'
+import { SalesPlanResponse } from '@/generated/models'
 import testData from './test-data.json'
-
-interface VendorPlan {
-  id: string
-  seller_id: string
-  seller_name: string
-  sales_period: string
-  goal: number
-  goal_type: string
-  accumulate: number
-  status: string
-}
 
 export function VendorPlansTable() {
   const t = useTranslations('vendorPlans')
@@ -35,21 +25,7 @@ export function VendorPlansTable() {
     data: vendorPlans,
     isLoading,
     isError
-  } = useQuery({
-    queryKey: ['vendorPlans'],
-    queryFn: async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/sales-plans`
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: testData
-    })
-  })
+  } = useSalesPlans(10, 0, testData)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -64,11 +40,11 @@ export function VendorPlansTable() {
     }
   }
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: string) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
-    }).format(amount)
+    }).format(parseFloat(amount))
   }
 
   if (isLoading) {
@@ -100,21 +76,21 @@ export function VendorPlansTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {!vendorPlans || vendorPlans.length === 0 ? (
+            {!vendorPlans || vendorPlans.items.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
                   {t('noResults')}
                 </TableCell>
               </TableRow>
             ) : (
-              vendorPlans.items.map((plan: VendorPlan) => (
+              vendorPlans.items.map((plan: SalesPlanResponse) => (
                 <TableRow key={plan.id}>
                   <TableCell className="font-medium">
-                    {plan.seller_name}
+                    {plan.seller.name}
                   </TableCell>
                   <TableCell>{plan.sales_period}</TableCell>
-                  <TableCell>{formatCurrency(plan.goal)}</TableCell>
-                  <TableCell>{formatCurrency(plan.accumulate)}</TableCell>
+                  <TableCell>{formatCurrency(`${plan.goal}`)}</TableCell>
+                  <TableCell>{formatCurrency(`${plan.accumulate}`)}</TableCell>
                   <TableCell className={getStatusColor(plan.status)}>
                     {plan.status}
                   </TableCell>

@@ -14,10 +14,11 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import LocationSelector from '../../ui/location-input'
+import { useCreateWarehouse } from '@/services/hooks/use-warehouses'
+import { WarehouseCreate } from '@/generated/models'
 
 type CreateWarehouseModalProps = {
   open: boolean
@@ -28,12 +29,10 @@ export function CreateWarehouseModal({
   open,
   onOpenChange
 }: CreateWarehouseModalProps) {
-  // query client instance
-  const queryClient = useQueryClient()
   const t = useTranslations('warehouses')
 
   // form state
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<WarehouseCreate>({
     name: '',
     address: '',
     country: '',
@@ -41,39 +40,26 @@ export function CreateWarehouseModal({
   })
 
   // mutation to create a new warehouse
-  const { mutate: createWarehouseMutation, isPending } = useMutation({
-    mutationKey: ['create-warehouse'],
-    mutationFn: async (newWarehouse: typeof formData) => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/warehouses`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include',
-          body: JSON.stringify(newWarehouse)
-        }
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    onSuccess: () => {
-      onOpenChange(false)
-      queryClient.invalidateQueries({ queryKey: ['warehouses'] })
-      toast.success(t('modal.toastSuccess'))
-    },
-    onError: () => {
-      toast.error(t('modal.toastError'))
-    }
-  })
+  const { mutate: createWarehouseMutation, isPending } = useCreateWarehouse()
 
   // form handlers
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createWarehouseMutation(formData)
+    createWarehouseMutation(formData, {
+      onSuccess: () => {
+        onOpenChange(false)
+        toast.success(t('modal.toastSuccess'))
+        setFormData({
+          name: '',
+          address: '',
+          country: '',
+          city: ''
+        })
+      },
+      onError: () => {
+        toast.error(t('modal.toastError'))
+      }
+    })
   }
 
   const handleChange = (field: keyof typeof formData, value: string) => {

@@ -28,44 +28,37 @@ import {
   CommandItem,
   CommandList
 } from '@/components/ui/command'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/utils/classNames'
 import { format } from 'date-fns'
-import productsMockData from './products-mock-data.json'
-import warehousesMockData from './warehouses-mock-data.json'
+import { useProducts, useWarehouses, useAddToInventory } from '@/services'
 
 type AddToInventoryModalProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-type Product = {
-  id: string
-  name: string
-}
-
-type Warehouse = {
-  id: number
-  name: string
+type InventoryFormData = {
+  product_id: string
+  warehouse_id: string
+  total_quantity: number
+  batch_number: string
+  expiration_date: string
 }
 
 export function AddToInventoryModal({
   open,
   onOpenChange
 }: AddToInventoryModalProps) {
-  // query client instance
-  const queryClient = useQueryClient()
   const t = useTranslations('inventory')
 
   // form state
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<InventoryFormData>({
     product_id: '',
     warehouse_id: '',
-    total_quantity: '',
-    reserved_quantity: '',
+    total_quantity: 0,
     batch_number: '',
     expiration_date: ''
   })
@@ -74,92 +67,49 @@ export function AddToInventoryModal({
   const [openProductSelect, setOpenProductSelect] = useState(false)
   const [openWarehouseSelect, setOpenWarehouseSelect] = useState(false)
 
-  // fetch products
-  const { data: products } = useQuery<Product[]>({
-    queryKey: ['products-for-inventory'],
-    queryFn: async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/products`
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: productsMockData
-    })
-  })
-
-  // fetch warehouses
-  const { data: warehouses } = useQuery<Warehouse[]>({
-    queryKey: ['warehouses-for-inventory'],
-    queryFn: async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/warehouses`
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: warehousesMockData
-    })
-  })
-
   // mutation to add to inventory
-  const { mutate: addToInventoryMutation, isPending } = useMutation({
-    mutationKey: ['add-to-inventory'],
-    mutationFn: async (newItem: typeof formData) => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/inventory`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include',
-          body: JSON.stringify(newItem)
-        }
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    onSuccess: () => {
-      onOpenChange(false)
-      queryClient.invalidateQueries({ queryKey: ['inventory'] })
-      toast.success(t('modal.toastSuccess'))
-      // Reset form
-      setFormData({
-        product_id: '',
-        warehouse_id: '',
-        total_quantity: '',
-        reserved_quantity: '',
-        batch_number: '',
-        expiration_date: ''
-      })
-      setDate(undefined)
-    },
-    onError: () => {
-      toast.error(t('modal.toastError'))
-    }
-  })
+  const { mutate: addToInventoryMutation, isPending } = useAddToInventory()
+
+  // query products to populate product select
+  const { data: products } = useProducts()
+
+  // query warehouses to populate warehouse select
+  const { data: warehouses } = useWarehouses()
 
   // form handlers
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    addToInventoryMutation(formData)
+  const resetForm = () => {
+    setFormData({
+      product_id: '',
+      warehouse_id: '',
+      total_quantity: 0,
+      batch_number: '',
+      expiration_date: ''
+    })
+    setDate(undefined)
   }
 
-  const handleChange = (field: keyof typeof formData, value: string) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    addToInventoryMutation(formData, {
+      onSuccess: () => {
+        onOpenChange(false)
+        toast.success(t('modal.toastSuccess'))
+        resetForm()
+      },
+      onError: () => {
+        toast.error(t('modal.toastError'))
+      }
+    })
+  }
+
+  const handleChange = (field: keyof InventoryFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const selectedProduct = products?.find((p) => p.id === formData.product_id)
-  const selectedWarehouse = warehouses?.find(
+  const selectedProduct = products?.items.find(
+    (p) => p.id === formData.product_id
+  )
+  const selectedWarehouse = warehouses?.items.find(
     (w) => w.id.toString() === formData.warehouse_id
   )
 
@@ -188,7 +138,7 @@ export function AddToInventoryModal({
                   >
                     {selectedProduct ? (
                       <span>
-                        {selectedProduct.id} - {selectedProduct.name}
+                        {selectedProduct.sku} - {selectedProduct.name}
                       </span>
                     ) : (
                       <span className="text-muted-foreground">
@@ -206,10 +156,10 @@ export function AddToInventoryModal({
                     <CommandList>
                       <CommandEmpty>{t('modal.noResults')}</CommandEmpty>
                       <CommandGroup>
-                        {products?.map((product) => (
+                        {products?.items?.map((product) => (
                           <CommandItem
                             key={product.id}
-                            value={`${product.id} ${product.name}`}
+                            value={`${product.sku} ${product.name}`}
                             onSelect={() => {
                               handleChange('product_id', product.id)
                               setOpenProductSelect(false)
@@ -223,7 +173,7 @@ export function AddToInventoryModal({
                                   : 'opacity-0'
                               )}
                             />
-                            {product.id} - {product.name}
+                            {product.sku} - {product.name}
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -265,7 +215,7 @@ export function AddToInventoryModal({
                     <CommandList>
                       <CommandEmpty>{t('modal.noResults')}</CommandEmpty>
                       <CommandGroup>
-                        {warehouses?.map((warehouse) => (
+                        {warehouses?.items?.map((warehouse) => (
                           <CommandItem
                             key={warehouse.id}
                             value={warehouse.name}
@@ -305,27 +255,14 @@ export function AddToInventoryModal({
                 id="total_quantity"
                 type="number"
                 min="0"
-                value={formData.total_quantity}
-                onChange={(e) => handleChange('total_quantity', e.target.value)}
-                placeholder="100"
-                required
-              />
-            </div>
-
-            {/* Reserved Quantity */}
-            <div className="grid gap-2">
-              <Label htmlFor="reserved_quantity">
-                {t('modal.fields.reservedQuantity')}
-              </Label>
-              <Input
-                id="reserved_quantity"
-                type="number"
-                min="0"
-                value={formData.reserved_quantity}
+                value={formData.total_quantity || ''}
                 onChange={(e) =>
-                  handleChange('reserved_quantity', e.target.value)
+                  setFormData((prev) => ({
+                    ...prev,
+                    total_quantity: Number(e.target.value) || 0
+                  }))
                 }
-                placeholder="0"
+                placeholder="100"
                 required
               />
             </div>

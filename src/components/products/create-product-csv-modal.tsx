@@ -14,10 +14,10 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
-import { Upload } from 'lucide-react'
+import { Upload, Download } from 'lucide-react'
+import { useUploadProductsCSV } from '@/services/hooks/use-products'
 
 type CreateProductCSVModalProps = {
   open: boolean
@@ -28,43 +28,13 @@ export function CreateProductCSVModal({
   open,
   onOpenChange
 }: CreateProductCSVModalProps) {
-  // query client instance
-  const queryClient = useQueryClient()
   const t = useTranslations('products')
 
   // form state
   const [file, setFile] = useState<File | null>(null)
 
   // mutation to create products from CSV
-  const { mutate: uploadCSVMutation, isPending } = useMutation({
-    mutationKey: ['upload-products-csv'],
-    mutationFn: async (csvFile: File) => {
-      const formData = new FormData()
-      formData.append('file', csvFile)
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/products/batch`,
-        {
-          method: 'POST',
-          credentials: 'include',
-          body: formData
-        }
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    onSuccess: () => {
-      onOpenChange(false)
-      setFile(null)
-      queryClient.invalidateQueries({ queryKey: ['products'] })
-      toast.success(t('csvModal.toastSuccess'))
-    },
-    onError: () => {
-      toast.error(t('csvModal.toastError'))
-    }
-  })
+  const { mutate: uploadCSVMutation, isPending } = useUploadProductsCSV()
 
   // form handlers
   const handleSubmit = (e: React.FormEvent) => {
@@ -73,7 +43,16 @@ export function CreateProductCSVModal({
       toast.error(t('csvModal.noFileError'))
       return
     }
-    uploadCSVMutation(file)
+    uploadCSVMutation(file, {
+      onSuccess: () => {
+        onOpenChange(false)
+        setFile(null)
+        toast.success(t('csvModal.toastSuccess'))
+      },
+      onError: () => {
+        toast.error(t('csvModal.toastError'))
+      }
+    })
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,6 +67,15 @@ export function CreateProductCSVModal({
     }
   }
 
+  const handleDownloadTemplate = () => {
+    const link = document.createElement('a')
+    link.href = '/bash-upload.csv'
+    link.download = 'products-template.csv'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg ">
@@ -95,13 +83,26 @@ export function CreateProductCSVModal({
           <DialogTitle>{t('csvModal.title')}</DialogTitle>
           <DialogDescription>{t('csvModal.description')}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form data-testid="csv-form" onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="file">{t('csvModal.fields.file')}</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="file">{t('csvModal.fields.file')}</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownloadTemplate}
+                  className="gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  {t('csvModal.buttons.downloadTemplate')}
+                </Button>
+              </div>
               <div className="flex items-center gap-2">
                 <Input
                   id="file"
+                  data-testid="csv-file-input"
                   type="file"
                   accept=".csv"
                   onChange={handleFileChange}

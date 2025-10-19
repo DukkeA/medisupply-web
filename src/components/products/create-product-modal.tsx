@@ -14,10 +14,18 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
+import { useCreateProduct } from '@/services/hooks/use-products'
+import { ProductCreate, ProductCategory } from '@/generated/models'
+import { useProviders } from '@/services/hooks/use-providers'
 
 type CreateProductModalProps = {
   open: boolean
@@ -28,55 +36,49 @@ export function CreateProductModal({
   open,
   onOpenChange
 }: CreateProductModalProps) {
-  // TODO - Convertir input de proveedor en un select con opciones de proveedores existentes
-  // TODO - Poner ENUM de categorías y convertir input de categoría en un select
-  // query client instance
-  const queryClient = useQueryClient()
   const t = useTranslations('products')
 
   // form state
-  const [formData, setFormData] = useState({
-    sku: '',
+  const [formData, setFormData] = useState<
+    Omit<ProductCreate, 'price'> & { price: number }
+  >({
     name: '',
-    category: '',
+    category: ProductCategory.Otros,
+    sku: '',
     price: 0,
     provider_id: ''
   })
 
   // mutation to create a new product
-  const { mutate: createProductMutation, isPending } = useMutation({
-    mutationKey: ['create-product'],
-    mutationFn: async (newProduct: typeof formData) => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/products`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include',
-          body: JSON.stringify(newProduct)
-        }
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    onSuccess: () => {
-      onOpenChange(false)
-      queryClient.invalidateQueries({ queryKey: ['products'] })
-      toast.success(t('modal.toastSuccess'))
-    },
-    onError: () => {
-      toast.error(t('modal.toastError'))
-    }
-  })
+  const { mutate: createProductMutation, isPending } = useCreateProduct()
+
+  // query providers to populate provider select
+  const { data: providers } = useProviders()
 
   // form handlers
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createProductMutation(formData)
+    const productData: ProductCreate = {
+      ...formData,
+      price: formData.price as unknown as ProductCreate['price']
+    }
+    createProductMutation(productData, {
+      onSuccess: () => {
+        onOpenChange(false)
+        toast.success(t('modal.toastSuccess'))
+        // Reset form
+        setFormData({
+          name: '',
+          category: ProductCategory.Otros,
+          sku: '',
+          price: 0,
+          provider_id: ''
+        })
+      },
+      onError: () => {
+        toast.error(t('modal.toastError'))
+      }
+    })
   }
 
   const handleChange = (field: keyof typeof formData, value: string) => {
@@ -90,18 +92,8 @@ export function CreateProductModal({
           <DialogTitle>{t('modal.title')}</DialogTitle>
           <DialogDescription>{t('modal.description')}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form role="form" onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="sku">{t('modal.fields.sku')}</Label>
-              <Input
-                id="sku"
-                value={formData.sku}
-                onChange={(e) => handleChange('sku', e.target.value)}
-                placeholder="MED001"
-                required
-              />
-            </div>
             <div className="grid gap-2">
               <Label htmlFor="name">{t('modal.fields.name')}</Label>
               <Input
@@ -113,14 +105,47 @@ export function CreateProductModal({
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="category">{t('modal.fields.category')}</Label>
+              <Label htmlFor="sku">{t('modal.fields.sku')}</Label>
               <Input
-                id="category"
-                value={formData.category}
-                onChange={(e) => handleChange('category', e.target.value)}
-                placeholder="Analgésicos"
+                id="sku"
+                value={formData.sku}
+                onChange={(e) => handleChange('sku', e.target.value)}
+                placeholder="SKU-001"
                 required
               />
+            </div>
+            <div className="grid gap-2 w-full">
+              <Label htmlFor="category">{t('modal.fields.category')}</Label>
+              <Select
+                value={formData.category}
+                onValueChange={(value) =>
+                  handleChange('category', value as ProductCategory)
+                }
+                required
+              >
+                <SelectTrigger id="category">
+                  <SelectValue
+                    placeholder={t('modal.fields.categoryPlaceholder')}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ProductCategory.MedicamentosEspeciales}>
+                    {t('modal.categories.medicamentosEspeciales')}
+                  </SelectItem>
+                  <SelectItem value={ProductCategory.InsumosQuirurgicos}>
+                    {t('modal.categories.insumosQuirurgicos')}
+                  </SelectItem>
+                  <SelectItem value={ProductCategory.ReactivosDiagnosticos}>
+                    {t('modal.categories.reactivosDiagnosticos')}
+                  </SelectItem>
+                  <SelectItem value={ProductCategory.EquiposBiomedicos}>
+                    {t('modal.categories.equiposBiomedicos')}
+                  </SelectItem>
+                  <SelectItem value={ProductCategory.Otros}>
+                    {t('modal.categories.otros')}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="price">{t('modal.fields.price')}</Label>
@@ -142,13 +167,24 @@ export function CreateProductModal({
             </div>
             <div className="grid gap-2">
               <Label htmlFor="provider">{t('modal.fields.provider')}</Label>
-              <Input
-                id="provider"
+              <Select
                 value={formData.provider_id}
-                onChange={(e) => handleChange('provider_id', e.target.value)}
-                placeholder="FarmaPlus"
+                onValueChange={(value) => handleChange('provider_id', value)}
                 required
-              />
+              >
+                <SelectTrigger id="provider">
+                  <SelectValue
+                    placeholder={t('modal.fields.providerPlaceholder')}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {providers?.items?.map((provider) => (
+                    <SelectItem key={provider.id} value={provider.id}>
+                      {provider.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>

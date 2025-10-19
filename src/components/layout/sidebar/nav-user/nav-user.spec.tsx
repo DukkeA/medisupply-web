@@ -1,4 +1,6 @@
-import { renderWithSidebar, screen } from '@/__tests__/sidebar-test-utils'
+import { renderWithProviders } from '@/__tests__/test-utils'
+import { screen } from '@testing-library/react'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { NavUser } from '.'
@@ -18,16 +20,22 @@ const mockUser = {
   avatar: '/avatars/john.jpg'
 }
 
+const renderOptions = {
+  locale: 'en' as const,
+  additionalWrappers: [SidebarProvider],
+  skipQueryClient: true
+}
+
 describe('NavUser', () => {
   it('renders user information', () => {
-    renderWithSidebar(<NavUser user={mockUser} />)
+    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
 
     expect(screen.getByText('John Doe')).toBeInTheDocument()
     expect(screen.getByText('john@example.com')).toBeInTheDocument()
   })
 
   it('renders user avatar with correct src and alt', () => {
-    renderWithSidebar(<NavUser user={mockUser} />)
+    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
 
     // Avatar may fallback to text, so we check if there are images or fallback text
     const images = screen.queryAllByRole('img')
@@ -43,7 +51,7 @@ describe('NavUser', () => {
   })
 
   it('renders fallback when avatar fails to load', () => {
-    renderWithSidebar(<NavUser user={mockUser} />)
+    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
 
     const fallbacks = screen.getAllByText('CN')
     expect(fallbacks.length).toBeGreaterThanOrEqual(1) // At least one fallback visible
@@ -51,7 +59,7 @@ describe('NavUser', () => {
 
   it('opens dropdown menu when clicked', async () => {
     const user = userEvent.setup()
-    renderWithSidebar(<NavUser user={mockUser} />)
+    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
 
     const triggerButton = screen.getByRole('button')
     await user.click(triggerButton)
@@ -65,7 +73,7 @@ describe('NavUser', () => {
 
   it('renders all menu items in dropdown', async () => {
     const user = userEvent.setup()
-    renderWithSidebar(<NavUser user={mockUser} />)
+    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
 
     const triggerButton = screen.getByRole('button')
     await user.click(triggerButton)
@@ -85,7 +93,7 @@ describe('NavUser', () => {
 
   it('renders user info duplicate in dropdown header', async () => {
     const user = userEvent.setup()
-    renderWithSidebar(<NavUser user={mockUser} />)
+    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
 
     const triggerButton = screen.getByRole('button')
     await user.click(triggerButton)
@@ -115,7 +123,7 @@ describe('NavUser', () => {
     )
 
     const user = userEvent.setup()
-    renderWithSidebar(<NavUser user={mockUser} />)
+    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
 
     const triggerButton = screen.getByRole('button')
     await user.click(triggerButton)

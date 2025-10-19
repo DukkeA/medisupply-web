@@ -26,31 +26,20 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/utils/classNames'
-import testData from './vendors-mock-data.json'
-
-interface Vendor {
-  id: number
-  name: string
-}
-
-interface VendorPlanFormData {
-  seller_id: number
-  sales_period: string
-  goal: number
-  accumulate?: number
-  status: string
-}
+import { useSellers, useCreateSalesPlan } from '@/services'
+import { SalesPlanCreate } from '@/generated/models'
 
 type CreateVendorPlanModalProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
+
+type SalesPlanFormData = Omit<SalesPlanCreate, 'goal'> & { goal: number }
 
 export function CreateVendorPlanModal({
   open,
@@ -58,89 +47,55 @@ export function CreateVendorPlanModal({
 }: CreateVendorPlanModalProps) {
   const t = useTranslations('vendorPlans')
   const [openVendorSelect, setOpenVendorSelect] = useState(false)
-  const [selectedVendorId, setSelectedVendorId] = useState<number | null>(null)
-  const [formData, setFormData] = useState<VendorPlanFormData>({
-    seller_id: 0,
+  const [formData, setFormData] = useState<SalesPlanFormData>({
+    seller_id: '',
     sales_period: '',
-    goal: 0,
-    accumulate: 0,
-    status: 'active'
+    goal: 0
   })
 
-  const queryClient = useQueryClient()
+  // mutation to create a new sales plan
+  const { mutate: createSalesPlanMutation, isPending } = useCreateSalesPlan()
 
-  const { data: vendors } = useQuery<{ items: Vendor[] }>({
-    queryKey: ['vendors'],
-    queryFn: async () => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sellers`)
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    ...(process.env.NEXT_PUBLIC_MOCK_DATA === 'true' && {
-      initialData: { items: testData }
-    })
-  })
+  // query vendors/sellers to populate vendor select
+  const { data: vendors } = useSellers()
 
-  const mutation = useMutation({
-    mutationKey: ['create-vendor-plan'],
-    mutationFn: async (newPlan: VendorPlanFormData) => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/sales-plans`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include',
-          body: JSON.stringify(newPlan)
-        }
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vendorPlans'] })
-      toast.success(t('createSuccess'))
-      onOpenChange(false)
-      resetForm()
-    },
-    onError: () => {
-      toast.error(t('createError'))
-    }
-  })
-
+  // form handlers
   const resetForm = () => {
     setFormData({
-      seller_id: 0,
+      seller_id: '',
       sales_period: '',
-      goal: 0,
-      accumulate: 0,
-      status: 'active'
+      goal: 0
     })
-    setSelectedVendorId(null)
   }
 
-  const handleChange = (
-    field: keyof VendorPlanFormData,
-    value: string | number
-  ) => {
+  const handleChange = (field: keyof SalesPlanFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!selectedVendorId) {
+    if (!formData.seller_id) {
       toast.error(t('selectVendor'))
       return
     }
-    mutation.mutate({ ...formData, seller_id: selectedVendorId })
+    // Convert goal number to Goal object for API
+    const salesPlanData: SalesPlanCreate = {
+      ...formData,
+      goal: formData.goal as unknown as SalesPlanCreate['goal']
+    }
+    createSalesPlanMutation(salesPlanData, {
+      onSuccess: () => {
+        onOpenChange(false)
+        toast.success(t('createSuccess'))
+        resetForm()
+      },
+      onError: () => {
+        toast.error(t('createError'))
+      }
+    })
   }
 
-  const selectedVendor = vendors?.items.find((v) => v.id === selectedVendorId)
+  const selectedVendor = vendors?.items.find((v) => v.id === formData.seller_id)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -180,14 +135,14 @@ export function CreateVendorPlanModal({
                             key={vendor.id}
                             value={`${vendor.id} ${vendor.name}`}
                             onSelect={() => {
-                              setSelectedVendorId(vendor.id)
+                              handleChange('seller_id', vendor.id)
                               setOpenVendorSelect(false)
                             }}
                           >
                             <Check
                               className={cn(
                                 'mr-2 h-4 w-4',
-                                selectedVendorId === vendor.id
+                                formData.seller_id === vendor.id
                                   ? 'opacity-100'
                                   : 'opacity-0'
                               )}
@@ -204,7 +159,7 @@ export function CreateVendorPlanModal({
 
             {/* Period */}
             <div className="grid gap-2">
-              <Label htmlFor="period">{t('period')}</Label>
+              <Label htmlFor="sales_period">{t('period')}</Label>
               <Input
                 id="sales_period"
                 placeholder="Q1 2024"
@@ -222,7 +177,12 @@ export function CreateVendorPlanModal({
                 type="number"
                 placeholder="50000"
                 value={formData.goal || ''}
-                onChange={(e) => handleChange('goal', Number(e.target.value))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    goal: Number(e.target.value) || 0
+                  }))
+                }
                 required
               />
             </div>
@@ -233,12 +193,12 @@ export function CreateVendorPlanModal({
               type="button"
               variant="ghost"
               onClick={() => onOpenChange(false)}
-              disabled={mutation.isPending}
+              disabled={isPending}
             >
               {t('cancel')}
             </Button>
-            <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? t('creating') : t('create')}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? t('creating') : t('create')}
             </Button>
           </DialogFooter>
         </form>
