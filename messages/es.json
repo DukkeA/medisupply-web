@@ -288,11 +288,13 @@
     },
     "price": {
       "required": "El precio es obligatorio",
+      "invalid": "El precio debe ser un número válido",
       "positive": "El precio debe ser mayor que cero",
       "maxValue": "El precio excede el valor máximo",
       "decimal": "El precio debe tener como máximo 2 decimales"
     },
     "amount": {
+      "invalid": "El monto debe ser un número válido",
       "positive": "El monto debe ser mayor que cero",
       "maxValue": "El monto excede el valor máximo",
       "decimal": "El monto debe tener como máximo 2 decimales"

@@ -288,11 +288,13 @@
     },
     "price": {
       "required": "Price is required",
+      "invalid": "Price must be a valid number",
       "positive": "Price must be greater than zero",
       "maxValue": "Price exceeds maximum value",
       "decimal": "Price must have at most 2 decimal places"
     },
     "amount": {
+      "invalid": "Amount must be a valid number",
       "positive": "Amount must be greater than zero",
       "maxValue": "Amount exceeds maximum value",
       "decimal": "Amount must have at most 2 decimal places"
