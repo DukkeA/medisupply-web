@@ -10,21 +10,57 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { AddToInventoryModal } from '@/components/inventory/add-to-inventory-modal'
-import { Plus } from 'lucide-react'
+import { Plus, Filter, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useInventory } from '@/services/hooks/use-inventory'
+import { useProducts } from '@/services/hooks/use-products'
+import { useWarehouses } from '@/services/hooks/use-warehouses'
 import { InventoryResponse } from '@/generated/models'
 import testData from './test-data.json'
 
 export function InventoryTable() {
-  // TODO Agregar filtros por producto y almacen
   const t = useTranslations('inventory')
   // modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // fetch inventory data
-  const { data, isLoading, isError } = useInventory(testData)
+  // filter states
+  const [selectedSku, setSelectedSku] = useState<string>('')
+  const [selectedWarehouse, setSelectedWarehouse] = useState<string>('')
+  const [appliedSku, setAppliedSku] = useState<string | undefined>(undefined)
+  const [appliedWarehouse, setAppliedWarehouse] = useState<string | undefined>(
+    undefined
+  )
+
+  // fetch data for filters
+  const { data: productsData } = useProducts(100, 0)
+  const { data: warehousesData } = useWarehouses(100, 0)
+
+  // fetch inventory data with applied filters
+  const { data, isLoading, isError } = useInventory(
+    appliedSku,
+    appliedWarehouse,
+    testData
+  )
+
+  const handleApplyFilters = () => {
+    setAppliedSku(selectedSku || undefined)
+    setAppliedWarehouse(selectedWarehouse || undefined)
+  }
+
+  const handleClearFilters = () => {
+    setSelectedSku('')
+    setSelectedWarehouse('')
+    setAppliedSku(undefined)
+    setAppliedWarehouse(undefined)
+  }
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -36,7 +72,64 @@ export function InventoryTable() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end">
+          {/* SKU Filter */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">
+              {t('filters.selectSku')}
+            </label>
+            <Select value={selectedSku} onValueChange={setSelectedSku}>
+              <SelectTrigger className="w-[250px]">
+                <SelectValue placeholder={t('filters.selectSkuPlaceholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                {productsData?.items.map((product) => (
+                  <SelectItem key={product.sku} value={product.sku}>
+                    {product.sku} - {product.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Warehouse Filter */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">
+              {t('filters.selectWarehouse')}
+            </label>
+            <Select
+              value={selectedWarehouse}
+              onValueChange={setSelectedWarehouse}
+            >
+              <SelectTrigger className="w-[250px]">
+                <SelectValue
+                  placeholder={t('filters.selectWarehousePlaceholder')}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {warehousesData?.items.map((warehouse) => (
+                  <SelectItem key={warehouse.id} value={warehouse.id}>
+                    {warehouse.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Filter Actions */}
+          <div className="flex gap-2">
+            <Button onClick={handleApplyFilters} variant="default">
+              <Filter className="mr-2 h-4 w-4" />
+              {t('filters.applyButton')}
+            </Button>
+            <Button onClick={handleClearFilters} variant="outline">
+              <X className="mr-2 h-4 w-4" />
+              {t('filters.clearButton')}
+            </Button>
+          </div>
+        </div>
+
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           {t('table.addButton')}

@@ -202,6 +202,14 @@
       "title": "Inventario",
       "description": "Administra tu inventario aquí."
     },
+    "filters": {
+      "selectSku": "Filtrar por SKU",
+      "selectSkuPlaceholder": "Selecciona un SKU...",
+      "selectWarehouse": "Filtrar por Almacén",
+      "selectWarehousePlaceholder": "Selecciona un almacén...",
+      "applyButton": "Aplicar Filtros",
+      "clearButton": "Limpiar Filtros"
+    },
     "table": {
       "addButton": "Agregar al Inventario",
       "columns": {

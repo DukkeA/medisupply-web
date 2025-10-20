@@ -98,7 +98,9 @@ describe('useInventory', () => {
       has_previous: false
     }
 
-    const { result } = renderHookWithProviders(() => useInventory(mockData))
+    const { result } = renderHookWithProviders(() =>
+      useInventory(undefined, undefined, mockData)
+    )
 
     expect(result.current.data).toEqual(mockData)
   })
@@ -132,7 +134,9 @@ describe('useInventory', () => {
       has_previous: true
     }
 
-    const { result } = renderHookWithProviders(() => useInventory(mockData))
+    const { result } = renderHookWithProviders(() =>
+      useInventory(undefined, undefined, mockData)
+    )
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true)
