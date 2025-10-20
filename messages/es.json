@@ -278,6 +278,91 @@
     "belowTarget": "Por Debajo de la Meta",
     "cancel": "Cancelar"
   },
+  "validation": {
+    "required": "Este campo es obligatorio",
+    "email": "Por favor ingresa un correo electrónico válido",
+    "country": "Por favor selecciona un país válido",
+    "uuid": "Formato de ID inválido",
+    "selectProduct": "Por favor selecciona un producto",
+    "selectWarehouse": "Por favor selecciona un almacén",
+    "selectProvider": "Por favor selecciona un proveedor",
+    "selectVendor": "Por favor selecciona un vendedor",
+    "selectCategory": "Por favor selecciona una categoría válida",
+    "quantity": {
+      "required": "La cantidad es obligatoria",
+      "invalid": "La cantidad debe ser un número",
+      "wholeNumber": "La cantidad debe ser un número entero",
+      "negative": "La cantidad no puede ser negativa"
+    },
+    "price": {
+      "required": "El precio es obligatorio",
+      "invalid": "El precio debe ser un número válido",
+      "positive": "El precio debe ser mayor que cero",
+      "maxValue": "El precio excede el valor máximo",
+      "decimal": "El precio debe tener como máximo 2 decimales"
+    },
+    "amount": {
+      "invalid": "El monto debe ser un número válido",
+      "positive": "El monto debe ser mayor que cero",
+      "maxValue": "El monto excede el valor máximo",
+      "decimal": "El monto debe tener como máximo 2 decimales"
+    },
+    "string": {
+      "required": "Este campo es obligatorio",
+      "maxLength": "Máximo {max} caracteres permitidos",
+      "minLength": "Mínimo {min} caracteres requeridos"
+    },
+    "batchNumber": {
+      "required": "El número de lote es obligatorio",
+      "maxLength": "Máximo 255 caracteres permitidos"
+    },
+    "expirationDate": {
+      "required": "La fecha de vencimiento es obligatoria",
+      "pastDate": "Advertencia: La fecha de vencimiento está en el pasado"
+    },
+    "name": {
+      "required": "El nombre es obligatorio",
+      "maxLength": "Máximo {max} caracteres permitidos"
+    },
+    "warehouse": {
+      "nameRequired": "El nombre del almacén es obligatorio"
+    },
+    "product": {
+      "nameRequired": "El nombre del producto es obligatorio",
+      "skuRequired": "El SKU es obligatorio",
+      "skuMaxLength": "Máximo 100 caracteres permitidos"
+    },
+    "sku": {
+      "required": "El SKU es obligatorio",
+      "maxLength": "Máximo 100 caracteres permitidos"
+    },
+    "provider": {
+      "nameRequired": "El nombre del proveedor es obligatorio",
+      "contactRequired": "El nombre de contacto es obligatorio",
+      "nitRequired": "El NIT es obligatorio",
+      "nitMaxLength": "Máximo 50 caracteres permitidos"
+    },
+    "vendor": {
+      "nameRequired": "El nombre del vendedor es obligatorio"
+    },
+    "city": {
+      "required": "La ciudad es obligatoria",
+      "maxLength": "Máximo 100 caracteres permitidos"
+    },
+    "address": {
+      "required": "La dirección es obligatoria",
+      "maxLength": "Máximo 500 caracteres permitidos"
+    },
+    "phone": {
+      "required": "El número de teléfono es obligatorio",
+      "maxLength": "Máximo 50 caracteres permitidos"
+    },
+    "salesPlan": {
+      "periodFormat": "El período de ventas debe estar en formato Q1-2025 (Q1-Q4)",
+      "yearRange": "El año debe estar entre 2000 y 2100",
+      "goalPositive": "La meta debe ser mayor que cero"
+    }
+  },
   "home": {
     "welcome": "Bienvenido a",
     "subtitle": "Proyecto Universitario - Sistema de Gestión de Suministros Médicos",

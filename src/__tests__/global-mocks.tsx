@@ -51,7 +51,15 @@ export function setupNextIntlMocks() {
     const actual = await vi.importActual('next-intl')
     return {
       ...actual,
-      useTranslations: () => (key: string) => key
+      useTranslations:
+        () => (key: string, values?: Record<string, string | number>) => {
+          if (values) {
+            return key.replace(/\{(\w+)\}/g, (_, k) =>
+              String(values[k] || `{${k}}`)
+            )
+          }
+          return key
+        }
     }
   })
 }
@@ -157,9 +165,13 @@ export function setupUIComponentMocks() {
       onSelect?: (value: string) => void
       value?: string
     }>) => (
-      <div onClick={() => onSelect?.(props.value || '')} {...props}>
+      <button
+        type="button"
+        onClick={() => onSelect?.(props.value || '')}
+        {...props}
+      >
         {children}
-      </div>
+      </button>
     )
   }))
 
@@ -178,16 +190,26 @@ export function setupUIComponentMocks() {
     )
   }))
 
-  // Form
-  vi.mock('@/components/ui/form', () => ({
-    Form: ({ children }: PropsWithChildren) => <form>{children}</form>,
-    FormField: ({ children }: PropsWithChildren) => <div>{children}</div>,
-    FormItem: ({ children }: PropsWithChildren) => <div>{children}</div>,
-    FormLabel: ({ children }: PropsWithChildren) => <label>{children}</label>,
-    FormControl: ({ children }: PropsWithChildren) => <div>{children}</div>,
-    FormDescription: ({ children }: PropsWithChildren) => <p>{children}</p>,
-    FormMessage: ({ children }: PropsWithChildren) => <span>{children}</span>
-  }))
+  // Form - Use real react-hook-form Controller for proper integration
+  vi.mock('@/components/ui/form', async () => {
+    const { Controller } = await import('react-hook-form')
+    return {
+      Form: ({ children }: PropsWithChildren) => <>{children}</>,
+      FormField: Controller,
+      FormItem: ({ children }: PropsWithChildren) => <div>{children}</div>,
+      FormLabel: ({ children }: PropsWithChildren) => <label>{children}</label>,
+      FormControl: ({ children }: PropsWithChildren) => <>{children}</>,
+      FormDescription: ({ children }: PropsWithChildren) => <p>{children}</p>,
+      FormMessage: ({ children }: PropsWithChildren) => <span>{children}</span>,
+      useFormField: () => ({
+        invalid: false,
+        error: undefined,
+        formItemId: 'test-form-item',
+        formDescriptionId: 'test-form-description',
+        formMessageId: 'test-form-message'
+      })
+    }
+  })
 
   // Table
   vi.mock('@/components/ui/table', () => ({

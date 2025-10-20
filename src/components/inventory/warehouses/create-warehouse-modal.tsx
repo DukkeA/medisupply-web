@@ -2,7 +2,9 @@
 
 import type React from 'react'
 
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -13,12 +15,22 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import LocationSelector from '../../ui/location-input'
 import { useCreateWarehouse } from '@/services/hooks/use-warehouses'
-import { WarehouseCreate } from '@/generated/models'
+import {
+  createWarehouseSchema,
+  type WarehouseFormData
+} from '@/lib/validations/warehouse-schema'
 
 type CreateWarehouseModalProps = {
   open: boolean
@@ -30,31 +42,30 @@ export function CreateWarehouseModal({
   onOpenChange
 }: CreateWarehouseModalProps) {
   const t = useTranslations('warehouses')
+  const tValidation = useTranslations()
 
-  // form state
-  const [formData, setFormData] = useState<WarehouseCreate>({
-    name: '',
-    address: '',
-    country: '',
-    city: ''
+  // Initialize form with validation (using translation)
+  const form = useForm<WarehouseFormData>({
+    resolver: zodResolver(createWarehouseSchema(tValidation)),
+    mode: 'onChange',
+    defaultValues: {
+      name: '',
+      address: '',
+      country: '',
+      city: ''
+    }
   })
 
   // mutation to create a new warehouse
   const { mutate: createWarehouseMutation, isPending } = useCreateWarehouse()
 
   // form handlers
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    createWarehouseMutation(formData, {
+  const handleSubmit = (data: WarehouseFormData) => {
+    createWarehouseMutation(data, {
       onSuccess: () => {
         onOpenChange(false)
         toast.success(t('modal.toastSuccess'))
-        setFormData({
-          name: '',
-          address: '',
-          country: '',
-          city: ''
-        })
+        form.reset()
       },
       onError: () => {
         toast.error(t('modal.toastError'))
@@ -62,9 +73,12 @@ export function CreateWarehouseModal({
     })
   }
 
-  const handleChange = (field: keyof typeof formData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!open) {
+      form.reset()
+    }
+  }, [open, form])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -73,56 +87,91 @@ export function CreateWarehouseModal({
           <DialogTitle>{t('modal.title')}</DialogTitle>
           <DialogDescription>{t('modal.description')}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">{t('modal.fields.name')}</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-                placeholder="Main Warehouse"
-                required
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)}>
+            <div className="grid gap-4 py-4">
+              {/* Name */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('modal.fields.name')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Main Warehouse" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Country and City using LocationSelector */}
+              <LocationSelector
+                showStates={true}
+                countryLabel={t('modal.fields.country')}
+                stateLabel={t('modal.fields.city')}
+                onCountryChange={(country) => {
+                  form.setValue('country', country?.name || '', {
+                    shouldValidate: true
+                  })
+                }}
+                onStateChange={(state) => {
+                  form.setValue('city', state?.name || '', {
+                    shouldValidate: true
+                  })
+                }}
+              />
+
+              {/* Display errors for country and city */}
+              {form.formState.errors.country && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.country.message}
+                </p>
+              )}
+              {form.formState.errors.city && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.city.message}
+                </p>
+              )}
+
+              {/* Address */}
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('modal.fields.address')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="123 Main St, New York, USA"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-            <LocationSelector
-              showStates={true}
-              countryLabel={t('modal.fields.country')}
-              stateLabel={t('modal.fields.city')}
-              onCountryChange={(country) => {
-                handleChange('country', country?.name || '')
-              }}
-              onStateChange={(state) => {
-                handleChange('city', state?.name || '')
-              }}
-            />
-            <div className="grid gap-2">
-              <Label htmlFor="address">{t('modal.fields.address')}</Label>
-              <Input
-                id="address"
-                value={formData.address}
-                onChange={(e) => handleChange('address', e.target.value)}
-                placeholder="123 Main St, New York, USA"
-                required
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => onOpenChange(false)}
-              disabled={isPending}
-            >
-              {t('modal.buttons.cancel')}
-            </Button>
-            <Button type="submit" disabled={isPending}>
-              {isPending
-                ? t('modal.buttons.creating')
-                : t('modal.buttons.create')}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => onOpenChange(false)}
+                disabled={isPending}
+              >
+                {t('modal.buttons.cancel')}
+              </Button>
+              <Button
+                type="submit"
+                disabled={isPending || !form.formState.isValid}
+              >
+                {isPending
+                  ? t('modal.buttons.creating')
+                  : t('modal.buttons.create')}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )

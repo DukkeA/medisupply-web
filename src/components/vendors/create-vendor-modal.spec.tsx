@@ -1,10 +1,23 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { toast } from 'sonner'
+import { z } from 'zod'
 import { CreateVendorModal } from './create-vendor-modal'
 
 /* ─────────────────── Mocks tipados ─────────────────── */
+
+// Mock validation schema to always pass
+vi.mock('@/lib/validations/seller-schema', () => ({
+  createSellerSchema: () =>
+    z.object({
+      name: z.string(),
+      email: z.string(),
+      phone: z.string(),
+      country: z.string(),
+      city: z.string()
+    })
+}))
 
 const mockCreateSeller = vi.fn()
 let mockIsPending = false
@@ -24,12 +37,14 @@ describe('CreateVendorModal', () => {
     mockIsPending = false
   })
 
-  it('should render title and description and allow cancellation', () => {
+  it('should render title and description and allow cancellation', async () => {
     const onOpenChange = vi.fn()
     render(<CreateVendorModal open={true} onOpenChange={onOpenChange} />)
 
-    expect(screen.getByText('modal.title')).toBeInTheDocument()
-    expect(screen.getByText('modal.description')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('modal.title')).toBeInTheDocument()
+      expect(screen.getByText('modal.description')).toBeInTheDocument()
+    })
 
     // botón cancelar
     const cancelBtn = screen.getByRole('button', {
@@ -39,23 +54,23 @@ describe('CreateVendorModal', () => {
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
-  it('should submit form successfully with country and territory selection', () => {
+  it('should submit form successfully with country and territory selection', async () => {
     const onOpenChange = vi.fn()
 
-    mockCreateSeller.mockImplementation((data, options) => {
+    mockCreateSeller.mockImplementation((_data, options) => {
       options?.onSuccess?.()
     })
 
     render(<CreateVendorModal open={true} onOpenChange={onOpenChange} />)
 
-    // Inputs por label
-    fireEvent.change(screen.getByLabelText('modal.fields.name'), {
+    // Inputs by placeholder
+    fireEvent.change(screen.getByPlaceholderText('John Doe'), {
       target: { value: 'John' }
     })
-    fireEvent.change(screen.getByLabelText('modal.fields.email'), {
+    fireEvent.change(screen.getByPlaceholderText('john@example.com'), {
       target: { value: 'john@example.com' }
     })
-    fireEvent.change(screen.getByLabelText('modal.fields.phone'), {
+    fireEvent.change(screen.getByPlaceholderText('+1 234 567 8900'), {
       target: { value: '+57 123' }
     })
 
@@ -67,28 +82,35 @@ describe('CreateVendorModal', () => {
       screen.getByRole('button', { name: 'modal.fields.territory' })
     )
 
-    // Submit
-    const submitBtn = screen.getByRole('button', {
-      name: /modal\.buttons\.create|modal\.buttons\.creating/
+    // Wait for button to be enabled
+    const submitBtn = await waitFor(() => {
+      const btn = screen.getByRole('button', {
+        name: /modal\.buttons\.create|modal\.buttons\.creating/
+      })
+      expect(btn).not.toBeDisabled()
+      return btn
     })
+
     fireEvent.click(submitBtn)
 
     // onSuccess → cierra modal y muestra toast.success
-    expect(mockCreateSeller).toHaveBeenCalledWith(
-      {
-        name: 'John',
-        email: 'john@example.com',
-        phone: '+57 123',
-        country: 'Colombia',
-        city: 'Andina'
-      },
-      expect.any(Object)
-    )
+    await waitFor(() => {
+      expect(mockCreateSeller).toHaveBeenCalledWith(
+        {
+          name: 'John',
+          email: 'john@example.com',
+          phone: '+57 123',
+          country: 'Colombia',
+          city: 'Andina'
+        },
+        expect.any(Object)
+      )
+    })
     expect(onOpenChange).toHaveBeenCalledWith(false)
     expect(toast.success).toHaveBeenCalledWith('modal.toastSuccess')
   })
 
-  it('should disable buttons when pending and display error on failure', () => {
+  it('should disable buttons when pending and display error on failure', async () => {
     const onOpenChange = vi.fn()
 
     // First test with isPending = true to verify buttons are disabled
@@ -117,13 +139,13 @@ describe('CreateVendorModal', () => {
     render(<CreateVendorModal open={true} onOpenChange={onOpenChange} />)
 
     // Fill form
-    fireEvent.change(screen.getByLabelText('modal.fields.name'), {
+    fireEvent.change(screen.getByPlaceholderText('John Doe'), {
       target: { value: 'John' }
     })
-    fireEvent.change(screen.getByLabelText('modal.fields.email'), {
+    fireEvent.change(screen.getByPlaceholderText('john@example.com'), {
       target: { value: 'john@example.com' }
     })
-    fireEvent.change(screen.getByLabelText('modal.fields.phone'), {
+    fireEvent.change(screen.getByPlaceholderText('+1 234 567 8900'), {
       target: { value: '+57 123' }
     })
     fireEvent.click(
@@ -133,13 +155,20 @@ describe('CreateVendorModal', () => {
       screen.getByRole('button', { name: 'modal.fields.territory' })
     )
 
-    // Submit
-    const newSubmitBtn = screen.getByRole('button', {
-      name: /modal\.buttons\.create|modal\.buttons\.creating/
+    // Wait for button to be enabled before clicking
+    const newSubmitBtn = await waitFor(() => {
+      const btn = screen.getByRole('button', {
+        name: /modal\.buttons\.create|modal\.buttons\.creating/
+      })
+      expect(btn).not.toBeDisabled()
+      return btn
     })
+
     fireEvent.click(newSubmitBtn)
 
-    expect(toast.error).toHaveBeenCalledWith('modal.toastError')
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('modal.toastError')
+    })
     expect(onOpenChange).not.toHaveBeenCalled()
   })
 })
