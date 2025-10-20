@@ -2,6 +2,9 @@ import '@testing-library/jest-dom'
 import { vi } from 'vitest'
 import { setupGlobalMocks } from './global-mocks'
 
+// Set environment variables for tests
+process.env.NEXT_PUBLIC_API_URL = 'http://localhost:3000'
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

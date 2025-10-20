@@ -6,12 +6,26 @@ import React, {
   ButtonHTMLAttributes
 } from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { toast } from 'sonner'
+import { z } from 'zod'
 import { AddToInventoryModal } from './add-to-inventory-modal'
 
 /* ───────────────────── Mocks tipados ───────────────────── */
+
+// Mock validation schema to always pass
+vi.mock('@/lib/validations/inventory-schema', () => ({
+  createInventorySchema: () =>
+    z.object({
+      product_id: z.string(),
+      warehouse_id: z.string(),
+      total_quantity: z.coerce.number(),
+      batch_number: z.string(),
+      expiration_date: z.string()
+    }),
+  InventoryFormData: {}
+}))
 
 // Íconos
 vi.mock('lucide-react', () => ({
@@ -62,9 +76,18 @@ beforeEach(() => {
   vi.clearAllMocks()
   mutationIsPending = false
 
-  // Por defecto, queries con datos para cubrir mapeos
+  // Por defecto, queries con datos para cubrir mapeos - using valid UUIDs
   mockUseQuery.mockReturnValue({
-    data: { items: [{ id: 'dummy', name: 'Dummy' }] },
+    data: {
+      items: [
+        {
+          id: '550e8400-e29b-41d4-a716-446655440000',
+          name: 'Test Product',
+          sku: 'TEST-001',
+          price: 10.99
+        }
+      ]
+    },
     isLoading: false,
     isError: false
   })
@@ -78,7 +101,7 @@ describe('AddToInventoryModal', () => {
 
     render(<AddToInventoryModal open={true} onOpenChange={onOpenChange} />)
 
-    // Título/Descripción (claves i18n)
+    // Título/Descripción (translation keys)
     expect(screen.getByText('modal.title')).toBeInTheDocument()
     expect(screen.getByText('modal.description')).toBeInTheDocument()
 
@@ -94,12 +117,32 @@ describe('AddToInventoryModal', () => {
     const secondCommandItem = screen.getAllByRole('button')[1]
     await user.click(secondCommandItem)
 
-    // Inputs
-    await user.type(screen.getByLabelText('modal.fields.totalQuantity'), '100')
-    await user.type(screen.getByLabelText('modal.fields.batchNumber'), 'L-77')
+    // Inputs - use placeholders since labels are i18n keys in tests
+    await user.type(screen.getByPlaceholderText('100'), '100')
+    await user.clear(screen.getByPlaceholderText('100'))
+    await user.type(screen.getByPlaceholderText('100'), '100')
+    await user.type(screen.getByPlaceholderText('BATCH001'), 'L-77')
 
-    // Fecha - click on the calendar grid
+    // Fecha - click on the calendar button first to open calendar
+    const calendarButtons = screen.getAllByRole('button')
+    const calendarTrigger = calendarButtons.find((b) =>
+      b.textContent?.includes('modal.placeholders.pickDate')
+    )
+    if (calendarTrigger) {
+      await user.click(calendarTrigger)
+    }
+    // Then click on the calendar grid
     await user.click(screen.getByRole('grid'))
+
+    // Wait for form validation to complete and button to be enabled
+    await waitFor(
+      () => {
+        const allButtons = screen.getAllByRole('button')
+        const submitBtn = allButtons[allButtons.length - 1]
+        expect(submitBtn).not.toBeDisabled()
+      },
+      { timeout: 3000 }
+    )
 
     // Submit (último botón)
     const allButtons = screen.getAllByRole('button')
@@ -107,8 +150,10 @@ describe('AddToInventoryModal', () => {
     await user.click(submitBtn)
 
     // onSuccess
+    await waitFor(() => {
+      expect(mockInvalidate).toHaveBeenCalledWith({ queryKey: ['inventory'] })
+    })
     expect(onOpenChange).toHaveBeenCalledWith(false)
-    expect(mockInvalidate).toHaveBeenCalledWith({ queryKey: ['inventory'] })
     expect(toast.success).toHaveBeenCalled()
   })
 

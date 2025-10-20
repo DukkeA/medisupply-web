@@ -213,7 +213,7 @@
     "table": {
       "addButton": "Add to Inventory",
       "columns": {
-        "productSKU": "Product SKU",
+        "productSku": "Product SKU",
         "productName": "Product Name",
         "warehouseName": "Warehouse Name",
         "totalQuantity": "Total Quantity",
@@ -277,6 +277,91 @@
     "exceeded": "Exceeded",
     "belowTarget": "Below Target",
     "cancel": "Cancel"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "country": "Please select a valid country",
+    "uuid": "Invalid ID format",
+    "selectProduct": "Please select a product",
+    "selectWarehouse": "Please select a warehouse",
+    "selectProvider": "Please select a provider",
+    "selectVendor": "Please select a vendor",
+    "selectCategory": "Please select a valid category",
+    "quantity": {
+      "required": "Quantity is required",
+      "invalid": "Quantity must be a number",
+      "wholeNumber": "Quantity must be a whole number",
+      "negative": "Quantity cannot be negative"
+    },
+    "price": {
+      "required": "Price is required",
+      "invalid": "Price must be a valid number",
+      "positive": "Price must be greater than zero",
+      "maxValue": "Price exceeds maximum value",
+      "decimal": "Price must have at most 2 decimal places"
+    },
+    "amount": {
+      "invalid": "Amount must be a valid number",
+      "positive": "Amount must be greater than zero",
+      "maxValue": "Amount exceeds maximum value",
+      "decimal": "Amount must have at most 2 decimal places"
+    },
+    "string": {
+      "required": "This field is required",
+      "maxLength": "Maximum {max} characters allowed",
+      "minLength": "Minimum {min} characters required"
+    },
+    "batchNumber": {
+      "required": "Batch number is required",
+      "maxLength": "Maximum 255 characters allowed"
+    },
+    "expirationDate": {
+      "required": "Expiration date is required",
+      "pastDate": "Warning: Expiration date is in the past"
+    },
+    "name": {
+      "required": "Name is required",
+      "maxLength": "Maximum {max} characters allowed"
+    },
+    "warehouse": {
+      "nameRequired": "Warehouse name is required"
+    },
+    "product": {
+      "nameRequired": "Product name is required",
+      "skuRequired": "SKU is required",
+      "skuMaxLength": "Maximum 100 characters allowed"
+    },
+    "sku": {
+      "required": "SKU is required",
+      "maxLength": "Maximum 100 characters allowed"
+    },
+    "provider": {
+      "nameRequired": "Provider name is required",
+      "contactRequired": "Contact name is required",
+      "nitRequired": "NIT is required",
+      "nitMaxLength": "Maximum 50 characters allowed"
+    },
+    "vendor": {
+      "nameRequired": "Vendor name is required"
+    },
+    "city": {
+      "required": "City is required",
+      "maxLength": "Maximum 100 characters allowed"
+    },
+    "address": {
+      "required": "Address is required",
+      "maxLength": "Maximum 500 characters allowed"
+    },
+    "phone": {
+      "required": "Phone number is required",
+      "maxLength": "Maximum 50 characters allowed"
+    },
+    "salesPlan": {
+      "periodFormat": "Sales period must be in format Q1-2025 (Q1-Q4)",
+      "yearRange": "Year must be between 2000 and 2100",
+      "goalPositive": "Goal must be greater than zero"
+    }
   },
   "home": {
     "welcome": "Welcome to",

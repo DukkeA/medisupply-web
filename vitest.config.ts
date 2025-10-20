@@ -21,6 +21,8 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'v8',
+      reporter: ['text', 'lcov', 'html', 'json'],
+      reportsDirectory: './coverage',
       exclude: [
         'src/components/ui/**',
         'src/app/**/layout.tsx', // Exclude layouts temporarily
