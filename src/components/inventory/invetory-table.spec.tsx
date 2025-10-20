@@ -19,9 +19,19 @@ vi.mock('./add-to-inventory-modal', () => ({
 // Mock useInventory hook
 type UseQueryResult<T> = { data?: T; isLoading: boolean; isError: boolean }
 const mockUseInventory = vi.fn<() => UseQueryResult<unknown>>()
+const mockUseProducts = vi.fn<() => UseQueryResult<unknown>>()
+const mockUseWarehouses = vi.fn<() => UseQueryResult<unknown>>()
 
 vi.mock('@/services/hooks/use-inventory', () => ({
   useInventory: () => mockUseInventory()
+}))
+
+vi.mock('@/services/hooks/use-products', () => ({
+  useProducts: () => mockUseProducts()
+}))
+
+vi.mock('@/services/hooks/use-warehouses', () => ({
+  useWarehouses: () => mockUseWarehouses()
 }))
 
 /* ────────────── Tests ────────────── */
@@ -32,6 +42,47 @@ describe('InventoryTable', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     process.env = { ...origEnv }
+
+    // Default mock values for products and warehouses
+    mockUseProducts.mockReturnValue({
+      isLoading: false,
+      isError: false,
+      data: {
+        items: [
+          {
+            sku: 'SKU-001',
+            name: 'Product 1',
+            description: 'Test product',
+            price: 10.99
+          }
+        ],
+        total: 1,
+        page: 1,
+        size: 10,
+        has_next: false,
+        has_previous: false
+      }
+    })
+
+    mockUseWarehouses.mockReturnValue({
+      isLoading: false,
+      isError: false,
+      data: {
+        items: [
+          {
+            id: 'WH-1',
+            name: 'Main Warehouse',
+            address: 'Test Address',
+            city: 'New York'
+          }
+        ],
+        total: 1,
+        page: 1,
+        size: 10,
+        has_next: false,
+        has_previous: false
+      }
+    })
   })
 
   afterEach(() => {
@@ -114,14 +165,17 @@ describe('InventoryTable', () => {
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByText('SKU-001')).toBeInTheDocument()
     expect(screen.getByText('Product 1')).toBeInTheDocument()
-    expect(screen.getByText('Main Warehouse')).toBeInTheDocument()
+    // Find "Main Warehouse" in table cell specifically
+    expect(
+      screen.getByRole('cell', { name: 'Main Warehouse' })
+    ).toBeInTheDocument()
     expect(screen.getByText('100')).toBeInTheDocument()
     expect(screen.getByText('5')).toBeInTheDocument()
     expect(screen.getByText('L-77')).toBeInTheDocument()
     expect(screen.getByText('2026-01-01')).toBeInTheDocument()
 
     const user = userEvent.setup()
-    const addBtn = screen.getByRole('button')
+    const addBtn = screen.getByRole('button', { name: /table\.addButton/i })
     expect(screen.getByTestId('add-modal')).toHaveAttribute(
       'data-open',
       'false'

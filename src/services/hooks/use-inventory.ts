@@ -15,11 +15,18 @@ const webApi = new WebApi(undefined, '', apiClient)
 
 export const INVENTORY_QUERY_KEY = 'inventory'
 
-export const useInventory = (mockData?: unknown) => {
+export const useInventory = (
+  sku?: string,
+  warehouseId?: string,
+  mockData?: unknown
+) => {
   const queryOptions: UseQueryOptions<PaginatedInventoriesResponse> = {
-    queryKey: [INVENTORY_QUERY_KEY],
+    queryKey: [INVENTORY_QUERY_KEY, sku, warehouseId],
     queryFn: async () => {
-      const response = await webApi.getInventoriesBffWebInventoriesGet({})
+      const response = await webApi.getInventoriesBffWebInventoriesGet({
+        sku,
+        warehouseId
+      })
       return response.data
     }
   }
