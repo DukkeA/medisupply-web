@@ -75,7 +75,7 @@ export function GenerateReportForm() {
   const isFormValid = reportType && dateRange?.from && dateRange?.to
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="generate-report-form">
       <div className="flex flex-col gap-4 md:flex-row md:items-end">
         <div className="flex-1">
           <label
@@ -85,19 +85,29 @@ export function GenerateReportForm() {
             {t('generateForm.reportTypeLabel')}
           </label>
           <Select value={reportType} onValueChange={setReportType}>
-            <SelectTrigger id="report-type" className="w-full">
+            <SelectTrigger
+              id="report-type"
+              className="w-full"
+              data-testid="report-type-select"
+            >
               <SelectValue
                 placeholder={t('generateForm.reportTypePlaceholder')}
               />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="orders_per_seller">
+              <SelectItem
+                value="orders_per_seller"
+                data-testid="report-type-orders-per-seller"
+              >
                 {t('generateForm.reportTypes.orders_per_seller')}
               </SelectItem>
-              <SelectItem value="low_stock">
+              <SelectItem value="low_stock" data-testid="report-type-low-stock">
                 {t('generateForm.reportTypes.low_stock')}
               </SelectItem>
-              <SelectItem value="orders_per_status">
+              <SelectItem
+                value="orders_per_status"
+                data-testid="report-type-orders-per-status"
+              >
                 {t('generateForm.reportTypes.orders_per_status')}
               </SelectItem>
             </SelectContent>
@@ -115,6 +125,7 @@ export function GenerateReportForm() {
           onClick={handleGenerateReport}
           disabled={!isFormValid || generateReportMutation.isPending}
           className="md:w-auto w-full"
+          data-testid="generate-report-button"
         >
           {generateReportMutation.isPending
             ? t('generateForm.generating')

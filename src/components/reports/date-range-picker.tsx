@@ -35,7 +35,10 @@ export function DateRangePicker({
   }
 
   return (
-    <div className={cn('grid gap-2', className)}>
+    <div
+      className={cn('grid gap-2', className)}
+      data-testid="date-range-picker"
+    >
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -45,28 +48,38 @@ export function DateRangePicker({
               'w-full justify-start text-left font-normal',
               !dateRange && 'text-muted-foreground'
             )}
+            data-testid="date-range-trigger"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {dateRange?.from ? (
               dateRange.to ? (
-                <>
+                <span data-testid="date-range-display">
                   {formatDate(dateRange.from)} - {formatDate(dateRange.to)}
-                </>
+                </span>
               ) : (
-                formatDate(dateRange.from)
+                <span data-testid="date-range-display">
+                  {formatDate(dateRange.from)}
+                </span>
               )
             ) : (
-              <span>{t('generateForm.selectDateRange')}</span>
+              <span data-testid="date-range-placeholder">
+                {t('generateForm.selectDateRange')}
+              </span>
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent
+          className="w-auto p-0"
+          align="start"
+          data-testid="date-range-popover"
+        >
           <Calendar
             mode="range"
             defaultMonth={dateRange?.from}
             selected={dateRange}
             onSelect={setDateRange}
             numberOfMonths={2}
+            data-testid="date-range-calendar"
           />
         </PopoverContent>
       </Popover>

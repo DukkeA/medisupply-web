@@ -118,15 +118,15 @@ export function ReportsTable() {
   }
 
   if (isLoading) {
-    return <div>{t('table.loading')}</div>
+    return <div data-testid="reports-loading">{t('table.loading')}</div>
   }
 
   if (isError) {
-    return <div>{t('table.error')}</div>
+    return <div data-testid="reports-error">{t('table.error')}</div>
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="reports-table">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
@@ -143,23 +143,36 @@ export function ReportsTable() {
         <TableBody>
           {!data || !data.items || data.items.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center">
+              <TableCell
+                colSpan={6}
+                className="h-24 text-center"
+                data-testid="reports-no-data"
+              >
                 {t('table.noData')}
               </TableCell>
             </TableRow>
           ) : (
             data.items.map((report: Report) => (
-              <TableRow key={report.id}>
-                <TableCell className="font-medium">{report.id}</TableCell>
-                <TableCell>
+              <TableRow key={report.id} data-testid={`report-row-${report.id}`}>
+                <TableCell
+                  className="font-medium"
+                  data-testid={`report-id-${report.id}`}
+                >
+                  {report.id}
+                </TableCell>
+                <TableCell data-testid={`report-type-${report.id}`}>
                   {t(`table.reportTypes.${report.report_type}`)}
                 </TableCell>
-                <TableCell>
+                <TableCell data-testid={`report-dates-${report.id}`}>
                   {report.start_date?.slice(0, 10)} -{' '}
                   {report.end_date?.slice(0, 10)}
                 </TableCell>
-                <TableCell>{report.created_at}</TableCell>
-                <TableCell>{t(`table.statuses.${report.status}`)}</TableCell>
+                <TableCell data-testid={`report-created-${report.id}`}>
+                  {report.created_at}
+                </TableCell>
+                <TableCell data-testid={`report-status-${report.id}`}>
+                  {t(`table.statuses.${report.status}`)}
+                </TableCell>
                 <TableCell className="text-right">
                   <Button
                     variant="ghost"
@@ -169,6 +182,7 @@ export function ReportsTable() {
                       downloadReportMutation.isPending ||
                       report.status !== 'completed'
                     }
+                    data-testid={`download-button-${report.id}`}
                   >
                     <Download className="h-4 w-4" />
                     {downloadReportMutation.isPending &&
