@@ -13,6 +13,7 @@ import { DynamicBreadcrumb } from '@/components/layout/dynamic-breadcrumb'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { Toaster } from '@/components/ui/sonner'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -61,6 +62,7 @@ export default async function RootLayout({
                   <div className="px-4">{children}</div>
                 </SidebarInset>
               </SidebarProvider>
+              <Toaster />
             </QueryProvider>
           </AuthProvider>
         </NextIntlClientProvider>
