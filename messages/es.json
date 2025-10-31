@@ -278,6 +278,47 @@
     "belowTarget": "Por Debajo de la Meta",
     "cancel": "Cancelar"
   },
+  "reports": {
+    "page": {
+      "title": "Informes",
+      "description": "Administra tus informes aquí."
+    },
+    "table": {
+      "columns": {
+        "id": "ID",
+        "reportType": "Tipo de Informe",
+        "dateRange": "Rango de Fechas",
+        "createdAt": "Fecha de Creación",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "reportTypes": {
+        "sales": "Ventas",
+        "orders": "Órdenes",
+        "stock": "Inventario"
+      },
+      "statuses": {
+        "completed": "Completado",
+        "in_progress": "En Progreso",
+        "failed": "Fallido"
+      },
+      "loading": "Cargando informes...",
+      "error": "Error al cargar informes.",
+      "noData": "No se encontraron informes. Genera tu primer informe para comenzar."
+    },
+    "generateForm": {
+      "reportTypeLabel": "Tipo de Informe",
+      "reportTypePlaceholder": "Selecciona el tipo de informe",
+      "reportTypes": {
+        "sales": "Informe de Ventas",
+        "orders": "Informe de Órdenes",
+        "stock": "Informe de Inventario"
+      },
+      "dateRangeLabel": "Rango de Fechas",
+      "selectDateRange": "Selecciona el rango de fechas",
+      "generateButton": "Generar Informe"
+    }
+  },
   "validation": {
     "required": "Este campo es obligatorio",
     "email": "Por favor ingresa un correo electrónico válido",

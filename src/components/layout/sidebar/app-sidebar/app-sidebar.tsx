@@ -73,17 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: t('reports'),
         url: '/reports',
         icon: Settings2,
-        isActive: true,
-        items: [
-          {
-            title: t('overview'),
-            url: '/reports'
-          },
-          {
-            title: t('generate-report'),
-            url: '/reports/generate'
-          }
-        ]
+        isActive: true
       },
       {
         title: t('inventory'),

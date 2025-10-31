@@ -278,6 +278,47 @@
     "belowTarget": "Below Target",
     "cancel": "Cancel"
   },
+  "reports": {
+    "page": {
+      "title": "Reports",
+      "description": "Manage your reports here."
+    },
+    "table": {
+      "columns": {
+        "id": "ID",
+        "reportType": "Report Type",
+        "dateRange": "Date Range",
+        "createdAt": "Created At",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "reportTypes": {
+        "sales": "Sales",
+        "orders": "Orders",
+        "stock": "Stock"
+      },
+      "statuses": {
+        "completed": "Completed",
+        "in_progress": "In Progress",
+        "failed": "Failed"
+      },
+      "loading": "Loading reports...",
+      "error": "Error loading reports.",
+      "noData": "No reports found. Generate your first report to get started."
+    },
+    "generateForm": {
+      "reportTypeLabel": "Report Type",
+      "reportTypePlaceholder": "Select report type",
+      "reportTypes": {
+        "sales": "Sales Report",
+        "orders": "Orders Report",
+        "stock": "Stock Report"
+      },
+      "dateRangeLabel": "Date Range",
+      "selectDateRange": "Select date range",
+      "generateButton": "Generate Report"
+    }
+  },
   "validation": {
     "required": "This field is required",
     "email": "Please enter a valid email address",
