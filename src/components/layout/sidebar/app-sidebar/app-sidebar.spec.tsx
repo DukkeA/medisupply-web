@@ -1,14 +1,33 @@
 import { renderWithProviders } from '@/__tests__/test-utils'
 import { screen } from '@testing-library/react'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { AppSidebar } from '.'
+import { AuthProvider } from '@/contexts/AuthContext'
 
+// Mock the useAuth hook
+vi.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      user_id: '123',
+      name: 'John Doe',
+      email: 'john@example.com',
+      groups: ['web_users'],
+      user_type: null
+    },
+    logout: vi.fn(),
+    isLoading: false,
+    isAuthenticated: true
+  }),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  )
+}))
 describe('AppSidebar', () => {
   it('renders the company branding', () => {
     renderWithProviders(<AppSidebar />, {
       locale: 'en',
-      additionalWrappers: [SidebarProvider],
+      additionalWrappers: [SidebarProvider, AuthProvider],
       skipQueryClient: true
     })
 
@@ -19,7 +38,7 @@ describe('AppSidebar', () => {
   it('renders main navigation items', () => {
     renderWithProviders(<AppSidebar />, {
       locale: 'en',
-      additionalWrappers: [SidebarProvider],
+      additionalWrappers: [SidebarProvider, AuthProvider],
       skipQueryClient: true
     })
 
@@ -34,12 +53,12 @@ describe('AppSidebar', () => {
   it('renders user navigation in footer', () => {
     renderWithProviders(<AppSidebar />, {
       locale: 'en',
-      additionalWrappers: [SidebarProvider],
+      additionalWrappers: [SidebarProvider, AuthProvider],
       skipQueryClient: true
     })
 
-    expect(screen.getByText('shadcn')).toBeInTheDocument()
-    expect(screen.getByText('m@example.com')).toBeInTheDocument()
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+    expect(screen.getByText('john@example.com')).toBeInTheDocument()
   })
 
   it('applies variant and additional props correctly', () => {
@@ -47,7 +66,7 @@ describe('AppSidebar', () => {
       <AppSidebar data-testid="sidebar" className="custom-class" />,
       {
         locale: 'en',
-        additionalWrappers: [SidebarProvider],
+        additionalWrappers: [SidebarProvider, AuthProvider],
         skipQueryClient: true
       }
     )

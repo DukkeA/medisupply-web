@@ -26,9 +26,12 @@ const createApiClient = (): AxiosInstance => {
 
   instance.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem('access_token')
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
+      // Only add access token if no Authorization header is already present
+      if (!config.headers.Authorization) {
+        const token = localStorage.getItem('access_token')
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`
+        }
       }
       return config
     },
