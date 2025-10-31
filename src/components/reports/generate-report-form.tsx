@@ -41,12 +41,17 @@ export function GenerateReportForm() {
     <div className="space-y-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-end">
         <div className="flex-1">
-          <label htmlFor="report-type" className="text-sm font-medium mb-2 block">
+          <label
+            htmlFor="report-type"
+            className="text-sm font-medium mb-2 block"
+          >
             {t('generateForm.reportTypeLabel')}
           </label>
           <Select value={reportType} onValueChange={setReportType}>
             <SelectTrigger id="report-type" className="w-full">
-              <SelectValue placeholder={t('generateForm.reportTypePlaceholder')} />
+              <SelectValue
+                placeholder={t('generateForm.reportTypePlaceholder')}
+              />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="sales">
