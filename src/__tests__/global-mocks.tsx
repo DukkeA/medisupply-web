@@ -37,7 +37,8 @@ import type {
   ButtonHTMLAttributes,
   InputHTMLAttributes,
   LabelHTMLAttributes,
-  PropsWithChildren
+  PropsWithChildren,
+  HTMLAttributes
 } from 'react'
 import { vi } from 'vitest'
 
@@ -178,8 +179,11 @@ export function setupUIComponentMocks() {
   // Select
   vi.mock('@/components/ui/select', () => ({
     Select: ({ children }: PropsWithChildren) => <div>{children}</div>,
-    SelectTrigger: ({ children }: PropsWithChildren) => (
-      <button>{children}</button>
+    SelectTrigger: ({
+      children,
+      ...props
+    }: PropsWithChildren<ButtonHTMLAttributes<HTMLButtonElement>>) => (
+      <button {...props}>{children}</button>
     ),
     SelectValue: ({ placeholder }: { placeholder?: string }) => (
       <span>{placeholder}</span>
@@ -217,9 +221,13 @@ export function setupUIComponentMocks() {
     TableHeader: ({ children }: PropsWithChildren) => <thead>{children}</thead>,
     TableBody: ({ children }: PropsWithChildren) => <tbody>{children}</tbody>,
     TableFooter: ({ children }: PropsWithChildren) => <tfoot>{children}</tfoot>,
-    TableRow: ({ children }: PropsWithChildren) => <tr>{children}</tr>,
+    TableRow: (
+      props: PropsWithChildren<HTMLAttributes<HTMLTableRowElement>>
+    ) => <tr {...props}>{props.children}</tr>,
     TableHead: ({ children }: PropsWithChildren) => <th>{children}</th>,
-    TableCell: ({ children }: PropsWithChildren) => <td>{children}</td>,
+    TableCell: (
+      props: PropsWithChildren<HTMLAttributes<HTMLTableCellElement>>
+    ) => <td {...props}>{props.children}</td>,
     TableCaption: ({ children }: PropsWithChildren) => (
       <caption>{children}</caption>
     )
@@ -227,17 +235,30 @@ export function setupUIComponentMocks() {
 
   // Calendar
   vi.mock('@/components/ui/calendar', () => ({
-    Calendar: ({
-      selected,
-      onSelect
-    }: {
-      selected?: Date
-      onSelect?: (date: Date) => void
-    }) => (
-      <div role="grid" onClick={() => onSelect?.(new Date())}>
-        {selected?.toDateString()}
-      </div>
-    )
+    Calendar: (props: {
+      selected?: unknown
+      onSelect?: (date: unknown) => void
+      defaultMonth?: unknown
+      numberOfMonths?: unknown
+      mode?: unknown
+      [key: string]: unknown
+    }) => {
+      const {
+        onSelect,
+        selected,
+        defaultMonth,
+        numberOfMonths,
+        mode,
+        ...domProps
+      } = props
+      return (
+        <div
+          role="grid"
+          onClick={() => onSelect?.(new Date())}
+          {...domProps}
+        ></div>
+      )
+    }
   }))
 }
 

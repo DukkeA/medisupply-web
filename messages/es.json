@@ -293,30 +293,39 @@
         "actions": "Acciones"
       },
       "reportTypes": {
-        "sales": "Ventas",
-        "orders": "Órdenes",
-        "stock": "Inventario"
+        "orders_per_seller": "Órdenes por Vendedor",
+        "low_stock": "Alerta de Stock Bajo",
+        "orders_per_status": "Órdenes por Estado"
       },
       "statuses": {
         "completed": "Completado",
         "in_progress": "En Progreso",
+        "processing": "Procesando",
         "failed": "Fallido"
       },
       "loading": "Cargando informes...",
       "error": "Error al cargar informes.",
       "noData": "No se encontraron informes. Genera tu primer informe para comenzar."
     },
+    "download": {
+      "success": "Descarga del informe iniciada correctamente",
+      "error": "Error al descargar el informe",
+      "noUrl": "URL de descarga no disponible"
+    },
     "generateForm": {
       "reportTypeLabel": "Tipo de Informe",
       "reportTypePlaceholder": "Selecciona el tipo de informe",
       "reportTypes": {
-        "sales": "Informe de Ventas",
-        "orders": "Informe de Órdenes",
-        "stock": "Informe de Inventario"
+        "orders_per_seller": "Órdenes por Vendedor",
+        "low_stock": "Alerta de Stock Bajo",
+        "orders_per_status": "Órdenes por Estado"
       },
       "dateRangeLabel": "Rango de Fechas",
       "selectDateRange": "Selecciona el rango de fechas",
-      "generateButton": "Generar Informe"
+      "generateButton": "Generar Informe",
+      "generating": "Generando...",
+      "success": "Generación del informe iniciada correctamente",
+      "error": "Error al generar el informe"
     }
   },
   "validation": {
