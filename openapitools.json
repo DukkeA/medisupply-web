@@ -7,7 +7,7 @@
     "generators": {
       "medisupply-api": {
         "generatorName": "typescript-axios",
-        "inputSpec": "https://bffproyecto.juanandresdeveloper.com/bff/openapi.json",
+        "inputSpec": "./openapi/openapi.json",
         "output": "./src/generated",
         "additionalProperties": {
           "npmName": "@medisupply/api-client",

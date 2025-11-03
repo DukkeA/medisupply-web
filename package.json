@@ -14,7 +14,8 @@
     "test:coverage": "vitest --coverage --run",
     "test:watch": "vitest --watch",
     "api:generate": "openapi-generator-cli generate",
-    "api:validate": "openapi-generator-cli validate -i https://bffproyecto.juanandresdeveloper.com/bff/openapi.json",
+    "api:update-spec": "curl -L https://bffproyecto.juanandresdeveloper.com/bff/openapi.json -o openapi/openapi.json",
+    "api:validate": "openapi-generator-cli validate -i ./openapi/openapi.json",
     "prepare": "husky"
   },
   "dependencies": {
