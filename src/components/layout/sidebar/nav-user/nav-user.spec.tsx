@@ -14,11 +14,21 @@ vi.mock('@/components/ui/sidebar', async () => {
   }
 })
 
-const mockUser = {
-  name: 'John Doe',
-  email: 'john@example.com',
-  avatar: '/avatars/john.jpg'
-}
+// Mock the useAuth hook
+vi.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      user_id: '123',
+      name: 'John Doe',
+      email: 'john@example.com',
+      groups: ['web_users'],
+      user_type: null
+    },
+    logout: vi.fn(),
+    isLoading: false,
+    isAuthenticated: true
+  })
+}))
 
 const renderOptions = {
   locale: 'en' as const,
@@ -28,38 +38,41 @@ const renderOptions = {
 
 describe('NavUser', () => {
   it('renders user information', () => {
-    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
+    renderWithProviders(<NavUser />, renderOptions)
 
     expect(screen.getByText('John Doe')).toBeInTheDocument()
     expect(screen.getByText('john@example.com')).toBeInTheDocument()
   })
 
   it('renders user avatar with correct src and alt', () => {
-    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
+    renderWithProviders(<NavUser />, renderOptions)
 
-    // Avatar may fallback to text, so we check if there are images or fallback text
+    // Avatar should use dicebear API with user_id
     const images = screen.queryAllByRole('img')
     if (images.length > 0) {
       images.forEach((avatar) => {
-        expect(avatar).toHaveAttribute('src', '/avatars/john.jpg')
+        expect(avatar).toHaveAttribute(
+          'src',
+          'https://api.dicebear.com/7.x/avataaars/svg?seed=123'
+        )
         expect(avatar).toHaveAttribute('alt', 'John Doe')
       })
     } else {
-      // If no images, should have fallback text
-      expect(screen.getByText('CN')).toBeInTheDocument()
+      // If no images, should have fallback text (first letter of name)
+      expect(screen.getByText('J')).toBeInTheDocument()
     }
   })
 
   it('renders fallback when avatar fails to load', () => {
-    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
+    renderWithProviders(<NavUser />, renderOptions)
 
-    const fallbacks = screen.getAllByText('CN')
+    const fallbacks = screen.getAllByText('J')
     expect(fallbacks.length).toBeGreaterThanOrEqual(1) // At least one fallback visible
   })
 
   it('opens dropdown menu when clicked', async () => {
     const user = userEvent.setup()
-    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
+    renderWithProviders(<NavUser />, renderOptions)
 
     const triggerButton = screen.getByRole('button')
     await user.click(triggerButton)
@@ -73,7 +86,7 @@ describe('NavUser', () => {
 
   it('renders all menu items in dropdown', async () => {
     const user = userEvent.setup()
-    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
+    renderWithProviders(<NavUser />, renderOptions)
 
     const triggerButton = screen.getByRole('button')
     await user.click(triggerButton)
@@ -93,7 +106,7 @@ describe('NavUser', () => {
 
   it('renders user info duplicate in dropdown header', async () => {
     const user = userEvent.setup()
-    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
+    renderWithProviders(<NavUser />, renderOptions)
 
     const triggerButton = screen.getByRole('button')
     await user.click(triggerButton)
@@ -123,7 +136,7 @@ describe('NavUser', () => {
     )
 
     const user = userEvent.setup()
-    renderWithProviders(<NavUser user={mockUser} />, renderOptions)
+    renderWithProviders(<NavUser />, renderOptions)
 
     const triggerButton = screen.getByRole('button')
     await user.click(triggerButton)

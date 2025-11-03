@@ -34,11 +34,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations('sidebar')
 
   const data = {
-    user: {
-      name: 'shadcn',
-      email: 'm@example.com',
-      avatar: '/avatars/shadcn.jpg'
-    },
     navMain: [
       {
         title: t('providers'),
@@ -73,17 +68,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: t('reports'),
         url: '/reports',
         icon: Settings2,
-        isActive: true,
-        items: [
-          {
-            title: t('overview'),
-            url: '/reports'
-          },
-          {
-            title: t('generate-report'),
-            url: '/reports/generate'
-          }
-        ]
+        isActive: true
       },
       {
         title: t('inventory'),
@@ -163,7 +148,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )

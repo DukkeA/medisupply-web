@@ -278,6 +278,56 @@
     "belowTarget": "Below Target",
     "cancel": "Cancel"
   },
+  "reports": {
+    "page": {
+      "title": "Reports",
+      "description": "Manage your reports here."
+    },
+    "table": {
+      "columns": {
+        "id": "ID",
+        "reportType": "Report Type",
+        "dateRange": "Date Range",
+        "createdAt": "Created At",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "reportTypes": {
+        "orders_per_seller": "Orders per Seller",
+        "low_stock": "Low Stock Alert",
+        "orders_per_status": "Orders by Status"
+      },
+      "statuses": {
+        "completed": "Completed",
+        "in_progress": "In Progress",
+        "processing": "Processing",
+        "failed": "Failed"
+      },
+      "loading": "Loading reports...",
+      "error": "Error loading reports.",
+      "noData": "No reports found. Generate your first report to get started."
+    },
+    "download": {
+      "success": "Report download started successfully",
+      "error": "Failed to download report",
+      "noUrl": "Download URL not available"
+    },
+    "generateForm": {
+      "reportTypeLabel": "Report Type",
+      "reportTypePlaceholder": "Select report type",
+      "reportTypes": {
+        "orders_per_seller": "Orders per Seller",
+        "low_stock": "Low Stock Alert",
+        "orders_per_status": "Orders by Status"
+      },
+      "dateRangeLabel": "Date Range",
+      "selectDateRange": "Select date range",
+      "generateButton": "Generate Report",
+      "generating": "Generating...",
+      "success": "Report generation started successfully",
+      "error": "Failed to generate report"
+    }
+  },
   "validation": {
     "required": "This field is required",
     "email": "Please enter a valid email address",

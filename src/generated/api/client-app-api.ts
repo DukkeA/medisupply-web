@@ -27,6 +27,8 @@ import type { ClientAppSchemasOrderSchemasOrderCreateInput } from '../models';
 import type { HTTPValidationError } from '../models';
 // @ts-ignore
 import type { OrderCreateResponse } from '../models';
+// @ts-ignore
+import type { PaginatedOrdersResponse } from '../models';
 /**
  * ClientAppApi - axios parameter creator
  * @export
@@ -55,6 +57,10 @@ export const ClientAppApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -63,6 +69,50 @@ export const ClientAppApiAxiosParamCreator = function (configuration?: Configura
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(clientAppSchemasOrderSchemasOrderCreateInput, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * List orders for the authenticated client user.  This endpoint: 1. Gets the Cognito User ID from the authenticated user (JWT sub claim) 2. Looks up the client record using cognito_user_id 3. Fetches orders for that client (customer_id = cliente_id)  Requires client_users group authentication.  Args:     limit: Maximum number of orders to return (1-100)     offset: Number of orders to skip     order_port: Order port for service communication     client_port: Client port for service communication     user: Authenticated client user  Returns:     PaginatedOrdersResponse with user\'s orders  Raises:     HTTPException: If client not found or order fetching fails
+         * @summary List My Orders
+         * @param {number} [limit] Maximum number of orders to return
+         * @param {number} [offset] Number of orders to skip
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listMyOrdersBffClientAppMyOrdersGet: async (limit?: number, offset?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/bff/client-app/my-orders`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -92,6 +142,20 @@ export const ClientAppApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['ClientAppApi.createOrderBffClientAppOrdersPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * List orders for the authenticated client user.  This endpoint: 1. Gets the Cognito User ID from the authenticated user (JWT sub claim) 2. Looks up the client record using cognito_user_id 3. Fetches orders for that client (customer_id = cliente_id)  Requires client_users group authentication.  Args:     limit: Maximum number of orders to return (1-100)     offset: Number of orders to skip     order_port: Order port for service communication     client_port: Client port for service communication     user: Authenticated client user  Returns:     PaginatedOrdersResponse with user\'s orders  Raises:     HTTPException: If client not found or order fetching fails
+         * @summary List My Orders
+         * @param {number} [limit] Maximum number of orders to return
+         * @param {number} [offset] Number of orders to skip
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listMyOrdersBffClientAppMyOrdersGet(limit?: number, offset?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedOrdersResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listMyOrdersBffClientAppMyOrdersGet(limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ClientAppApi.listMyOrdersBffClientAppMyOrdersGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -112,6 +176,16 @@ export const ClientAppApiFactory = function (configuration?: Configuration, base
         createOrderBffClientAppOrdersPost(requestParameters: ClientAppApiCreateOrderBffClientAppOrdersPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<OrderCreateResponse> {
             return localVarFp.createOrderBffClientAppOrdersPost(requestParameters.clientAppSchemasOrderSchemasOrderCreateInput, options).then((request) => request(axios, basePath));
         },
+        /**
+         * List orders for the authenticated client user.  This endpoint: 1. Gets the Cognito User ID from the authenticated user (JWT sub claim) 2. Looks up the client record using cognito_user_id 3. Fetches orders for that client (customer_id = cliente_id)  Requires client_users group authentication.  Args:     limit: Maximum number of orders to return (1-100)     offset: Number of orders to skip     order_port: Order port for service communication     client_port: Client port for service communication     user: Authenticated client user  Returns:     PaginatedOrdersResponse with user\'s orders  Raises:     HTTPException: If client not found or order fetching fails
+         * @summary List My Orders
+         * @param {ClientAppApiListMyOrdersBffClientAppMyOrdersGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listMyOrdersBffClientAppMyOrdersGet(requestParameters: ClientAppApiListMyOrdersBffClientAppMyOrdersGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedOrdersResponse> {
+            return localVarFp.listMyOrdersBffClientAppMyOrdersGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -131,6 +205,16 @@ export interface ClientAppApiInterface {
      */
     createOrderBffClientAppOrdersPost(requestParameters: ClientAppApiCreateOrderBffClientAppOrdersPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<OrderCreateResponse>;
 
+    /**
+     * List orders for the authenticated client user.  This endpoint: 1. Gets the Cognito User ID from the authenticated user (JWT sub claim) 2. Looks up the client record using cognito_user_id 3. Fetches orders for that client (customer_id = cliente_id)  Requires client_users group authentication.  Args:     limit: Maximum number of orders to return (1-100)     offset: Number of orders to skip     order_port: Order port for service communication     client_port: Client port for service communication     user: Authenticated client user  Returns:     PaginatedOrdersResponse with user\'s orders  Raises:     HTTPException: If client not found or order fetching fails
+     * @summary List My Orders
+     * @param {ClientAppApiListMyOrdersBffClientAppMyOrdersGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ClientAppApiInterface
+     */
+    listMyOrdersBffClientAppMyOrdersGet(requestParameters?: ClientAppApiListMyOrdersBffClientAppMyOrdersGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedOrdersResponse>;
+
 }
 
 /**
@@ -145,6 +229,27 @@ export interface ClientAppApiCreateOrderBffClientAppOrdersPostRequest {
      * @memberof ClientAppApiCreateOrderBffClientAppOrdersPost
      */
     readonly clientAppSchemasOrderSchemasOrderCreateInput: ClientAppSchemasOrderSchemasOrderCreateInput
+}
+
+/**
+ * Request parameters for listMyOrdersBffClientAppMyOrdersGet operation in ClientAppApi.
+ * @export
+ * @interface ClientAppApiListMyOrdersBffClientAppMyOrdersGetRequest
+ */
+export interface ClientAppApiListMyOrdersBffClientAppMyOrdersGetRequest {
+    /**
+     * Maximum number of orders to return
+     * @type {number}
+     * @memberof ClientAppApiListMyOrdersBffClientAppMyOrdersGet
+     */
+    readonly limit?: number
+
+    /**
+     * Number of orders to skip
+     * @type {number}
+     * @memberof ClientAppApiListMyOrdersBffClientAppMyOrdersGet
+     */
+    readonly offset?: number
 }
 
 /**
@@ -164,6 +269,18 @@ export class ClientAppApi extends BaseAPI implements ClientAppApiInterface {
      */
     public createOrderBffClientAppOrdersPost(requestParameters: ClientAppApiCreateOrderBffClientAppOrdersPostRequest, options?: RawAxiosRequestConfig) {
         return ClientAppApiFp(this.configuration).createOrderBffClientAppOrdersPost(requestParameters.clientAppSchemasOrderSchemasOrderCreateInput, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * List orders for the authenticated client user.  This endpoint: 1. Gets the Cognito User ID from the authenticated user (JWT sub claim) 2. Looks up the client record using cognito_user_id 3. Fetches orders for that client (customer_id = cliente_id)  Requires client_users group authentication.  Args:     limit: Maximum number of orders to return (1-100)     offset: Number of orders to skip     order_port: Order port for service communication     client_port: Client port for service communication     user: Authenticated client user  Returns:     PaginatedOrdersResponse with user\'s orders  Raises:     HTTPException: If client not found or order fetching fails
+     * @summary List My Orders
+     * @param {ClientAppApiListMyOrdersBffClientAppMyOrdersGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ClientAppApi
+     */
+    public listMyOrdersBffClientAppMyOrdersGet(requestParameters: ClientAppApiListMyOrdersBffClientAppMyOrdersGetRequest = {}, options?: RawAxiosRequestConfig) {
+        return ClientAppApiFp(this.configuration).listMyOrdersBffClientAppMyOrdersGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
