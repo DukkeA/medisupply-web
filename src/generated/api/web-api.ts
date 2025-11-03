@@ -38,6 +38,8 @@ import type { PaginatedProductsResponse } from '../models';
 // @ts-ignore
 import type { PaginatedProvidersResponse } from '../models';
 // @ts-ignore
+import type { PaginatedReportsResponse } from '../models';
+// @ts-ignore
 import type { PaginatedSalesPlansResponse } from '../models';
 // @ts-ignore
 import type { PaginatedWarehousesResponse } from '../models';
@@ -47,6 +49,12 @@ import type { ProductCreate } from '../models';
 import type { ProviderCreate } from '../models';
 // @ts-ignore
 import type { ProviderCreateResponse } from '../models';
+// @ts-ignore
+import type { ReportCreateRequest } from '../models';
+// @ts-ignore
+import type { ReportCreateResponse } from '../models';
+// @ts-ignore
+import type { ReportResponse } from '../models';
 // @ts-ignore
 import type { ResponseGetSellersBffWebSellersGet } from '../models';
 // @ts-ignore
@@ -91,6 +99,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -126,6 +138,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -163,6 +179,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
             if (file !== undefined) { 
@@ -204,6 +224,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -212,6 +236,46 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(providerCreate, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Create a report generation request.  Routes to appropriate microservice based on report type: - orders_per_seller, orders_per_status → Order microservice - low_stock → Inventory microservice  Args:     request: Report creation request     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     ReportCreateResponse with report_id and status
+         * @summary Create Report
+         * @param {ReportCreateRequest} reportCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createReportBffWebReportsPost: async (reportCreateRequest: ReportCreateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'reportCreateRequest' is not null or undefined
+            assertParamExists('createReportBffWebReportsPost', 'reportCreateRequest', reportCreateRequest)
+            const localVarPath = `/bff/web/reports`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(reportCreateRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -239,6 +303,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -276,6 +344,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -311,6 +383,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -348,6 +424,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
@@ -397,6 +477,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
             }
@@ -437,6 +521,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
             }
@@ -444,6 +532,44 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             if (offset !== undefined) {
                 localVarQueryParameter['offset'] = offset;
             }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get a single report with download URL.  Tries Order microservice first, then Inventory microservice.  Args:     report_id: Report UUID     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     ReportResponse with report details and download URL
+         * @summary Get Report
+         * @param {string} reportId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getReportBffWebReportsReportIdGet: async (reportId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'reportId' is not null or undefined
+            assertParamExists('getReportBffWebReportsReportIdGet', 'reportId', reportId)
+            const localVarPath = `/bff/web/reports/{report_id}`
+                .replace(`{${"report_id"}}`, encodeURIComponent(String(reportId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -476,6 +602,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
@@ -521,6 +651,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
             }
@@ -560,6 +694,10 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
@@ -601,12 +739,70 @@ export const WebApiAxiosParamCreator = function (configuration?: Configuration) 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
             }
 
             if (offset !== undefined) {
                 localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * List all reports for the authenticated user.  Aggregates reports from Order and Inventory microservices.  Args:     limit: Maximum number of reports to return     offset: Number of reports to skip     status: Optional status filter     report_type: Optional report type filter     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     PaginatedReportsResponse with list of reports
+         * @summary List Reports
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {string | null} [status] 
+         * @param {string | null} [reportType] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listReportsBffWebReportsGet: async (limit?: number, offset?: number, status?: string | null, reportType?: string | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/bff/web/reports`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication HTTPBearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+            if (status !== undefined) {
+                localVarQueryParameter['status'] = status;
+            }
+
+            if (reportType !== undefined) {
+                localVarQueryParameter['report_type'] = reportType;
             }
 
 
@@ -680,6 +876,19 @@ export const WebApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createProviderBffWebProviderPost(providerCreate, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['WebApi.createProviderBffWebProviderPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Create a report generation request.  Routes to appropriate microservice based on report type: - orders_per_seller, orders_per_status → Order microservice - low_stock → Inventory microservice  Args:     request: Report creation request     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     ReportCreateResponse with report_id and status
+         * @summary Create Report
+         * @param {ReportCreateRequest} reportCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createReportBffWebReportsPost(reportCreateRequest: ReportCreateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ReportCreateResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createReportBffWebReportsPost(reportCreateRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.createReportBffWebReportsPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -766,6 +975,19 @@ export const WebApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * Get a single report with download URL.  Tries Order microservice first, then Inventory microservice.  Args:     report_id: Report UUID     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     ReportResponse with report details and download URL
+         * @summary Get Report
+         * @param {string} reportId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getReportBffWebReportsReportIdGet(reportId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ReportResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getReportBffWebReportsReportIdGet(reportId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.getReportBffWebReportsReportIdGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
          * @summary Get Sales Plans
          * @param {number} [limit] 
@@ -822,6 +1044,22 @@ export const WebApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['WebApi.getWarehousesBffWebWarehousesGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * List all reports for the authenticated user.  Aggregates reports from Order and Inventory microservices.  Args:     limit: Maximum number of reports to return     offset: Number of reports to skip     status: Optional status filter     report_type: Optional report type filter     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     PaginatedReportsResponse with list of reports
+         * @summary List Reports
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {string | null} [status] 
+         * @param {string | null} [reportType] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listReportsBffWebReportsGet(limit?: number, offset?: number, status?: string | null, reportType?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedReportsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listReportsBffWebReportsGet(limit, offset, status, reportType, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['WebApi.listReportsBffWebReportsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -871,6 +1109,16 @@ export const WebApiFactory = function (configuration?: Configuration, basePath?:
          */
         createProviderBffWebProviderPost(requestParameters: WebApiCreateProviderBffWebProviderPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<ProviderCreateResponse> {
             return localVarFp.createProviderBffWebProviderPost(requestParameters.providerCreate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create a report generation request.  Routes to appropriate microservice based on report type: - orders_per_seller, orders_per_status → Order microservice - low_stock → Inventory microservice  Args:     request: Report creation request     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     ReportCreateResponse with report_id and status
+         * @summary Create Report
+         * @param {WebApiCreateReportBffWebReportsPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createReportBffWebReportsPost(requestParameters: WebApiCreateReportBffWebReportsPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<ReportCreateResponse> {
+            return localVarFp.createReportBffWebReportsPost(requestParameters.reportCreateRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
@@ -933,6 +1181,16 @@ export const WebApiFactory = function (configuration?: Configuration, basePath?:
             return localVarFp.getProvidersBffWebProvidersGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
         },
         /**
+         * Get a single report with download URL.  Tries Order microservice first, then Inventory microservice.  Args:     report_id: Report UUID     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     ReportResponse with report details and download URL
+         * @summary Get Report
+         * @param {WebApiGetReportBffWebReportsReportIdGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getReportBffWebReportsReportIdGet(requestParameters: WebApiGetReportBffWebReportsReportIdGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<ReportResponse> {
+            return localVarFp.getReportBffWebReportsReportIdGet(requestParameters.reportId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
          * @summary Get Sales Plans
          * @param {WebApiGetSalesPlansBffWebSalesPlansGetRequest} requestParameters Request parameters.
@@ -971,6 +1229,16 @@ export const WebApiFactory = function (configuration?: Configuration, basePath?:
          */
         getWarehousesBffWebWarehousesGet(requestParameters: WebApiGetWarehousesBffWebWarehousesGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedWarehousesResponse> {
             return localVarFp.getWarehousesBffWebWarehousesGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * List all reports for the authenticated user.  Aggregates reports from Order and Inventory microservices.  Args:     limit: Maximum number of reports to return     offset: Number of reports to skip     status: Optional status filter     report_type: Optional report type filter     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     PaginatedReportsResponse with list of reports
+         * @summary List Reports
+         * @param {WebApiListReportsBffWebReportsGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listReportsBffWebReportsGet(requestParameters: WebApiListReportsBffWebReportsGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedReportsResponse> {
+            return localVarFp.listReportsBffWebReportsGet(requestParameters.limit, requestParameters.offset, requestParameters.status, requestParameters.reportType, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1020,6 +1288,16 @@ export interface WebApiInterface {
      * @memberof WebApiInterface
      */
     createProviderBffWebProviderPost(requestParameters: WebApiCreateProviderBffWebProviderPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<ProviderCreateResponse>;
+
+    /**
+     * Create a report generation request.  Routes to appropriate microservice based on report type: - orders_per_seller, orders_per_status → Order microservice - low_stock → Inventory microservice  Args:     request: Report creation request     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     ReportCreateResponse with report_id and status
+     * @summary Create Report
+     * @param {WebApiCreateReportBffWebReportsPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    createReportBffWebReportsPost(requestParameters: WebApiCreateReportBffWebReportsPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<ReportCreateResponse>;
 
     /**
      * Create a new sales plan.  Args:     sales_plan: Sales plan data to create     seller_port: Seller port for service communication  Returns:     Created sales plan id and success message
@@ -1082,6 +1360,16 @@ export interface WebApiInterface {
     getProvidersBffWebProvidersGet(requestParameters?: WebApiGetProvidersBffWebProvidersGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedProvidersResponse>;
 
     /**
+     * Get a single report with download URL.  Tries Order microservice first, then Inventory microservice.  Args:     report_id: Report UUID     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     ReportResponse with report details and download URL
+     * @summary Get Report
+     * @param {WebApiGetReportBffWebReportsReportIdGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    getReportBffWebReportsReportIdGet(requestParameters: WebApiGetReportBffWebReportsReportIdGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<ReportResponse>;
+
+    /**
      * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
      * @summary Get Sales Plans
      * @param {WebApiGetSalesPlansBffWebSalesPlansGetRequest} requestParameters Request parameters.
@@ -1120,6 +1408,16 @@ export interface WebApiInterface {
      * @memberof WebApiInterface
      */
     getWarehousesBffWebWarehousesGet(requestParameters?: WebApiGetWarehousesBffWebWarehousesGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedWarehousesResponse>;
+
+    /**
+     * List all reports for the authenticated user.  Aggregates reports from Order and Inventory microservices.  Args:     limit: Maximum number of reports to return     offset: Number of reports to skip     status: Optional status filter     report_type: Optional report type filter     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     PaginatedReportsResponse with list of reports
+     * @summary List Reports
+     * @param {WebApiListReportsBffWebReportsGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApiInterface
+     */
+    listReportsBffWebReportsGet(requestParameters?: WebApiListReportsBffWebReportsGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedReportsResponse>;
 
 }
 
@@ -1177,6 +1475,20 @@ export interface WebApiCreateProviderBffWebProviderPostRequest {
      * @memberof WebApiCreateProviderBffWebProviderPost
      */
     readonly providerCreate: ProviderCreate
+}
+
+/**
+ * Request parameters for createReportBffWebReportsPost operation in WebApi.
+ * @export
+ * @interface WebApiCreateReportBffWebReportsPostRequest
+ */
+export interface WebApiCreateReportBffWebReportsPostRequest {
+    /**
+     * 
+     * @type {ReportCreateRequest}
+     * @memberof WebApiCreateReportBffWebReportsPost
+     */
+    readonly reportCreateRequest: ReportCreateRequest
 }
 
 /**
@@ -1299,6 +1611,20 @@ export interface WebApiGetProvidersBffWebProvidersGetRequest {
 }
 
 /**
+ * Request parameters for getReportBffWebReportsReportIdGet operation in WebApi.
+ * @export
+ * @interface WebApiGetReportBffWebReportsReportIdGetRequest
+ */
+export interface WebApiGetReportBffWebReportsReportIdGetRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof WebApiGetReportBffWebReportsReportIdGet
+     */
+    readonly reportId: string
+}
+
+/**
  * Request parameters for getSalesPlansBffWebSalesPlansGet operation in WebApi.
  * @export
  * @interface WebApiGetSalesPlansBffWebSalesPlansGetRequest
@@ -1390,6 +1716,41 @@ export interface WebApiGetWarehousesBffWebWarehousesGetRequest {
 }
 
 /**
+ * Request parameters for listReportsBffWebReportsGet operation in WebApi.
+ * @export
+ * @interface WebApiListReportsBffWebReportsGetRequest
+ */
+export interface WebApiListReportsBffWebReportsGetRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiListReportsBffWebReportsGet
+     */
+    readonly limit?: number
+
+    /**
+     * 
+     * @type {number}
+     * @memberof WebApiListReportsBffWebReportsGet
+     */
+    readonly offset?: number
+
+    /**
+     * 
+     * @type {string}
+     * @memberof WebApiListReportsBffWebReportsGet
+     */
+    readonly status?: string | null
+
+    /**
+     * 
+     * @type {string}
+     * @memberof WebApiListReportsBffWebReportsGet
+     */
+    readonly reportType?: string | null
+}
+
+/**
  * WebApi - object-oriented interface
  * @export
  * @class WebApi
@@ -1442,6 +1803,18 @@ export class WebApi extends BaseAPI implements WebApiInterface {
      */
     public createProviderBffWebProviderPost(requestParameters: WebApiCreateProviderBffWebProviderPostRequest, options?: RawAxiosRequestConfig) {
         return WebApiFp(this.configuration).createProviderBffWebProviderPost(requestParameters.providerCreate, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Create a report generation request.  Routes to appropriate microservice based on report type: - orders_per_seller, orders_per_status → Order microservice - low_stock → Inventory microservice  Args:     request: Report creation request     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     ReportCreateResponse with report_id and status
+     * @summary Create Report
+     * @param {WebApiCreateReportBffWebReportsPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public createReportBffWebReportsPost(requestParameters: WebApiCreateReportBffWebReportsPostRequest, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).createReportBffWebReportsPost(requestParameters.reportCreateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1517,6 +1890,18 @@ export class WebApi extends BaseAPI implements WebApiInterface {
     }
 
     /**
+     * Get a single report with download URL.  Tries Order microservice first, then Inventory microservice.  Args:     report_id: Report UUID     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     ReportResponse with report details and download URL
+     * @summary Get Report
+     * @param {WebApiGetReportBffWebReportsReportIdGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public getReportBffWebReportsReportIdGet(requestParameters: WebApiGetReportBffWebReportsReportIdGetRequest, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).getReportBffWebReportsReportIdGet(requestParameters.reportId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Get sales plans with pagination.  Args:     limit: Maximum number of sales plans to return (1-100)     offset: Number of sales plans to skip     seller_port: Seller port for service communication  Returns:     Paginated list of sales plans
      * @summary Get Sales Plans
      * @param {WebApiGetSalesPlansBffWebSalesPlansGetRequest} requestParameters Request parameters.
@@ -1562,6 +1947,18 @@ export class WebApi extends BaseAPI implements WebApiInterface {
      */
     public getWarehousesBffWebWarehousesGet(requestParameters: WebApiGetWarehousesBffWebWarehousesGetRequest = {}, options?: RawAxiosRequestConfig) {
         return WebApiFp(this.configuration).getWarehousesBffWebWarehousesGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * List all reports for the authenticated user.  Aggregates reports from Order and Inventory microservices.  Args:     limit: Maximum number of reports to return     offset: Number of reports to skip     status: Optional status filter     report_type: Optional report type filter     order_reports: Order reports adapter (injected)     inventory_reports: Inventory reports adapter (injected)     user: Authenticated user (from JWT)  Returns:     PaginatedReportsResponse with list of reports
+     * @summary List Reports
+     * @param {WebApiListReportsBffWebReportsGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebApi
+     */
+    public listReportsBffWebReportsGet(requestParameters: WebApiListReportsBffWebReportsGetRequest = {}, options?: RawAxiosRequestConfig) {
+        return WebApiFp(this.configuration).listReportsBffWebReportsGet(requestParameters.limit, requestParameters.offset, requestParameters.status, requestParameters.reportType, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
