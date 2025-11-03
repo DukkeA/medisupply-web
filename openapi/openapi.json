@@ -1,1 +1,2689 @@
-{"openapi":"3.1.0","info":{"title":"BFF Service","description":"Backend For Frontend service aggregating microservices","contact":{"name":"Your Name","email":"you@example.com"},"version":"1.0.0"},"paths":{"/auth/login":{"post":{"tags":["authentication"],"summary":"Login","description":"Authenticate user with email and password.\n\nReturns JWT tokens that can be used for subsequent API requests.\nUsers are automatically assigned to groups based on their user_type attribute.\n\nArgs:\n    request: Login credentials (email and password)\n    auth_service: Auth service instance\n\nReturns:\n    LoginResponse with access_token, id_token, and refresh_token","operationId":"login_auth_login_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/LoginRequest"}}},"required":true},"responses":{"200":{"description":"Successfully authenticated","content":{"application/json":{"schema":{"$ref":"#/components/schemas/LoginResponse"}}}},"401":{"description":"Invalid credentials","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"403":{"description":"Email not verified","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"503":{"description":"Authentication service unavailable","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/auth/refresh":{"post":{"tags":["authentication"],"summary":"Refresh","description":"Refresh access token using refresh token.\n\nArgs:\n    request: Refresh token request\n    auth_service: Auth service instance\n\nReturns:\n    RefreshTokenResponse with new access_token and id_token","operationId":"refresh_auth_refresh_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RefreshTokenRequest"}}},"required":true},"responses":{"200":{"description":"Token refreshed successfully","content":{"application/json":{"schema":{"$ref":"#/components/schemas/RefreshTokenResponse"}}}},"401":{"description":"Invalid refresh token","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"503":{"description":"Authentication service unavailable","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/auth/signup":{"post":{"tags":["authentication"],"summary":"Signup","description":"Register a new client user with saga pattern.\n\nOnly clients can self-register through this endpoint.\nUses a distributed transaction pattern:\n1. Create user in Cognito\n2. Create client record in client microservice\n3. If step 2 fails, automatically rollback step 1\n\nArgs:\n    request: Signup data with all client fields\n    auth_service: Auth service instance\n    client_port: Client port instance\n\nReturns:\n    SignupResponse with user_id and confirmation message","operationId":"signup_auth_signup_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/SignupRequest"}}},"required":true},"responses":{"201":{"description":"User created successfully","content":{"application/json":{"schema":{"$ref":"#/components/schemas/SignupResponse"}}}},"400":{"description":"Invalid password or user_type","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"404":{"description":"Failed to complete registration (rolled back)","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"409":{"description":"User already exists","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"503":{"description":"Authentication service unavailable","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/auth/me":{"get":{"tags":["authentication"],"summary":"Get Me","description":"Get current authenticated user information.\n\nRequires valid JWT ID token in Authorization header (not access token).\nThe ID token contains user profile information like email, name, and custom attributes.\n\nArgs:\n    user: Current user from JWT token\n\nReturns:\n    User claims from JWT token","operationId":"get_me_auth_me_get","responses":{"200":{"description":"Current user information","content":{"application/json":{"schema":{"additionalProperties":true,"type":"object","title":"Response Get Me Auth Me Get"}}}},"401":{"description":"Invalid or missing token","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorResponse"}}}}},"security":[{"HTTPBearer":[]}]}},"/bff/web/provider":{"post":{"tags":["web"],"summary":"Create Provider","description":"Create a new provider in the catalog microservice.\n\nArgs:\n    provider: Provider data to create\n    catalog: Catalog port for service communication\n\nReturns:\n    Created provider id and success message","operationId":"create_provider_bff_web_provider_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProviderCreate"}}},"required":true},"responses":{"201":{"description":"Provider created successfully","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProviderCreateResponse"}}}},"400":{"description":"Invalid provider data"},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires web_users group"},"500":{"description":"Error communicating with catalog microservice"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"HTTPBearer":[]}]}},"/bff/web/providers":{"get":{"tags":["web"],"summary":"Get Providers","description":"Retrieve providers from the catalog microservice.\n\nArgs:\n    limit: Maximum number of providers to return (1-100)\n    offset: Number of providers to skip\n    catalog: Catalog port for service communication\n\nReturns:\n    Paginated list of providers","operationId":"get_providers_bff_web_providers_get","security":[{"HTTPBearer":[]}],"parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":10,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"List of providers from catalog microservice","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PaginatedProvidersResponse"}}}},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires web_users group"},"500":{"description":"Error communicating with catalog microservice"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/bff/web/products":{"post":{"tags":["web"],"summary":"Create Product","description":"Create a single product.\n\nThis endpoint accepts a single product and sends it as a batch of size 1\nto the catalog microservice.\n\nArgs:\n    product: Product data to create\n    catalog: Catalog port for service communication\n\nReturns:\n    Response with the created product","operationId":"create_product_bff_web_products_post","security":[{"HTTPBearer":[]}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProductCreate"}}}},"responses":{"201":{"description":"Product created successfully","content":{"application/json":{"schema":{"$ref":"#/components/schemas/BatchProductsResponse"}}}},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires web_users group"},"404":{"description":"Provider not found","content":{"application/json":{"schema":{"$ref":"#/components/schemas/NotFoundErrorResponse"}}}},"422":{"description":"Invalid product data","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ValidationErrorResponse"}}}}}},"get":{"tags":["web"],"summary":"Get Products","description":"Retrieve products from the catalog microservice.\n\nArgs:\n    limit: Maximum number of products to return (1-100)\n    offset: Number of products to skip\n    catalog: Catalog port for service communication\n\nReturns:\n    Paginated list of products","operationId":"get_products_bff_web_products_get","security":[{"HTTPBearer":[]}],"parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":10,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"List of products from catalog microservice","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PaginatedProductsResponse"}}}},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires web_users group"},"422":{"description":"Invalid query parameters","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ValidationErrorResponse"}}}}}}},"/bff/web/products/batch":{"post":{"tags":["web"],"summary":"Create Products From Csv","description":"Create multiple products from a CSV file.\n\nThe CSV file must have the following columns:\n- provider_id (UUID)\n- name (string)\n- category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros)\n- sku (string - unique identifier)\n- price (decimal)\n\nAll products are created in a single transaction in the catalog service.\nIf any product fails validation or creation, all products are rolled back.\n\nArgs:\n    file: CSV file with product data\n    catalog: Catalog port for service communication\n\nReturns:\n    Response with all created products","operationId":"create_products_from_csv_bff_web_products_batch_post","requestBody":{"content":{"multipart/form-data":{"schema":{"$ref":"#/components/schemas/Body_create_products_from_csv_bff_web_products_batch_post"}}},"required":true},"responses":{"201":{"description":"Products created successfully from CSV","content":{"application/json":{"schema":{"$ref":"#/components/schemas/BatchProductsResponse"}}}},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires web_users group"},"404":{"description":"Provider not found","content":{"application/json":{"schema":{"$ref":"#/components/schemas/NotFoundErrorResponse"}}}},"422":{"description":"CSV parsing error or invalid product data","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ValidationErrorResponse"}}}}},"security":[{"HTTPBearer":[]}]}},"/bff/web/warehouse":{"post":{"tags":["web"],"summary":"Create Warehouse","description":"Create a new warehouse in the inventory microservice.\n\nArgs:\n    warehouse: Warehouse data to create\n    inventory: Inventory port for service communication\n\nReturns:\n    Created warehouse id and success message","operationId":"create_warehouse_bff_web_warehouse_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/WarehouseCreate"}}},"required":true},"responses":{"201":{"description":"Warehouse created successfully","content":{"application/json":{"schema":{"$ref":"#/components/schemas/WarehouseCreateResponse"}}}},"400":{"description":"Invalid warehouse data"},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires web_users group"},"500":{"description":"Error communicating with inventory microservice"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"HTTPBearer":[]}]}},"/bff/web/warehouses":{"get":{"tags":["web"],"summary":"Get Warehouses","description":"Retrieve warehouses from the inventory microservice.\n\nArgs:\n    limit: Maximum number of warehouses to return (1-100)\n    offset: Number of warehouses to skip\n    inventory: Inventory port for service communication\n\nReturns:\n    Paginated list of warehouses","operationId":"get_warehouses_bff_web_warehouses_get","security":[{"HTTPBearer":[]}],"parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":10,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"List of warehouses from inventory microservice","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PaginatedWarehousesResponse"}}}},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires web_users group"},"500":{"description":"Error communicating with inventory microservice"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/bff/web/inventory":{"post":{"tags":["web"],"summary":"Create Inventory","description":"Create a new inventory entry.\n\nThis endpoint orchestrates between catalog and inventory microservices:\n1. Fetches product data from catalog service\n2. Validates product exists\n3. Creates inventory with denormalized product data\n\nArgs:\n    request_data: Inventory creation data from client (JSON body) - does NOT include denormalized fields\n    catalog: Catalog port for service communication\n    inventory: Inventory port for service communication\n\nReturns:\n    Created inventory id and success message\n\nRaises:\n    HTTPException: 404 if product not found","operationId":"create_inventory_bff_web_inventory_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/InventoryCreateRequest"}}},"required":true},"responses":{"201":{"description":"Inventory created successfully","content":{"application/json":{"schema":{"$ref":"#/components/schemas/InventoryCreateResponse"}}}},"404":{"description":"Product not found","content":{"application/json":{"schema":{"$ref":"#/components/schemas/NotFoundErrorResponse"}}}},"422":{"description":"Invalid inventory data","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ValidationErrorResponse"}}}}},"security":[{"HTTPBearer":[]}]}},"/bff/web/inventories":{"get":{"tags":["web"],"summary":"Get Inventories","description":"Retrieve inventories from the inventory microservice with optional filters.\n\nArgs:\n    limit: Maximum number of inventories to return (1-100)\n    offset: Number of inventories to skip\n    sku: Optional product SKU filter\n    warehouse_id: Optional warehouse ID filter\n    inventory: Inventory port for service communication\n\nReturns:\n    Paginated list of inventories (with denormalized product and warehouse data)","operationId":"get_inventories_bff_web_inventories_get","security":[{"HTTPBearer":[]}],"parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":10,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}},{"name":"sku","in":"query","required":false,"schema":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Sku"}},{"name":"warehouse_id","in":"query","required":false,"schema":{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Warehouse Id"}}],"responses":{"200":{"description":"List of inventories from inventory microservice","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PaginatedInventoriesResponse"}}}},"422":{"description":"Invalid query parameters","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ValidationErrorResponse"}}}}}}},"/bff/web/sellers":{"post":{"tags":["web"],"summary":"Create Seller","description":"Create a new seller.\n\nArgs:\n    seller: Seller data to create\n    seller_port: Seller port for service communication\n\nReturns:\n    Created seller id and success message","operationId":"create_seller_bff_web_sellers_post","security":[{"HTTPBearer":[]}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/SellerCreate"}}}},"responses":{"201":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/SellerCreateResponse"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"get":{"tags":["web"],"summary":"Get Sellers","description":"Get sellers with pagination.\n\nArgs:\n    limit: Maximum number of sellers to return (1-100)\n    offset: Number of sellers to skip\n    seller_port: Seller port for service communication\n\nReturns:\n    Paginated list of sellers","operationId":"get_sellers_bff_web_sellers_get","security":[{"HTTPBearer":[]}],"parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":10,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"anyOf":[{"$ref":"#/components/schemas/PaginatedSellersResponse"},{"type":"array","items":{"$ref":"#/components/schemas/SellerResponse"}}],"title":"Response Get Sellers Bff Web Sellers Get"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/bff/web/sellers/{seller_id}/sales-plans":{"get":{"tags":["web"],"summary":"Get Seller Sales Plans","description":"Get sales plans for a specific seller with pagination.\n\nArgs:\n    seller_id: UUID of the seller\n    limit: Maximum number of sales plans to return (1-100)\n    offset: Number of sales plans to skip\n    seller_port: Seller port for service communication\n\nReturns:\n    Paginated list of sales plans for the seller","operationId":"get_seller_sales_plans_bff_web_sellers__seller_id__sales_plans_get","security":[{"HTTPBearer":[]}],"parameters":[{"name":"seller_id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Seller Id"}},{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":10,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PaginatedSalesPlansResponse"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/bff/web/sales-plans":{"post":{"tags":["web"],"summary":"Create Sales Plan","description":"Create a new sales plan.\n\nArgs:\n    sales_plan: Sales plan data to create\n    seller_port: Seller port for service communication\n\nReturns:\n    Created sales plan id and success message","operationId":"create_sales_plan_bff_web_sales_plans_post","security":[{"HTTPBearer":[]}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/SalesPlanCreate"}}}},"responses":{"201":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/SalesPlanCreateResponse"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"get":{"tags":["web"],"summary":"Get Sales Plans","description":"Get sales plans with pagination.\n\nArgs:\n    limit: Maximum number of sales plans to return (1-100)\n    offset: Number of sales plans to skip\n    seller_port: Seller port for service communication\n\nReturns:\n    Paginated list of sales plans","operationId":"get_sales_plans_bff_web_sales_plans_get","security":[{"HTTPBearer":[]}],"parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":10,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PaginatedSalesPlansResponse"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/bff/web/reports":{"post":{"tags":["web"],"summary":"Create Report","description":"Create a report generation request.\n\nRoutes to appropriate microservice based on report type:\n- orders_per_seller, orders_per_status → Order microservice\n- low_stock → Inventory microservice\n\nArgs:\n    request: Report creation request\n    order_reports: Order reports adapter (injected)\n    inventory_reports: Inventory reports adapter (injected)\n    user: Authenticated user (from JWT)\n\nReturns:\n    ReportCreateResponse with report_id and status","operationId":"create_report_bff_web_reports_post","security":[{"HTTPBearer":[]}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ReportCreateRequest"}}}},"responses":{"202":{"description":"Report generation request accepted","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ReportCreateResponse"}}}},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires web_users group"},"422":{"description":"Invalid request data","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ValidationErrorResponse"}}}}}},"get":{"tags":["web"],"summary":"List Reports","description":"List all reports for the authenticated user.\n\nAggregates reports from Order and Inventory microservices.\n\nArgs:\n    limit: Maximum number of reports to return\n    offset: Number of reports to skip\n    status: Optional status filter\n    report_type: Optional report type filter\n    order_reports: Order reports adapter (injected)\n    inventory_reports: Inventory reports adapter (injected)\n    user: Authenticated user (from JWT)\n\nReturns:\n    PaginatedReportsResponse with list of reports","operationId":"list_reports_bff_web_reports_get","security":[{"HTTPBearer":[]}],"parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"default":10,"title":"Limit"}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"default":0,"title":"Offset"}},{"name":"status","in":"query","required":false,"schema":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Status"}},{"name":"report_type","in":"query","required":false,"schema":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Report Type"}}],"responses":{"200":{"description":"List of reports","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PaginatedReportsResponse"}}}},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires web_users group"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/bff/web/reports/{report_id}":{"get":{"tags":["web"],"summary":"Get Report","description":"Get a single report with download URL.\n\nTries Order microservice first, then Inventory microservice.\n\nArgs:\n    report_id: Report UUID\n    order_reports: Order reports adapter (injected)\n    inventory_reports: Inventory reports adapter (injected)\n    user: Authenticated user (from JWT)\n\nReturns:\n    ReportResponse with report details and download URL","operationId":"get_report_bff_web_reports__report_id__get","security":[{"HTTPBearer":[]}],"parameters":[{"name":"report_id","in":"path","required":true,"schema":{"type":"string","format":"uuid","title":"Report Id"}}],"responses":{"200":{"description":"Report details with download URL","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ReportResponse"}}}},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires web_users group"},"404":{"description":"Report not found","content":{"application/json":{"schema":{"$ref":"#/components/schemas/NotFoundErrorResponse"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/bff/client-app/orders":{"post":{"tags":["client-app"],"summary":"Create Order","description":"Create a new order via client app.\n\nThis endpoint:\n1. Accepts customer_id and items (producto_id, cantidad)\n2. Forwards request to Order Service with metodo_creacion='app_cliente'\n3. No seller_id or visit_id required (client app orders)\n\nArgs:\n    order_input: Order creation input\n    order_port: Order port for service communication\n\nReturns:\n    OrderCreateResponse with order ID and message\n\nRaises:\n    HTTPException: If order creation fails","operationId":"create_order_bff_client_app_orders_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/client_app__schemas__order_schemas__OrderCreateInput"}}},"required":true},"responses":{"201":{"description":"Order created successfully via client app","content":{"application/json":{"schema":{"$ref":"#/components/schemas/OrderCreateResponse"}}}},"400":{"description":"Invalid order data"},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires client_users group"},"503":{"description":"Order service unavailable"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"HTTPBearer":[]}]}},"/bff/client-app/my-orders":{"get":{"tags":["client-app"],"summary":"List My Orders","description":"List orders for the authenticated client user.\n\nThis endpoint:\n1. Gets the Cognito User ID from the authenticated user (JWT sub claim)\n2. Looks up the client record using cognito_user_id\n3. Fetches orders for that client (customer_id = cliente_id)\n\nRequires client_users group authentication.\n\nArgs:\n    limit: Maximum number of orders to return (1-100)\n    offset: Number of orders to skip\n    order_port: Order port for service communication\n    client_port: Client port for service communication\n    user: Authenticated client user\n\nReturns:\n    PaginatedOrdersResponse with user's orders\n\nRaises:\n    HTTPException: If client not found or order fetching fails","operationId":"list_my_orders_bff_client_app_my_orders_get","security":[{"HTTPBearer":[]}],"parameters":[{"name":"limit","in":"query","required":false,"schema":{"type":"integer","maximum":100,"minimum":1,"description":"Maximum number of orders to return","default":10,"title":"Limit"},"description":"Maximum number of orders to return"},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","minimum":0,"description":"Number of orders to skip","default":0,"title":"Offset"},"description":"Number of orders to skip"}],"responses":{"200":{"description":"List of orders for the authenticated client","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PaginatedOrdersResponse"}}}},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires client_users group"},"404":{"description":"Client not found for authenticated user"},"503":{"description":"Order or Client service unavailable"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/bff/sellers-app/orders":{"post":{"tags":["sellers-app"],"summary":"Create Order","description":"Create a new order via sellers app.\n\nThis endpoint:\n1. Accepts customer_id, seller_id, items, and optional visit_id\n2. Forwards request to Order Service with metodo_creacion='app_vendedor'\n3. seller_id is REQUIRED (seller creating the order)\n4. visit_id is OPTIONAL (can be linked to a visit or not)\n\nArgs:\n    order_input: Order creation input\n    order_port: Order port for service communication\n\nReturns:\n    OrderCreateResponse with order ID and message\n\nRaises:\n    HTTPException: If order creation fails","operationId":"create_order_bff_sellers_app_orders_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/sellers_app__schemas__order_schemas__OrderCreateInput"}}},"required":true},"responses":{"201":{"description":"Order created successfully via seller app","content":{"application/json":{"schema":{"$ref":"#/components/schemas/OrderCreateResponse"}}}},"400":{"description":"Invalid order data"},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires seller_users group"},"503":{"description":"Order service unavailable"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"HTTPBearer":[]}]}},"/bff/sellers-app/clients":{"post":{"tags":["sellers-app"],"summary":"Create Client","description":"Create a new client via sellers app.\n\nRequires mobile seller authentication (seller_users group).\n\nArgs:\n    client_input: Client creation input\n    client_port: Client port for service communication\n    user: Authenticated seller user\n\nReturns:\n    Client creation response with ID and message\n\nRaises:\n    HTTPException: If client creation fails","operationId":"create_client_bff_sellers_app_clients_post","security":[{"HTTPBearer":[]}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ClientCreateInput"}}}},"responses":{"201":{"description":"Client created successfully via seller app","content":{"application/json":{"schema":{}}}},"400":{"description":"Invalid client data or duplicate NIT/Cognito User"},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires seller_users group"},"503":{"description":"Client service unavailable"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}},"get":{"tags":["sellers-app"],"summary":"List Clients","description":"List clients, optionally filtered by assigned seller.\n\nRequires mobile seller authentication (seller_users group).\n\nArgs:\n    vendedor_asignado_id: Optional seller ID to filter clients\n    client_port: Client port for service communication\n    user: Authenticated seller user\n\nReturns:\n    List of clients\n\nRaises:\n    HTTPException: If listing clients fails","operationId":"list_clients_bff_sellers_app_clients_get","security":[{"HTTPBearer":[]}],"parameters":[{"name":"vendedor_asignado_id","in":"query","required":false,"schema":{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"description":"Filter clients by assigned seller ID","title":"Vendedor Asignado Id"},"description":"Filter clients by assigned seller ID"}],"responses":{"200":{"description":"List of clients","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ClientListResponse"}}}},"401":{"description":"Unauthorized - Invalid or missing token"},"403":{"description":"Forbidden - Requires seller_users group"},"503":{"description":"Client service unavailable"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/bff/health":{"get":{"tags":["health"],"summary":"Health Check","description":"Health check endpoint for BFF service.\n\nReturns:\n    Simple health status response","operationId":"health_check_bff_health_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}}},"components":{"schemas":{"BatchProductsResponse":{"properties":{"created":{"items":{"$ref":"#/components/schemas/ProductResponse"},"type":"array","title":"Created"},"count":{"type":"integer","title":"Count"}},"type":"object","required":["created","count"],"title":"BatchProductsResponse"},"Body_create_products_from_csv_bff_web_products_batch_post":{"properties":{"file":{"type":"string","format":"binary","title":"File"}},"type":"object","required":["file"],"title":"Body_create_products_from_csv_bff_web_products_batch_post"},"ClientCreateInput":{"properties":{"cognito_user_id":{"type":"string","title":"Cognito User Id"},"email":{"type":"string","format":"email","title":"Email"},"telefono":{"type":"string","title":"Telefono"},"nombre_institucion":{"type":"string","title":"Nombre Institucion"},"tipo_institucion":{"type":"string","title":"Tipo Institucion"},"nit":{"type":"string","title":"Nit"},"direccion":{"type":"string","title":"Direccion"},"ciudad":{"type":"string","title":"Ciudad"},"pais":{"type":"string","title":"Pais"},"representante":{"type":"string","title":"Representante"},"vendedor_asignado_id":{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Vendedor Asignado Id"}},"type":"object","required":["cognito_user_id","email","telefono","nombre_institucion","tipo_institucion","nit","direccion","ciudad","pais","representante"],"title":"ClientCreateInput","description":"Input schema for creating a client via sellers app."},"ClientListResponse":{"properties":{"clients":{"items":{"$ref":"#/components/schemas/ClientResponse"},"type":"array","title":"Clients"},"total":{"type":"integer","title":"Total"}},"type":"object","required":["clients","total"],"title":"ClientListResponse","description":"Response schema for listing clients."},"ClientResponse":{"properties":{"cliente_id":{"type":"string","format":"uuid","title":"Cliente Id"},"cognito_user_id":{"type":"string","title":"Cognito User Id"},"email":{"type":"string","title":"Email"},"telefono":{"type":"string","title":"Telefono"},"nombre_institucion":{"type":"string","title":"Nombre Institucion"},"tipo_institucion":{"type":"string","title":"Tipo Institucion"},"nit":{"type":"string","title":"Nit"},"direccion":{"type":"string","title":"Direccion"},"ciudad":{"type":"string","title":"Ciudad"},"pais":{"type":"string","title":"Pais"},"representante":{"type":"string","title":"Representante"},"vendedor_asignado_id":{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Vendedor Asignado Id"},"created_at":{"type":"string","format":"date-time","title":"Created At"},"updated_at":{"type":"string","format":"date-time","title":"Updated At"}},"type":"object","required":["cliente_id","cognito_user_id","email","telefono","nombre_institucion","tipo_institucion","nit","direccion","ciudad","pais","representante","vendedor_asignado_id","created_at","updated_at"],"title":"ClientResponse","description":"Response schema for a client."},"ErrorResponse":{"properties":{"error_code":{"type":"string","title":"Error Code"},"message":{"type":"string","title":"Message"}},"type":"object","required":["error_code","message"],"title":"ErrorResponse","description":"Generic error response."},"HTTPValidationError":{"properties":{"detail":{"items":{"$ref":"#/components/schemas/ValidationError"},"type":"array","title":"Detail"}},"type":"object","title":"HTTPValidationError"},"InventoryCreateRequest":{"properties":{"product_id":{"type":"string","format":"uuid","title":"Product Id"},"warehouse_id":{"type":"string","format":"uuid","title":"Warehouse Id"},"total_quantity":{"type":"integer","title":"Total Quantity"},"batch_number":{"type":"string","title":"Batch Number"},"expiration_date":{"type":"string","format":"date-time","title":"Expiration Date"}},"type":"object","required":["product_id","warehouse_id","total_quantity","batch_number","expiration_date"],"title":"InventoryCreateRequest","description":"Client request schema for creating inventory - does NOT include denormalized fields"},"InventoryCreateResponse":{"properties":{"id":{"type":"string","title":"Id"},"message":{"type":"string","title":"Message"}},"type":"object","required":["id","message"],"title":"InventoryCreateResponse"},"InventoryResponse":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"product_id":{"type":"string","format":"uuid","title":"Product Id"},"warehouse_id":{"type":"string","format":"uuid","title":"Warehouse Id"},"total_quantity":{"type":"integer","title":"Total Quantity"},"reserved_quantity":{"type":"integer","title":"Reserved Quantity"},"batch_number":{"type":"string","title":"Batch Number"},"expiration_date":{"type":"string","format":"date-time","title":"Expiration Date"},"product_sku":{"type":"string","title":"Product Sku"},"product_name":{"type":"string","title":"Product Name"},"product_price":{"type":"number","title":"Product Price"},"warehouse_name":{"type":"string","title":"Warehouse Name"},"warehouse_city":{"type":"string","title":"Warehouse City"},"created_at":{"type":"string","format":"date-time","title":"Created At"},"updated_at":{"type":"string","format":"date-time","title":"Updated At"}},"type":"object","required":["id","product_id","warehouse_id","total_quantity","reserved_quantity","batch_number","expiration_date","product_sku","product_name","product_price","warehouse_name","warehouse_city","created_at","updated_at"],"title":"InventoryResponse"},"LoginRequest":{"properties":{"email":{"type":"string","format":"email","title":"Email"},"password":{"type":"string","minLength":8,"title":"Password"}},"type":"object","required":["email","password"],"title":"LoginRequest","description":"Request model for user login."},"LoginResponse":{"properties":{"access_token":{"type":"string","title":"Access Token"},"id_token":{"type":"string","title":"Id Token"},"refresh_token":{"type":"string","title":"Refresh Token"},"token_type":{"type":"string","title":"Token Type","default":"Bearer"},"expires_in":{"type":"integer","title":"Expires In"},"user_groups":{"items":{"type":"string"},"type":"array","title":"User Groups","default":[]}},"type":"object","required":["access_token","id_token","refresh_token","expires_in"],"title":"LoginResponse","description":"Response model for successful login."},"NotFoundErrorResponse":{"properties":{"error_code":{"type":"string","title":"Error Code","description":"Machine-readable error code"},"message":{"type":"string","title":"Message","description":"Human-readable error message"},"type":{"type":"string","title":"Type","default":"not_found"}},"type":"object","required":["error_code","message"],"title":"NotFoundErrorResponse","description":"Not found error response (404).","examples":[{"error_code":"PRODUCT_NOT_FOUND","message":"Product with ID '550e8400-e29b-41d4-a716-446655440000' not found","type":"not_found"}]},"OrderCreateResponse":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"message":{"type":"string","title":"Message"}},"type":"object","required":["id","message"],"title":"OrderCreateResponse","description":"Response after creating an order."},"OrderItemInput":{"properties":{"producto_id":{"type":"string","format":"uuid","title":"Producto Id"},"cantidad":{"type":"integer","title":"Cantidad"}},"type":"object","required":["producto_id","cantidad"],"title":"OrderItemInput","description":"Input schema for a single order item."},"OrderItemResponse":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"pedido_id":{"type":"string","format":"uuid","title":"Pedido Id"},"producto_id":{"type":"string","format":"uuid","title":"Producto Id"},"inventario_id":{"type":"string","format":"uuid","title":"Inventario Id"},"cantidad":{"type":"integer","title":"Cantidad"},"precio_unitario":{"type":"number","title":"Precio Unitario"},"precio_total":{"type":"number","title":"Precio Total"},"product_name":{"type":"string","title":"Product Name"},"product_sku":{"type":"string","title":"Product Sku"},"warehouse_id":{"type":"string","format":"uuid","title":"Warehouse Id"},"warehouse_name":{"type":"string","title":"Warehouse Name"},"warehouse_city":{"type":"string","title":"Warehouse City"},"warehouse_country":{"type":"string","title":"Warehouse Country"},"batch_number":{"type":"string","title":"Batch Number"},"expiration_date":{"type":"string","format":"date","title":"Expiration Date"},"created_at":{"type":"string","format":"date-time","title":"Created At"},"updated_at":{"type":"string","format":"date-time","title":"Updated At"}},"type":"object","required":["id","pedido_id","producto_id","inventario_id","cantidad","precio_unitario","precio_total","product_name","product_sku","warehouse_id","warehouse_name","warehouse_city","warehouse_country","batch_number","expiration_date","created_at","updated_at"],"title":"OrderItemResponse","description":"Response schema for an order item."},"OrderResponse":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"customer_id":{"type":"string","format":"uuid","title":"Customer Id"},"seller_id":{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Seller Id"},"visit_id":{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Visit Id"},"route_id":{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Route Id"},"fecha_pedido":{"type":"string","format":"date-time","title":"Fecha Pedido"},"fecha_entrega_estimada":{"anyOf":[{"type":"string","format":"date"},{"type":"null"}],"title":"Fecha Entrega Estimada"},"metodo_creacion":{"type":"string","title":"Metodo Creacion"},"direccion_entrega":{"type":"string","title":"Direccion Entrega"},"ciudad_entrega":{"type":"string","title":"Ciudad Entrega"},"pais_entrega":{"type":"string","title":"Pais Entrega"},"customer_name":{"type":"string","title":"Customer Name"},"customer_phone":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Customer Phone"},"customer_email":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Customer Email"},"seller_name":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Seller Name"},"seller_email":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Seller Email"},"monto_total":{"type":"number","title":"Monto Total"},"created_at":{"type":"string","format":"date-time","title":"Created At"},"updated_at":{"type":"string","format":"date-time","title":"Updated At"},"items":{"items":{"$ref":"#/components/schemas/OrderItemResponse"},"type":"array","title":"Items"}},"type":"object","required":["id","customer_id","seller_id","visit_id","route_id","fecha_pedido","fecha_entrega_estimada","metodo_creacion","direccion_entrega","ciudad_entrega","pais_entrega","customer_name","customer_phone","customer_email","seller_name","seller_email","monto_total","created_at","updated_at","items"],"title":"OrderResponse","description":"Response schema for an order."},"PaginatedInventoriesResponse":{"properties":{"items":{"items":{"$ref":"#/components/schemas/InventoryResponse"},"type":"array","title":"Items"},"total":{"type":"integer","title":"Total"},"page":{"type":"integer","title":"Page"},"size":{"type":"integer","title":"Size"},"has_next":{"type":"boolean","title":"Has Next"},"has_previous":{"type":"boolean","title":"Has Previous"}},"type":"object","required":["items","total","page","size","has_next","has_previous"],"title":"PaginatedInventoriesResponse"},"PaginatedOrdersResponse":{"properties":{"items":{"items":{"$ref":"#/components/schemas/OrderResponse"},"type":"array","title":"Items"},"total":{"type":"integer","title":"Total"},"page":{"type":"integer","title":"Page"},"size":{"type":"integer","title":"Size"},"has_next":{"type":"boolean","title":"Has Next"},"has_previous":{"type":"boolean","title":"Has Previous"}},"type":"object","required":["items","total","page","size","has_next","has_previous"],"title":"PaginatedOrdersResponse","description":"Paginated response for listing orders."},"PaginatedProductsResponse":{"properties":{"items":{"items":{"$ref":"#/components/schemas/ProductResponse"},"type":"array","title":"Items"},"total":{"type":"integer","title":"Total"},"page":{"type":"integer","title":"Page"},"size":{"type":"integer","title":"Size"},"has_next":{"type":"boolean","title":"Has Next"},"has_previous":{"type":"boolean","title":"Has Previous"}},"type":"object","required":["items","total","page","size","has_next","has_previous"],"title":"PaginatedProductsResponse"},"PaginatedProvidersResponse":{"properties":{"items":{"items":{"$ref":"#/components/schemas/ProviderResponse"},"type":"array","title":"Items"},"total":{"type":"integer","title":"Total"},"page":{"type":"integer","title":"Page"},"size":{"type":"integer","title":"Size"},"has_next":{"type":"boolean","title":"Has Next"},"has_previous":{"type":"boolean","title":"Has Previous"}},"type":"object","required":["items","total","page","size","has_next","has_previous"],"title":"PaginatedProvidersResponse"},"PaginatedReportsResponse":{"properties":{"items":{"items":{"$ref":"#/components/schemas/ReportResponse"},"type":"array","title":"Items"},"total":{"type":"integer","title":"Total"},"page":{"type":"integer","title":"Page"},"size":{"type":"integer","title":"Size"},"has_next":{"type":"boolean","title":"Has Next"},"has_previous":{"type":"boolean","title":"Has Previous"}},"type":"object","required":["items","total","page","size","has_next","has_previous"],"title":"PaginatedReportsResponse","description":"Response schema for paginated reports list."},"PaginatedSalesPlansResponse":{"properties":{"items":{"items":{"$ref":"#/components/schemas/SalesPlanResponse"},"type":"array","title":"Items"},"total":{"type":"integer","title":"Total"},"page":{"type":"integer","title":"Page"},"size":{"type":"integer","title":"Size"},"has_next":{"type":"boolean","title":"Has Next"},"has_previous":{"type":"boolean","title":"Has Previous"}},"type":"object","required":["items","total","page","size","has_next","has_previous"],"title":"PaginatedSalesPlansResponse"},"PaginatedSellersResponse":{"properties":{"items":{"items":{"$ref":"#/components/schemas/SellerResponse"},"type":"array","title":"Items"},"total":{"type":"integer","title":"Total"},"page":{"type":"integer","title":"Page"},"size":{"type":"integer","title":"Size"},"has_next":{"type":"boolean","title":"Has Next"},"has_previous":{"type":"boolean","title":"Has Previous"}},"type":"object","required":["items","total","page","size","has_next","has_previous"],"title":"PaginatedSellersResponse"},"PaginatedWarehousesResponse":{"properties":{"items":{"items":{"$ref":"#/components/schemas/WarehouseResponse"},"type":"array","title":"Items"},"total":{"type":"integer","title":"Total"},"page":{"type":"integer","title":"Page"},"size":{"type":"integer","title":"Size"},"has_next":{"type":"boolean","title":"Has Next"},"has_previous":{"type":"boolean","title":"Has Previous"}},"type":"object","required":["items","total","page","size","has_next","has_previous"],"title":"PaginatedWarehousesResponse"},"ProductCategory":{"type":"string","enum":["medicamentos_especiales","insumos_quirurgicos","reactivos_diagnosticos","equipos_biomedicos","otros"],"title":"ProductCategory","description":"Product category options according to ER diagram"},"ProductCreate":{"properties":{"provider_id":{"type":"string","format":"uuid","title":"Provider Id","description":"ID of the provider"},"name":{"type":"string","maxLength":255,"minLength":1,"title":"Name","description":"Product name"},"category":{"$ref":"#/components/schemas/ProductCategory","description":"Product category"},"sku":{"type":"string","maxLength":100,"minLength":1,"title":"Sku","description":"Product SKU (unique identifier)"},"price":{"type":"number","exclusiveMinimum":0.0,"title":"Price","description":"Product price (must be greater than 0)"}},"type":"object","required":["provider_id","name","category","sku","price"],"title":"ProductCreate"},"ProductResponse":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"provider_id":{"type":"string","format":"uuid","title":"Provider Id"},"provider_name":{"type":"string","title":"Provider Name"},"name":{"type":"string","title":"Name"},"category":{"type":"string","title":"Category"},"sku":{"type":"string","title":"Sku"},"price":{"type":"number","title":"Price"},"created_at":{"type":"string","format":"date-time","title":"Created At"},"updated_at":{"type":"string","format":"date-time","title":"Updated At"}},"type":"object","required":["id","provider_id","provider_name","name","category","sku","price","created_at","updated_at"],"title":"ProductResponse"},"ProviderCreate":{"properties":{"name":{"type":"string","title":"Name"},"nit":{"type":"string","title":"Nit"},"contact_name":{"type":"string","title":"Contact Name"},"email":{"type":"string","format":"email","title":"Email"},"phone":{"type":"string","title":"Phone"},"address":{"type":"string","title":"Address"},"country":{"type":"string","title":"Country"}},"type":"object","required":["name","nit","contact_name","email","phone","address","country"],"title":"ProviderCreate"},"ProviderCreateResponse":{"properties":{"id":{"type":"string","title":"Id"},"message":{"type":"string","title":"Message"}},"type":"object","required":["id","message"],"title":"ProviderCreateResponse"},"ProviderResponse":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"name":{"type":"string","title":"Name"},"nit":{"type":"string","title":"Nit"},"contact_name":{"type":"string","title":"Contact Name"},"email":{"type":"string","title":"Email"},"phone":{"type":"string","title":"Phone"},"address":{"type":"string","title":"Address"},"country":{"type":"string","title":"Country"},"created_at":{"type":"string","format":"date-time","title":"Created At"},"updated_at":{"type":"string","format":"date-time","title":"Updated At"}},"type":"object","required":["id","name","nit","contact_name","email","phone","address","country","created_at","updated_at"],"title":"ProviderResponse"},"RefreshTokenRequest":{"properties":{"refresh_token":{"type":"string","title":"Refresh Token"}},"type":"object","required":["refresh_token"],"title":"RefreshTokenRequest","description":"Request model for refreshing access token."},"RefreshTokenResponse":{"properties":{"access_token":{"type":"string","title":"Access Token"},"id_token":{"type":"string","title":"Id Token"},"token_type":{"type":"string","title":"Token Type","default":"Bearer"},"expires_in":{"type":"integer","title":"Expires In"}},"type":"object","required":["access_token","id_token","expires_in"],"title":"RefreshTokenResponse","description":"Response model for token refresh."},"ReportCreateRequest":{"properties":{"report_type":{"$ref":"#/components/schemas/ReportType"},"start_date":{"type":"string","format":"date-time","title":"Start Date"},"end_date":{"type":"string","format":"date-time","title":"End Date"},"filters":{"anyOf":[{"additionalProperties":true,"type":"object"},{"type":"null"}],"title":"Filters"}},"type":"object","required":["report_type","start_date","end_date"],"title":"ReportCreateRequest","description":"Request schema for creating a report."},"ReportCreateResponse":{"properties":{"report_id":{"type":"string","format":"uuid","title":"Report Id"},"status":{"$ref":"#/components/schemas/ReportStatus"},"message":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Message"}},"type":"object","required":["report_id","status"],"title":"ReportCreateResponse","description":"Response schema for report creation."},"ReportResponse":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"report_type":{"$ref":"#/components/schemas/ReportType"},"status":{"$ref":"#/components/schemas/ReportStatus"},"start_date":{"type":"string","format":"date-time","title":"Start Date"},"end_date":{"type":"string","format":"date-time","title":"End Date"},"created_at":{"type":"string","format":"date-time","title":"Created At"},"completed_at":{"anyOf":[{"type":"string","format":"date-time"},{"type":"null"}],"title":"Completed At"},"download_url":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Download Url"},"error_message":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Error Message"}},"type":"object","required":["id","report_type","status","start_date","end_date","created_at"],"title":"ReportResponse","description":"Response schema for a single report."},"ReportStatus":{"type":"string","enum":["pending","processing","completed","failed"],"title":"ReportStatus","description":"Report status enum."},"ReportType":{"type":"string","enum":["orders_per_seller","low_stock","orders_per_status"],"title":"ReportType","description":"Report type enum."},"SalesPlanCreate":{"properties":{"seller_id":{"type":"string","format":"uuid","title":"Seller Id"},"sales_period":{"type":"string","title":"Sales Period"},"goal":{"type":"number","exclusiveMinimum":0.0,"title":"Goal","description":"Sales goal amount"}},"type":"object","required":["seller_id","sales_period","goal"],"title":"SalesPlanCreate"},"SalesPlanCreateResponse":{"properties":{"id":{"type":"string","title":"Id"},"message":{"type":"string","title":"Message"}},"type":"object","required":["id","message"],"title":"SalesPlanCreateResponse"},"SalesPlanResponse":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"seller":{"$ref":"#/components/schemas/SellerResponse"},"sales_period":{"type":"string","title":"Sales Period"},"goal":{"type":"number","title":"Goal"},"accumulate":{"type":"number","title":"Accumulate"},"status":{"type":"string","title":"Status"},"created_at":{"type":"string","format":"date-time","title":"Created At"},"updated_at":{"type":"string","format":"date-time","title":"Updated At"}},"type":"object","required":["id","seller","sales_period","goal","accumulate","status","created_at","updated_at"],"title":"SalesPlanResponse"},"SellerCreate":{"properties":{"name":{"type":"string","title":"Name"},"email":{"type":"string","format":"email","title":"Email"},"phone":{"type":"string","title":"Phone"},"city":{"type":"string","title":"City"},"country":{"type":"string","title":"Country"}},"type":"object","required":["name","email","phone","city","country"],"title":"SellerCreate"},"SellerCreateResponse":{"properties":{"id":{"type":"string","title":"Id"},"message":{"type":"string","title":"Message"}},"type":"object","required":["id","message"],"title":"SellerCreateResponse"},"SellerResponse":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"name":{"type":"string","title":"Name"},"email":{"type":"string","title":"Email"},"phone":{"type":"string","title":"Phone"},"city":{"type":"string","title":"City"},"country":{"type":"string","title":"Country"},"created_at":{"type":"string","format":"date-time","title":"Created At"},"updated_at":{"type":"string","format":"date-time","title":"Updated At"}},"type":"object","required":["id","name","email","phone","city","country","created_at","updated_at"],"title":"SellerResponse"},"SignupRequest":{"properties":{"email":{"type":"string","format":"email","title":"Email"},"password":{"type":"string","minLength":8,"title":"Password"},"name":{"type":"string","minLength":1,"title":"Name","description":"Representative's full name"},"telefono":{"type":"string","minLength":1,"title":"Telefono"},"nombre_institucion":{"type":"string","minLength":1,"title":"Nombre Institucion"},"tipo_institucion":{"type":"string","title":"Tipo Institucion","description":"Tipo de institución: hospital, clinica, laboratorio, centro_diagnostico"},"nit":{"type":"string","minLength":1,"title":"Nit"},"direccion":{"type":"string","minLength":1,"title":"Direccion"},"ciudad":{"type":"string","minLength":1,"title":"Ciudad"},"pais":{"type":"string","minLength":1,"title":"Pais"},"representante":{"type":"string","minLength":1,"title":"Representante"},"user_type":{"type":"string","title":"User Type","description":"Must be 'client' - only clients can self-register","default":"client"}},"type":"object","required":["email","password","name","telefono","nombre_institucion","tipo_institucion","nit","direccion","ciudad","pais","representante"],"title":"SignupRequest","description":"Request model for user signup - only clients can self-register."},"SignupResponse":{"properties":{"user_id":{"type":"string","title":"User Id"},"email":{"type":"string","title":"Email"},"message":{"type":"string","title":"Message","default":"User created successfully. Please check your email for verification."}},"type":"object","required":["user_id","email"],"title":"SignupResponse","description":"Response model for successful signup."},"ValidationError":{"properties":{"loc":{"items":{"anyOf":[{"type":"string"},{"type":"integer"}]},"type":"array","title":"Location"},"msg":{"type":"string","title":"Message"},"type":{"type":"string","title":"Error Type"}},"type":"object","required":["loc","msg","type"],"title":"ValidationError"},"ValidationErrorResponse":{"properties":{"error_code":{"type":"string","title":"Error Code","default":"VALIDATION_ERROR"},"message":{"type":"string","title":"Message","description":"Human-readable error message"},"type":{"type":"string","title":"Type","default":"validation_error"}},"type":"object","required":["message"],"title":"ValidationErrorResponse","description":"Validation error response (422).","examples":[{"error_code":"VALIDATION_ERROR","message":"limit: Input should be less than or equal to 100","type":"validation_error"}]},"WarehouseCreate":{"properties":{"name":{"type":"string","title":"Name"},"country":{"type":"string","title":"Country"},"city":{"type":"string","title":"City"},"address":{"type":"string","title":"Address"}},"type":"object","required":["name","country","city","address"],"title":"WarehouseCreate"},"WarehouseCreateResponse":{"properties":{"id":{"type":"string","title":"Id"},"message":{"type":"string","title":"Message"}},"type":"object","required":["id","message"],"title":"WarehouseCreateResponse"},"WarehouseResponse":{"properties":{"id":{"type":"string","format":"uuid","title":"Id"},"name":{"type":"string","title":"Name"},"country":{"type":"string","title":"Country"},"city":{"type":"string","title":"City"},"address":{"type":"string","title":"Address"},"created_at":{"type":"string","format":"date-time","title":"Created At"},"updated_at":{"type":"string","format":"date-time","title":"Updated At"}},"type":"object","required":["id","name","country","city","address","created_at","updated_at"],"title":"WarehouseResponse"},"client_app__schemas__order_schemas__OrderCreateInput":{"properties":{"customer_id":{"type":"string","format":"uuid","title":"Customer Id"},"items":{"items":{"$ref":"#/components/schemas/OrderItemInput"},"type":"array","title":"Items"}},"type":"object","required":["customer_id","items"],"title":"OrderCreateInput","description":"Input schema for creating an order via client app.\n\nBusiness rules:\n- metodo_creacion is automatically set to 'app_cliente'\n- No seller_id or visit_id required (client app orders)"},"sellers_app__schemas__order_schemas__OrderCreateInput":{"properties":{"customer_id":{"type":"string","format":"uuid","title":"Customer Id"},"seller_id":{"type":"string","format":"uuid","title":"Seller Id"},"items":{"items":{"$ref":"#/components/schemas/OrderItemInput"},"type":"array","title":"Items"},"visit_id":{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"Visit Id"}},"type":"object","required":["customer_id","seller_id","items"],"title":"OrderCreateInput","description":"Input schema for creating an order via sellers app.\n\nBusiness rules:\n- metodo_creacion is automatically set to 'app_vendedor'\n- seller_id is REQUIRED (seller creating the order)\n- visit_id is OPTIONAL (can be associated with a visit or not)"}},"securitySchemes":{"HTTPBearer":{"type":"http","scheme":"bearer"}}}}
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "BFF Service",
+    "description": "Backend For Frontend service aggregating microservices",
+    "contact": { "name": "Your Name", "email": "you@example.com" },
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["authentication"],
+        "summary": "Login",
+        "description": "Authenticate user with email and password.\n\nReturns JWT tokens that can be used for subsequent API requests.\nUsers are automatically assigned to groups based on their user_type attribute.\n\nArgs:\n    request: Login credentials (email and password)\n    auth_service: Auth service instance\n\nReturns:\n    LoginResponse with access_token, id_token, and refresh_token",
+        "operationId": "login_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully authenticated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LoginResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Email not verified",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "503": {
+            "description": "Authentication service unavailable",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["authentication"],
+        "summary": "Refresh",
+        "description": "Refresh access token using refresh token.\n\nArgs:\n    request: Refresh token request\n    auth_service: Auth service instance\n\nReturns:\n    RefreshTokenResponse with new access_token and id_token",
+        "operationId": "refresh_auth_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RefreshTokenRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Token refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid refresh token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "503": {
+            "description": "Authentication service unavailable",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "tags": ["authentication"],
+        "summary": "Signup",
+        "description": "Register a new client user with saga pattern.\n\nOnly clients can self-register through this endpoint.\nUses a distributed transaction pattern:\n1. Create user in Cognito\n2. Create client record in client microservice\n3. If step 2 fails, automatically rollback step 1\n\nArgs:\n    request: Signup data with all client fields\n    auth_service: Auth service instance\n    client_port: Client port instance\n\nReturns:\n    SignupResponse with user_id and confirmation message",
+        "operationId": "signup_auth_signup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SignupRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SignupResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid password or user_type",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Failed to complete registration (rolled back)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "503": {
+            "description": "Authentication service unavailable",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": ["authentication"],
+        "summary": "Get Me",
+        "description": "Get current authenticated user information.\n\nRequires valid JWT ID token in Authorization header (not access token).\nThe ID token contains user profile information like email, name, and custom attributes.\n\nArgs:\n    user: Current user from JWT token\n\nReturns:\n    User claims from JWT token",
+        "operationId": "get_me_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Current user information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Me Auth Me Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/bff/web/provider": {
+      "post": {
+        "tags": ["web"],
+        "summary": "Create Provider",
+        "description": "Create a new provider in the catalog microservice.\n\nArgs:\n    provider: Provider data to create\n    catalog: Catalog port for service communication\n\nReturns:\n    Created provider id and success message",
+        "operationId": "create_provider_bff_web_provider_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ProviderCreate" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Provider created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderCreateResponse"
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid provider data" },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires web_users group" },
+          "500": {
+            "description": "Error communicating with catalog microservice"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/bff/web/providers": {
+      "get": {
+        "tags": ["web"],
+        "summary": "Get Providers",
+        "description": "Retrieve providers from the catalog microservice.\n\nArgs:\n    limit: Maximum number of providers to return (1-100)\n    offset: Number of providers to skip\n    catalog: Catalog port for service communication\n\nReturns:\n    Paginated list of providers",
+        "operationId": "get_providers_bff_web_providers_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of providers from catalog microservice",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedProvidersResponse"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires web_users group" },
+          "500": {
+            "description": "Error communicating with catalog microservice"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bff/web/products": {
+      "post": {
+        "tags": ["web"],
+        "summary": "Create Product",
+        "description": "Create a single product.\n\nThis endpoint accepts a single product and sends it as a batch of size 1\nto the catalog microservice.\n\nArgs:\n    product: Product data to create\n    catalog: Catalog port for service communication\n\nReturns:\n    Response with the created product",
+        "operationId": "create_product_bff_web_products_post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ProductCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchProductsResponse"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires web_users group" },
+          "404": {
+            "description": "Provider not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid product data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["web"],
+        "summary": "Get Products",
+        "description": "Retrieve products from the catalog microservice.\n\nArgs:\n    limit: Maximum number of products to return (1-100)\n    offset: Number of products to skip\n    catalog: Catalog port for service communication\n\nReturns:\n    Paginated list of products",
+        "operationId": "get_products_bff_web_products_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products from catalog microservice",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedProductsResponse"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires web_users group" },
+          "422": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bff/web/products/batch": {
+      "post": {
+        "tags": ["web"],
+        "summary": "Create Products From Csv",
+        "description": "Create multiple products from a CSV file.\n\nThe CSV file must have the following columns:\n- provider_id (UUID)\n- name (string)\n- category (medicamentos_especiales, insumos_quirurgicos, reactivos_diagnosticos, equipos_biomedicos, otros)\n- sku (string - unique identifier)\n- price (decimal)\n\nAll products are created in a single transaction in the catalog service.\nIf any product fails validation or creation, all products are rolled back.\n\nArgs:\n    file: CSV file with product data\n    catalog: Catalog port for service communication\n\nReturns:\n    Response with all created products",
+        "operationId": "create_products_from_csv_bff_web_products_batch_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_products_from_csv_bff_web_products_batch_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Products created successfully from CSV",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchProductsResponse"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires web_users group" },
+          "404": {
+            "description": "Provider not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "CSV parsing error or invalid product data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/bff/web/warehouse": {
+      "post": {
+        "tags": ["web"],
+        "summary": "Create Warehouse",
+        "description": "Create a new warehouse in the inventory microservice.\n\nArgs:\n    warehouse: Warehouse data to create\n    inventory: Inventory port for service communication\n\nReturns:\n    Created warehouse id and success message",
+        "operationId": "create_warehouse_bff_web_warehouse_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WarehouseCreate" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Warehouse created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WarehouseCreateResponse"
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid warehouse data" },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires web_users group" },
+          "500": {
+            "description": "Error communicating with inventory microservice"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/bff/web/warehouses": {
+      "get": {
+        "tags": ["web"],
+        "summary": "Get Warehouses",
+        "description": "Retrieve warehouses from the inventory microservice.\n\nArgs:\n    limit: Maximum number of warehouses to return (1-100)\n    offset: Number of warehouses to skip\n    inventory: Inventory port for service communication\n\nReturns:\n    Paginated list of warehouses",
+        "operationId": "get_warehouses_bff_web_warehouses_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of warehouses from inventory microservice",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedWarehousesResponse"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires web_users group" },
+          "500": {
+            "description": "Error communicating with inventory microservice"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bff/web/inventory": {
+      "post": {
+        "tags": ["web"],
+        "summary": "Create Inventory",
+        "description": "Create a new inventory entry.\n\nThis endpoint orchestrates between catalog and inventory microservices:\n1. Fetches product data from catalog service\n2. Validates product exists\n3. Creates inventory with denormalized product data\n\nArgs:\n    request_data: Inventory creation data from client (JSON body) - does NOT include denormalized fields\n    catalog: Catalog port for service communication\n    inventory: Inventory port for service communication\n\nReturns:\n    Created inventory id and success message\n\nRaises:\n    HTTPException: 404 if product not found",
+        "operationId": "create_inventory_bff_web_inventory_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Inventory created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryCreateResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid inventory data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/bff/web/inventories": {
+      "get": {
+        "tags": ["web"],
+        "summary": "Get Inventories",
+        "description": "Retrieve inventories from the inventory microservice with optional filters.\n\nArgs:\n    limit: Maximum number of inventories to return (1-100)\n    offset: Number of inventories to skip\n    sku: Optional product SKU filter\n    warehouse_id: Optional warehouse ID filter\n    inventory: Inventory port for service communication\n\nReturns:\n    Paginated list of inventories (with denormalized product and warehouse data)",
+        "operationId": "get_inventories_bff_web_inventories_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "sku",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Sku"
+            }
+          },
+          {
+            "name": "warehouse_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "uuid" },
+                { "type": "null" }
+              ],
+              "title": "Warehouse Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of inventories from inventory microservice",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedInventoriesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bff/web/sellers": {
+      "post": {
+        "tags": ["web"],
+        "summary": "Create Seller",
+        "description": "Create a new seller.\n\nArgs:\n    seller: Seller data to create\n    seller_port: Seller port for service communication\n\nReturns:\n    Created seller id and success message",
+        "operationId": "create_seller_bff_web_sellers_post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SellerCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellerCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["web"],
+        "summary": "Get Sellers",
+        "description": "Get sellers with pagination.\n\nArgs:\n    limit: Maximum number of sellers to return (1-100)\n    offset: Number of sellers to skip\n    seller_port: Seller port for service communication\n\nReturns:\n    Paginated list of sellers",
+        "operationId": "get_sellers_bff_web_sellers_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    { "$ref": "#/components/schemas/PaginatedSellersResponse" },
+                    {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/SellerResponse" }
+                    }
+                  ],
+                  "title": "Response Get Sellers Bff Web Sellers Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bff/web/sellers/{seller_id}/sales-plans": {
+      "get": {
+        "tags": ["web"],
+        "summary": "Get Seller Sales Plans",
+        "description": "Get sales plans for a specific seller with pagination.\n\nArgs:\n    seller_id: UUID of the seller\n    limit: Maximum number of sales plans to return (1-100)\n    offset: Number of sales plans to skip\n    seller_port: Seller port for service communication\n\nReturns:\n    Paginated list of sales plans for the seller",
+        "operationId": "get_seller_sales_plans_bff_web_sellers__seller_id__sales_plans_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "seller_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Seller Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedSalesPlansResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bff/web/sales-plans": {
+      "post": {
+        "tags": ["web"],
+        "summary": "Create Sales Plan",
+        "description": "Create a new sales plan.\n\nArgs:\n    sales_plan: Sales plan data to create\n    seller_port: Seller port for service communication\n\nReturns:\n    Created sales plan id and success message",
+        "operationId": "create_sales_plan_bff_web_sales_plans_post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SalesPlanCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesPlanCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["web"],
+        "summary": "Get Sales Plans",
+        "description": "Get sales plans with pagination.\n\nArgs:\n    limit: Maximum number of sales plans to return (1-100)\n    offset: Number of sales plans to skip\n    seller_port: Seller port for service communication\n\nReturns:\n    Paginated list of sales plans",
+        "operationId": "get_sales_plans_bff_web_sales_plans_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedSalesPlansResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bff/web/reports": {
+      "post": {
+        "tags": ["web"],
+        "summary": "Create Report",
+        "description": "Create a report generation request.\n\nRoutes to appropriate microservice based on report type:\n- orders_per_seller, orders_per_status → Order microservice\n- low_stock → Inventory microservice\n\nArgs:\n    request: Report creation request\n    order_reports: Order reports adapter (injected)\n    inventory_reports: Inventory reports adapter (injected)\n    user: Authenticated user (from JWT)\n\nReturns:\n    ReportCreateResponse with report_id and status",
+        "operationId": "create_report_bff_web_reports_post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ReportCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Report generation request accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportCreateResponse"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires web_users group" },
+          "422": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["web"],
+        "summary": "List Reports",
+        "description": "List all reports for the authenticated user.\n\nAggregates reports from Order and Inventory microservices.\n\nArgs:\n    limit: Maximum number of reports to return\n    offset: Number of reports to skip\n    status: Optional status filter\n    report_type: Optional report type filter\n    order_reports: Order reports adapter (injected)\n    inventory_reports: Inventory reports adapter (injected)\n    user: Authenticated user (from JWT)\n\nReturns:\n    PaginatedReportsResponse with list of reports",
+        "operationId": "list_reports_bff_web_reports_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "report_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Report Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of reports",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedReportsResponse"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires web_users group" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bff/web/reports/{report_id}": {
+      "get": {
+        "tags": ["web"],
+        "summary": "Get Report",
+        "description": "Get a single report with download URL.\n\nTries Order microservice first, then Inventory microservice.\n\nArgs:\n    report_id: Report UUID\n    order_reports: Order reports adapter (injected)\n    inventory_reports: Inventory reports adapter (injected)\n    user: Authenticated user (from JWT)\n\nReturns:\n    ReportResponse with report details and download URL",
+        "operationId": "get_report_bff_web_reports__report_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Report Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report details with download URL",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ReportResponse" }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires web_users group" },
+          "404": {
+            "description": "Report not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bff/client-app/orders": {
+      "post": {
+        "tags": ["client-app"],
+        "summary": "Create Order",
+        "description": "Create a new order via client app.\n\nThis endpoint:\n1. Accepts customer_id and items (producto_id, cantidad)\n2. Forwards request to Order Service with metodo_creacion='app_cliente'\n3. No seller_id or visit_id required (client app orders)\n\nArgs:\n    order_input: Order creation input\n    order_port: Order port for service communication\n\nReturns:\n    OrderCreateResponse with order ID and message\n\nRaises:\n    HTTPException: If order creation fails",
+        "operationId": "create_order_bff_client_app_orders_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/client_app__schemas__order_schemas__OrderCreateInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Order created successfully via client app",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OrderCreateResponse" }
+              }
+            }
+          },
+          "400": { "description": "Invalid order data" },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires client_users group" },
+          "503": { "description": "Order service unavailable" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/bff/client-app/my-orders": {
+      "get": {
+        "tags": ["client-app"],
+        "summary": "List My Orders",
+        "description": "List orders for the authenticated client user.\n\nThis endpoint:\n1. Gets the Cognito User ID from the authenticated user (JWT sub claim)\n2. Looks up the client record using cognito_user_id\n3. Fetches orders for that client (customer_id = cliente_id)\n\nRequires client_users group authentication.\n\nArgs:\n    limit: Maximum number of orders to return (1-100)\n    offset: Number of orders to skip\n    order_port: Order port for service communication\n    client_port: Client port for service communication\n    user: Authenticated client user\n\nReturns:\n    PaginatedOrdersResponse with user's orders\n\nRaises:\n    HTTPException: If client not found or order fetching fails",
+        "operationId": "list_my_orders_bff_client_app_my_orders_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Maximum number of orders to return",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Maximum number of orders to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of orders to skip",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Number of orders to skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of orders for the authenticated client",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedOrdersResponse"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires client_users group" },
+          "404": { "description": "Client not found for authenticated user" },
+          "503": { "description": "Order or Client service unavailable" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bff/sellers-app/orders": {
+      "post": {
+        "tags": ["sellers-app"],
+        "summary": "Create Order",
+        "description": "Create a new order via sellers app.\n\nThis endpoint:\n1. Accepts customer_id, seller_id, items, and optional visit_id\n2. Forwards request to Order Service with metodo_creacion='app_vendedor'\n3. seller_id is REQUIRED (seller creating the order)\n4. visit_id is OPTIONAL (can be linked to a visit or not)\n\nArgs:\n    order_input: Order creation input\n    order_port: Order port for service communication\n\nReturns:\n    OrderCreateResponse with order ID and message\n\nRaises:\n    HTTPException: If order creation fails",
+        "operationId": "create_order_bff_sellers_app_orders_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sellers_app__schemas__order_schemas__OrderCreateInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Order created successfully via seller app",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OrderCreateResponse" }
+              }
+            }
+          },
+          "400": { "description": "Invalid order data" },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires seller_users group" },
+          "503": { "description": "Order service unavailable" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/bff/sellers-app/clients": {
+      "post": {
+        "tags": ["sellers-app"],
+        "summary": "Create Client",
+        "description": "Create a new client via sellers app.\n\nRequires mobile seller authentication (seller_users group).\n\nArgs:\n    client_input: Client creation input\n    client_port: Client port for service communication\n    user: Authenticated seller user\n\nReturns:\n    Client creation response with ID and message\n\nRaises:\n    HTTPException: If client creation fails",
+        "operationId": "create_client_bff_sellers_app_clients_post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ClientCreateInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Client created successfully via seller app",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "400": {
+            "description": "Invalid client data or duplicate NIT/Cognito User"
+          },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires seller_users group" },
+          "503": { "description": "Client service unavailable" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["sellers-app"],
+        "summary": "List Clients",
+        "description": "List clients, optionally filtered by assigned seller.\n\nRequires mobile seller authentication (seller_users group).\n\nArgs:\n    vendedor_asignado_id: Optional seller ID to filter clients\n    client_port: Client port for service communication\n    user: Authenticated seller user\n\nReturns:\n    List of clients\n\nRaises:\n    HTTPException: If listing clients fails",
+        "operationId": "list_clients_bff_sellers_app_clients_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "vendedor_asignado_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "uuid" },
+                { "type": "null" }
+              ],
+              "description": "Filter clients by assigned seller ID",
+              "title": "Vendedor Asignado Id"
+            },
+            "description": "Filter clients by assigned seller ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of clients",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ClientListResponse" }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized - Invalid or missing token" },
+          "403": { "description": "Forbidden - Requires seller_users group" },
+          "503": { "description": "Client service unavailable" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bff/health": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Health Check",
+        "description": "Health check endpoint for BFF service.\n\nReturns:\n    Simple health status response",
+        "operationId": "health_check_bff_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BatchProductsResponse": {
+        "properties": {
+          "created": {
+            "items": { "$ref": "#/components/schemas/ProductResponse" },
+            "type": "array",
+            "title": "Created"
+          },
+          "count": { "type": "integer", "title": "Count" }
+        },
+        "type": "object",
+        "required": ["created", "count"],
+        "title": "BatchProductsResponse"
+      },
+      "Body_create_products_from_csv_bff_web_products_batch_post": {
+        "properties": {
+          "file": { "type": "string", "format": "binary", "title": "File" }
+        },
+        "type": "object",
+        "required": ["file"],
+        "title": "Body_create_products_from_csv_bff_web_products_batch_post"
+      },
+      "ClientCreateInput": {
+        "properties": {
+          "cognito_user_id": { "type": "string", "title": "Cognito User Id" },
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "telefono": { "type": "string", "title": "Telefono" },
+          "nombre_institucion": {
+            "type": "string",
+            "title": "Nombre Institucion"
+          },
+          "tipo_institucion": { "type": "string", "title": "Tipo Institucion" },
+          "nit": { "type": "string", "title": "Nit" },
+          "direccion": { "type": "string", "title": "Direccion" },
+          "ciudad": { "type": "string", "title": "Ciudad" },
+          "pais": { "type": "string", "title": "Pais" },
+          "representante": { "type": "string", "title": "Representante" },
+          "vendedor_asignado_id": {
+            "anyOf": [
+              { "type": "string", "format": "uuid" },
+              { "type": "null" }
+            ],
+            "title": "Vendedor Asignado Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cognito_user_id",
+          "email",
+          "telefono",
+          "nombre_institucion",
+          "tipo_institucion",
+          "nit",
+          "direccion",
+          "ciudad",
+          "pais",
+          "representante"
+        ],
+        "title": "ClientCreateInput",
+        "description": "Input schema for creating a client via sellers app."
+      },
+      "ClientListResponse": {
+        "properties": {
+          "clients": {
+            "items": { "$ref": "#/components/schemas/ClientResponse" },
+            "type": "array",
+            "title": "Clients"
+          },
+          "total": { "type": "integer", "title": "Total" }
+        },
+        "type": "object",
+        "required": ["clients", "total"],
+        "title": "ClientListResponse",
+        "description": "Response schema for listing clients."
+      },
+      "ClientResponse": {
+        "properties": {
+          "cliente_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Cliente Id"
+          },
+          "cognito_user_id": { "type": "string", "title": "Cognito User Id" },
+          "email": { "type": "string", "title": "Email" },
+          "telefono": { "type": "string", "title": "Telefono" },
+          "nombre_institucion": {
+            "type": "string",
+            "title": "Nombre Institucion"
+          },
+          "tipo_institucion": { "type": "string", "title": "Tipo Institucion" },
+          "nit": { "type": "string", "title": "Nit" },
+          "direccion": { "type": "string", "title": "Direccion" },
+          "ciudad": { "type": "string", "title": "Ciudad" },
+          "pais": { "type": "string", "title": "Pais" },
+          "representante": { "type": "string", "title": "Representante" },
+          "vendedor_asignado_id": {
+            "anyOf": [
+              { "type": "string", "format": "uuid" },
+              { "type": "null" }
+            ],
+            "title": "Vendedor Asignado Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cliente_id",
+          "cognito_user_id",
+          "email",
+          "telefono",
+          "nombre_institucion",
+          "tipo_institucion",
+          "nit",
+          "direccion",
+          "ciudad",
+          "pais",
+          "representante",
+          "vendedor_asignado_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ClientResponse",
+        "description": "Response schema for a client."
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error_code": { "type": "string", "title": "Error Code" },
+          "message": { "type": "string", "title": "Message" }
+        },
+        "type": "object",
+        "required": ["error_code", "message"],
+        "title": "ErrorResponse",
+        "description": "Generic error response."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InventoryCreateRequest": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Product Id"
+          },
+          "warehouse_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Warehouse Id"
+          },
+          "total_quantity": { "type": "integer", "title": "Total Quantity" },
+          "batch_number": { "type": "string", "title": "Batch Number" },
+          "expiration_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiration Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "warehouse_id",
+          "total_quantity",
+          "batch_number",
+          "expiration_date"
+        ],
+        "title": "InventoryCreateRequest",
+        "description": "Client request schema for creating inventory - does NOT include denormalized fields"
+      },
+      "InventoryCreateResponse": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "message": { "type": "string", "title": "Message" }
+        },
+        "type": "object",
+        "required": ["id", "message"],
+        "title": "InventoryCreateResponse"
+      },
+      "InventoryResponse": {
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "product_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Product Id"
+          },
+          "warehouse_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Warehouse Id"
+          },
+          "total_quantity": { "type": "integer", "title": "Total Quantity" },
+          "reserved_quantity": {
+            "type": "integer",
+            "title": "Reserved Quantity"
+          },
+          "batch_number": { "type": "string", "title": "Batch Number" },
+          "expiration_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiration Date"
+          },
+          "product_sku": { "type": "string", "title": "Product Sku" },
+          "product_name": { "type": "string", "title": "Product Name" },
+          "product_price": { "type": "number", "title": "Product Price" },
+          "warehouse_name": { "type": "string", "title": "Warehouse Name" },
+          "warehouse_city": { "type": "string", "title": "Warehouse City" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "product_id",
+          "warehouse_id",
+          "total_quantity",
+          "reserved_quantity",
+          "batch_number",
+          "expiration_date",
+          "product_sku",
+          "product_name",
+          "product_price",
+          "warehouse_name",
+          "warehouse_city",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "InventoryResponse"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "password": { "type": "string", "minLength": 8, "title": "Password" }
+        },
+        "type": "object",
+        "required": ["email", "password"],
+        "title": "LoginRequest",
+        "description": "Request model for user login."
+      },
+      "LoginResponse": {
+        "properties": {
+          "access_token": { "type": "string", "title": "Access Token" },
+          "id_token": { "type": "string", "title": "Id Token" },
+          "refresh_token": { "type": "string", "title": "Refresh Token" },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "Bearer"
+          },
+          "expires_in": { "type": "integer", "title": "Expires In" },
+          "user_groups": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "User Groups",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": ["access_token", "id_token", "refresh_token", "expires_in"],
+        "title": "LoginResponse",
+        "description": "Response model for successful login."
+      },
+      "NotFoundErrorResponse": {
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "title": "Error Code",
+            "description": "Machine-readable error code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Human-readable error message"
+          },
+          "type": { "type": "string", "title": "Type", "default": "not_found" }
+        },
+        "type": "object",
+        "required": ["error_code", "message"],
+        "title": "NotFoundErrorResponse",
+        "description": "Not found error response (404).",
+        "examples": [
+          {
+            "error_code": "PRODUCT_NOT_FOUND",
+            "message": "Product with ID '550e8400-e29b-41d4-a716-446655440000' not found",
+            "type": "not_found"
+          }
+        ]
+      },
+      "OrderCreateResponse": {
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "message": { "type": "string", "title": "Message" }
+        },
+        "type": "object",
+        "required": ["id", "message"],
+        "title": "OrderCreateResponse",
+        "description": "Response after creating an order."
+      },
+      "OrderItemInput": {
+        "properties": {
+          "producto_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Producto Id"
+          },
+          "cantidad": { "type": "integer", "title": "Cantidad" }
+        },
+        "type": "object",
+        "required": ["producto_id", "cantidad"],
+        "title": "OrderItemInput",
+        "description": "Input schema for a single order item."
+      },
+      "OrderItemResponse": {
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "pedido_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Pedido Id"
+          },
+          "producto_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Producto Id"
+          },
+          "inventario_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Inventario Id"
+          },
+          "cantidad": { "type": "integer", "title": "Cantidad" },
+          "precio_unitario": { "type": "number", "title": "Precio Unitario" },
+          "precio_total": { "type": "number", "title": "Precio Total" },
+          "product_name": { "type": "string", "title": "Product Name" },
+          "product_sku": { "type": "string", "title": "Product Sku" },
+          "warehouse_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Warehouse Id"
+          },
+          "warehouse_name": { "type": "string", "title": "Warehouse Name" },
+          "warehouse_city": { "type": "string", "title": "Warehouse City" },
+          "warehouse_country": {
+            "type": "string",
+            "title": "Warehouse Country"
+          },
+          "batch_number": { "type": "string", "title": "Batch Number" },
+          "expiration_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Expiration Date"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "pedido_id",
+          "producto_id",
+          "inventario_id",
+          "cantidad",
+          "precio_unitario",
+          "precio_total",
+          "product_name",
+          "product_sku",
+          "warehouse_id",
+          "warehouse_name",
+          "warehouse_city",
+          "warehouse_country",
+          "batch_number",
+          "expiration_date",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "OrderItemResponse",
+        "description": "Response schema for an order item."
+      },
+      "OrderResponse": {
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "customer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Customer Id"
+          },
+          "seller_id": {
+            "anyOf": [
+              { "type": "string", "format": "uuid" },
+              { "type": "null" }
+            ],
+            "title": "Seller Id"
+          },
+          "visit_id": {
+            "anyOf": [
+              { "type": "string", "format": "uuid" },
+              { "type": "null" }
+            ],
+            "title": "Visit Id"
+          },
+          "route_id": {
+            "anyOf": [
+              { "type": "string", "format": "uuid" },
+              { "type": "null" }
+            ],
+            "title": "Route Id"
+          },
+          "fecha_pedido": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Fecha Pedido"
+          },
+          "fecha_entrega_estimada": {
+            "anyOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ],
+            "title": "Fecha Entrega Estimada"
+          },
+          "metodo_creacion": { "type": "string", "title": "Metodo Creacion" },
+          "direccion_entrega": {
+            "type": "string",
+            "title": "Direccion Entrega"
+          },
+          "ciudad_entrega": { "type": "string", "title": "Ciudad Entrega" },
+          "pais_entrega": { "type": "string", "title": "Pais Entrega" },
+          "customer_name": { "type": "string", "title": "Customer Name" },
+          "customer_phone": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Customer Phone"
+          },
+          "customer_email": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Customer Email"
+          },
+          "seller_name": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Seller Name"
+          },
+          "seller_email": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Seller Email"
+          },
+          "monto_total": { "type": "number", "title": "Monto Total" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "items": {
+            "items": { "$ref": "#/components/schemas/OrderItemResponse" },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "customer_id",
+          "seller_id",
+          "visit_id",
+          "route_id",
+          "fecha_pedido",
+          "fecha_entrega_estimada",
+          "metodo_creacion",
+          "direccion_entrega",
+          "ciudad_entrega",
+          "pais_entrega",
+          "customer_name",
+          "customer_phone",
+          "customer_email",
+          "seller_name",
+          "seller_email",
+          "monto_total",
+          "created_at",
+          "updated_at",
+          "items"
+        ],
+        "title": "OrderResponse",
+        "description": "Response schema for an order."
+      },
+      "PaginatedInventoriesResponse": {
+        "properties": {
+          "items": {
+            "items": { "$ref": "#/components/schemas/InventoryResponse" },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": { "type": "integer", "title": "Total" },
+          "page": { "type": "integer", "title": "Page" },
+          "size": { "type": "integer", "title": "Size" },
+          "has_next": { "type": "boolean", "title": "Has Next" },
+          "has_previous": { "type": "boolean", "title": "Has Previous" }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size",
+          "has_next",
+          "has_previous"
+        ],
+        "title": "PaginatedInventoriesResponse"
+      },
+      "PaginatedOrdersResponse": {
+        "properties": {
+          "items": {
+            "items": { "$ref": "#/components/schemas/OrderResponse" },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": { "type": "integer", "title": "Total" },
+          "page": { "type": "integer", "title": "Page" },
+          "size": { "type": "integer", "title": "Size" },
+          "has_next": { "type": "boolean", "title": "Has Next" },
+          "has_previous": { "type": "boolean", "title": "Has Previous" }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size",
+          "has_next",
+          "has_previous"
+        ],
+        "title": "PaginatedOrdersResponse",
+        "description": "Paginated response for listing orders."
+      },
+      "PaginatedProductsResponse": {
+        "properties": {
+          "items": {
+            "items": { "$ref": "#/components/schemas/ProductResponse" },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": { "type": "integer", "title": "Total" },
+          "page": { "type": "integer", "title": "Page" },
+          "size": { "type": "integer", "title": "Size" },
+          "has_next": { "type": "boolean", "title": "Has Next" },
+          "has_previous": { "type": "boolean", "title": "Has Previous" }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size",
+          "has_next",
+          "has_previous"
+        ],
+        "title": "PaginatedProductsResponse"
+      },
+      "PaginatedProvidersResponse": {
+        "properties": {
+          "items": {
+            "items": { "$ref": "#/components/schemas/ProviderResponse" },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": { "type": "integer", "title": "Total" },
+          "page": { "type": "integer", "title": "Page" },
+          "size": { "type": "integer", "title": "Size" },
+          "has_next": { "type": "boolean", "title": "Has Next" },
+          "has_previous": { "type": "boolean", "title": "Has Previous" }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size",
+          "has_next",
+          "has_previous"
+        ],
+        "title": "PaginatedProvidersResponse"
+      },
+      "PaginatedReportsResponse": {
+        "properties": {
+          "items": {
+            "items": { "$ref": "#/components/schemas/ReportResponse" },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": { "type": "integer", "title": "Total" },
+          "page": { "type": "integer", "title": "Page" },
+          "size": { "type": "integer", "title": "Size" },
+          "has_next": { "type": "boolean", "title": "Has Next" },
+          "has_previous": { "type": "boolean", "title": "Has Previous" }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size",
+          "has_next",
+          "has_previous"
+        ],
+        "title": "PaginatedReportsResponse",
+        "description": "Response schema for paginated reports list."
+      },
+      "PaginatedSalesPlansResponse": {
+        "properties": {
+          "items": {
+            "items": { "$ref": "#/components/schemas/SalesPlanResponse" },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": { "type": "integer", "title": "Total" },
+          "page": { "type": "integer", "title": "Page" },
+          "size": { "type": "integer", "title": "Size" },
+          "has_next": { "type": "boolean", "title": "Has Next" },
+          "has_previous": { "type": "boolean", "title": "Has Previous" }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size",
+          "has_next",
+          "has_previous"
+        ],
+        "title": "PaginatedSalesPlansResponse"
+      },
+      "PaginatedSellersResponse": {
+        "properties": {
+          "items": {
+            "items": { "$ref": "#/components/schemas/SellerResponse" },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": { "type": "integer", "title": "Total" },
+          "page": { "type": "integer", "title": "Page" },
+          "size": { "type": "integer", "title": "Size" },
+          "has_next": { "type": "boolean", "title": "Has Next" },
+          "has_previous": { "type": "boolean", "title": "Has Previous" }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size",
+          "has_next",
+          "has_previous"
+        ],
+        "title": "PaginatedSellersResponse"
+      },
+      "PaginatedWarehousesResponse": {
+        "properties": {
+          "items": {
+            "items": { "$ref": "#/components/schemas/WarehouseResponse" },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": { "type": "integer", "title": "Total" },
+          "page": { "type": "integer", "title": "Page" },
+          "size": { "type": "integer", "title": "Size" },
+          "has_next": { "type": "boolean", "title": "Has Next" },
+          "has_previous": { "type": "boolean", "title": "Has Previous" }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size",
+          "has_next",
+          "has_previous"
+        ],
+        "title": "PaginatedWarehousesResponse"
+      },
+      "ProductCategory": {
+        "type": "string",
+        "enum": [
+          "medicamentos_especiales",
+          "insumos_quirurgicos",
+          "reactivos_diagnosticos",
+          "equipos_biomedicos",
+          "otros"
+        ],
+        "title": "ProductCategory",
+        "description": "Product category options according to ER diagram"
+      },
+      "ProductCreate": {
+        "properties": {
+          "provider_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Provider Id",
+            "description": "ID of the provider"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "description": "Product name"
+          },
+          "category": {
+            "$ref": "#/components/schemas/ProductCategory",
+            "description": "Product category"
+          },
+          "sku": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Sku",
+            "description": "Product SKU (unique identifier)"
+          },
+          "price": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Price",
+            "description": "Product price (must be greater than 0)"
+          }
+        },
+        "type": "object",
+        "required": ["provider_id", "name", "category", "sku", "price"],
+        "title": "ProductCreate"
+      },
+      "ProductResponse": {
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "provider_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Provider Id"
+          },
+          "provider_name": { "type": "string", "title": "Provider Name" },
+          "name": { "type": "string", "title": "Name" },
+          "category": { "type": "string", "title": "Category" },
+          "sku": { "type": "string", "title": "Sku" },
+          "price": { "type": "number", "title": "Price" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "provider_id",
+          "provider_name",
+          "name",
+          "category",
+          "sku",
+          "price",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ProductResponse"
+      },
+      "ProviderCreate": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "nit": { "type": "string", "title": "Nit" },
+          "contact_name": { "type": "string", "title": "Contact Name" },
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "phone": { "type": "string", "title": "Phone" },
+          "address": { "type": "string", "title": "Address" },
+          "country": { "type": "string", "title": "Country" }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "nit",
+          "contact_name",
+          "email",
+          "phone",
+          "address",
+          "country"
+        ],
+        "title": "ProviderCreate"
+      },
+      "ProviderCreateResponse": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "message": { "type": "string", "title": "Message" }
+        },
+        "type": "object",
+        "required": ["id", "message"],
+        "title": "ProviderCreateResponse"
+      },
+      "ProviderResponse": {
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "name": { "type": "string", "title": "Name" },
+          "nit": { "type": "string", "title": "Nit" },
+          "contact_name": { "type": "string", "title": "Contact Name" },
+          "email": { "type": "string", "title": "Email" },
+          "phone": { "type": "string", "title": "Phone" },
+          "address": { "type": "string", "title": "Address" },
+          "country": { "type": "string", "title": "Country" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "nit",
+          "contact_name",
+          "email",
+          "phone",
+          "address",
+          "country",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ProviderResponse"
+      },
+      "RefreshTokenRequest": {
+        "properties": {
+          "refresh_token": { "type": "string", "title": "Refresh Token" }
+        },
+        "type": "object",
+        "required": ["refresh_token"],
+        "title": "RefreshTokenRequest",
+        "description": "Request model for refreshing access token."
+      },
+      "RefreshTokenResponse": {
+        "properties": {
+          "access_token": { "type": "string", "title": "Access Token" },
+          "id_token": { "type": "string", "title": "Id Token" },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "Bearer"
+          },
+          "expires_in": { "type": "integer", "title": "Expires In" }
+        },
+        "type": "object",
+        "required": ["access_token", "id_token", "expires_in"],
+        "title": "RefreshTokenResponse",
+        "description": "Response model for token refresh."
+      },
+      "ReportCreateRequest": {
+        "properties": {
+          "report_type": { "$ref": "#/components/schemas/ReportType" },
+          "start_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Date"
+          },
+          "filters": {
+            "anyOf": [
+              { "additionalProperties": true, "type": "object" },
+              { "type": "null" }
+            ],
+            "title": "Filters"
+          }
+        },
+        "type": "object",
+        "required": ["report_type", "start_date", "end_date"],
+        "title": "ReportCreateRequest",
+        "description": "Request schema for creating a report."
+      },
+      "ReportCreateResponse": {
+        "properties": {
+          "report_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Report Id"
+          },
+          "status": { "$ref": "#/components/schemas/ReportStatus" },
+          "message": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["report_id", "status"],
+        "title": "ReportCreateResponse",
+        "description": "Response schema for report creation."
+      },
+      "ReportResponse": {
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "report_type": { "$ref": "#/components/schemas/ReportType" },
+          "status": { "$ref": "#/components/schemas/ReportStatus" },
+          "start_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Date"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Completed At"
+          },
+          "download_url": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Download Url"
+          },
+          "error_message": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Error Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "report_type",
+          "status",
+          "start_date",
+          "end_date",
+          "created_at"
+        ],
+        "title": "ReportResponse",
+        "description": "Response schema for a single report."
+      },
+      "ReportStatus": {
+        "type": "string",
+        "enum": ["pending", "processing", "completed", "failed"],
+        "title": "ReportStatus",
+        "description": "Report status enum."
+      },
+      "ReportType": {
+        "type": "string",
+        "enum": ["orders_per_seller", "low_stock", "orders_per_status"],
+        "title": "ReportType",
+        "description": "Report type enum."
+      },
+      "SalesPlanCreate": {
+        "properties": {
+          "seller_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Seller Id"
+          },
+          "sales_period": { "type": "string", "title": "Sales Period" },
+          "goal": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Goal",
+            "description": "Sales goal amount"
+          }
+        },
+        "type": "object",
+        "required": ["seller_id", "sales_period", "goal"],
+        "title": "SalesPlanCreate"
+      },
+      "SalesPlanCreateResponse": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "message": { "type": "string", "title": "Message" }
+        },
+        "type": "object",
+        "required": ["id", "message"],
+        "title": "SalesPlanCreateResponse"
+      },
+      "SalesPlanResponse": {
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "seller": { "$ref": "#/components/schemas/SellerResponse" },
+          "sales_period": { "type": "string", "title": "Sales Period" },
+          "goal": { "type": "number", "title": "Goal" },
+          "accumulate": { "type": "number", "title": "Accumulate" },
+          "status": { "type": "string", "title": "Status" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "seller",
+          "sales_period",
+          "goal",
+          "accumulate",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "SalesPlanResponse"
+      },
+      "SellerCreate": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "phone": { "type": "string", "title": "Phone" },
+          "city": { "type": "string", "title": "City" },
+          "country": { "type": "string", "title": "Country" }
+        },
+        "type": "object",
+        "required": ["name", "email", "phone", "city", "country"],
+        "title": "SellerCreate"
+      },
+      "SellerCreateResponse": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "message": { "type": "string", "title": "Message" }
+        },
+        "type": "object",
+        "required": ["id", "message"],
+        "title": "SellerCreateResponse"
+      },
+      "SellerResponse": {
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "name": { "type": "string", "title": "Name" },
+          "email": { "type": "string", "title": "Email" },
+          "phone": { "type": "string", "title": "Phone" },
+          "city": { "type": "string", "title": "City" },
+          "country": { "type": "string", "title": "Country" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "email",
+          "phone",
+          "city",
+          "country",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "SellerResponse"
+      },
+      "SignupRequest": {
+        "properties": {
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "password": { "type": "string", "minLength": 8, "title": "Password" },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Name",
+            "description": "Representative's full name"
+          },
+          "telefono": { "type": "string", "minLength": 1, "title": "Telefono" },
+          "nombre_institucion": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Nombre Institucion"
+          },
+          "tipo_institucion": {
+            "type": "string",
+            "title": "Tipo Institucion",
+            "description": "Tipo de institución: hospital, clinica, laboratorio, centro_diagnostico"
+          },
+          "nit": { "type": "string", "minLength": 1, "title": "Nit" },
+          "direccion": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Direccion"
+          },
+          "ciudad": { "type": "string", "minLength": 1, "title": "Ciudad" },
+          "pais": { "type": "string", "minLength": 1, "title": "Pais" },
+          "representante": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Representante"
+          },
+          "user_type": {
+            "type": "string",
+            "title": "User Type",
+            "description": "Must be 'client' - only clients can self-register",
+            "default": "client"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "name",
+          "telefono",
+          "nombre_institucion",
+          "tipo_institucion",
+          "nit",
+          "direccion",
+          "ciudad",
+          "pais",
+          "representante"
+        ],
+        "title": "SignupRequest",
+        "description": "Request model for user signup - only clients can self-register."
+      },
+      "SignupResponse": {
+        "properties": {
+          "user_id": { "type": "string", "title": "User Id" },
+          "email": { "type": "string", "title": "Email" },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "User created successfully. Please check your email for verification."
+          }
+        },
+        "type": "object",
+        "required": ["user_id", "email"],
+        "title": "SignupResponse",
+        "description": "Response model for successful signup."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      },
+      "ValidationErrorResponse": {
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "title": "Error Code",
+            "default": "VALIDATION_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Human-readable error message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "default": "validation_error"
+          }
+        },
+        "type": "object",
+        "required": ["message"],
+        "title": "ValidationErrorResponse",
+        "description": "Validation error response (422).",
+        "examples": [
+          {
+            "error_code": "VALIDATION_ERROR",
+            "message": "limit: Input should be less than or equal to 100",
+            "type": "validation_error"
+          }
+        ]
+      },
+      "WarehouseCreate": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "country": { "type": "string", "title": "Country" },
+          "city": { "type": "string", "title": "City" },
+          "address": { "type": "string", "title": "Address" }
+        },
+        "type": "object",
+        "required": ["name", "country", "city", "address"],
+        "title": "WarehouseCreate"
+      },
+      "WarehouseCreateResponse": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "message": { "type": "string", "title": "Message" }
+        },
+        "type": "object",
+        "required": ["id", "message"],
+        "title": "WarehouseCreateResponse"
+      },
+      "WarehouseResponse": {
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "name": { "type": "string", "title": "Name" },
+          "country": { "type": "string", "title": "Country" },
+          "city": { "type": "string", "title": "City" },
+          "address": { "type": "string", "title": "Address" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "country",
+          "city",
+          "address",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "WarehouseResponse"
+      },
+      "client_app__schemas__order_schemas__OrderCreateInput": {
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Customer Id"
+          },
+          "items": {
+            "items": { "$ref": "#/components/schemas/OrderItemInput" },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": ["customer_id", "items"],
+        "title": "OrderCreateInput",
+        "description": "Input schema for creating an order via client app.\n\nBusiness rules:\n- metodo_creacion is automatically set to 'app_cliente'\n- No seller_id or visit_id required (client app orders)"
+      },
+      "sellers_app__schemas__order_schemas__OrderCreateInput": {
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Customer Id"
+          },
+          "seller_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Seller Id"
+          },
+          "items": {
+            "items": { "$ref": "#/components/schemas/OrderItemInput" },
+            "type": "array",
+            "title": "Items"
+          },
+          "visit_id": {
+            "anyOf": [
+              { "type": "string", "format": "uuid" },
+              { "type": "null" }
+            ],
+            "title": "Visit Id"
+          }
+        },
+        "type": "object",
+        "required": ["customer_id", "seller_id", "items"],
+        "title": "OrderCreateInput",
+        "description": "Input schema for creating an order via sellers app.\n\nBusiness rules:\n- metodo_creacion is automatically set to 'app_vendedor'\n- seller_id is REQUIRED (seller creating the order)\n- visit_id is OPTIONAL (can be associated with a visit or not)"
+      }
+    },
+    "securitySchemes": { "HTTPBearer": { "type": "http", "scheme": "bearer" } }
+  }
+}
