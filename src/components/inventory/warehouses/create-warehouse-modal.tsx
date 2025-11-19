@@ -26,7 +26,7 @@ import {
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import LocationSelector from '../../ui/location-input'
-import { useCreateWarehouse } from '@/services/hooks/use-warehouses'
+import { useCreateWarehouseBffWebWarehousePost } from '@/generated'
 import {
   createWarehouseSchema,
   type WarehouseFormData
@@ -57,20 +57,24 @@ export function CreateWarehouseModal({
   })
 
   // mutation to create a new warehouse
-  const { mutate: createWarehouseMutation, isPending } = useCreateWarehouse()
+  const { mutate: createWarehouseMutation, isPending } =
+    useCreateWarehouseBffWebWarehousePost()
 
   // form handlers
   const handleSubmit = (data: WarehouseFormData) => {
-    createWarehouseMutation(data, {
-      onSuccess: () => {
-        onOpenChange(false)
-        toast.success(t('modal.toastSuccess'))
-        form.reset()
-      },
-      onError: () => {
-        toast.error(t('modal.toastError'))
+    createWarehouseMutation(
+      { data },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          toast.success(t('modal.toastSuccess'))
+          form.reset()
+        },
+        onError: () => {
+          toast.error(t('modal.toastError'))
+        }
       }
-    })
+    )
   }
 
   // Reset form when modal closes

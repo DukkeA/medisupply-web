@@ -26,7 +26,7 @@ import {
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import LocationSelector from '../ui/location-input'
-import { useCreateProvider } from '@/services/hooks/use-providers'
+import { useCreateProviderBffWebProviderPost } from '@/generated'
 import {
   createProviderSchema,
   type ProviderFormData
@@ -60,20 +60,24 @@ export function CreateProviderModal({
   })
 
   // mutation to create a new provider
-  const { mutate: createProviderMutation, isPending } = useCreateProvider()
+  const { mutate: createProviderMutation, isPending } =
+    useCreateProviderBffWebProviderPost()
 
   // form handlers
   const handleSubmit = (data: ProviderFormData) => {
-    createProviderMutation(data, {
-      onSuccess: () => {
-        onOpenChange(false)
-        toast.success(t('modal.toastSuccess'))
-        form.reset()
-      },
-      onError: () => {
-        toast.error(t('modal.toastError'))
+    createProviderMutation(
+      { data },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          toast.success(t('modal.toastSuccess'))
+          form.reset()
+        },
+        onError: () => {
+          toast.error(t('modal.toastError'))
+        }
       }
-    })
+    )
   }
 
   // Reset form when modal closes

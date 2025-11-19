@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import {
   Table,
   TableBody,
@@ -13,70 +13,20 @@ import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-
-interface Report {
-  id: string
-  report_type: string
-  status: string
-  start_date?: string
-  end_date?: string
-  created_at: string
-  completed_at?: string
-  download_url?: string
-  error_message?: string
-}
-
-interface PaginatedReportsResponse {
-  items: Report[]
-  total: number
-  page: number
-  size: number
-  has_next: boolean
-  has_previous: boolean
-}
+import {
+  useListReportsBffWebReportsGet,
+  getReportBffWebReportsReportIdGet
+} from '@/generated'
+import type { ReportResponse } from '@/generated'
 
 export function ReportsTable() {
   const t = useTranslations('reports')
 
-  const { data, isLoading, isError } = useQuery<PaginatedReportsResponse>({
-    queryKey: ['reports'],
-    queryFn: async () => {
-      const accessToken = localStorage.getItem('access_token')
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/bff/web/reports`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response.json()
-    },
-    refetchInterval: 3000, // Refetch every 3 seconds
-    refetchIntervalInBackground: false, // Only refetch when tab is active
-    refetchOnWindowFocus: true
-  })
+  const { data, isLoading, isError } = useListReportsBffWebReportsGet()
 
   const downloadReportMutation = useMutation({
     mutationFn: async (reportId: string) => {
-      const accessToken = localStorage.getItem('access_token')
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/bff/web/reports/${reportId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-      if (!response.ok) {
-        throw new Error('Failed to get download URL')
-      }
-      return response.json()
+      return getReportBffWebReportsReportIdGet(reportId)
     },
     onSuccess: async (reportData) => {
       if (reportData.download_url) {
@@ -113,7 +63,7 @@ export function ReportsTable() {
     }
   })
 
-  const handleDownload = (report: Report) => {
+  const handleDownload = (report: ReportResponse) => {
     downloadReportMutation.mutate(report.id)
   }
 
@@ -152,7 +102,7 @@ export function ReportsTable() {
               </TableCell>
             </TableRow>
           ) : (
-            data.items.map((report: Report) => (
+            data.items.map((report: ReportResponse) => (
               <TableRow key={report.id} data-testid={`report-row-${report.id}`}>
                 <TableCell
                   className="font-medium"

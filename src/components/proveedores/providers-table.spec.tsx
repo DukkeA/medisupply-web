@@ -1,7 +1,8 @@
 import React from 'react'
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { ProvidersTable } from './providers-table'
 
 /* ───────────── Mocks tipados ───────────── */
@@ -16,13 +17,17 @@ vi.mock('@/components/proveedores/create-provider-modal', () => ({
   )
 }))
 
-// Mock useProviders hook
+// Mock useGetProvidersBffWebProvidersGet hook
 type UseQueryResult<T> = { data?: T; isLoading: boolean; isError: boolean }
-const mockUseProviders = vi.fn<() => UseQueryResult<unknown>>()
+const mockUseGetProviders = vi.fn<() => UseQueryResult<unknown>>()
 
-vi.mock('@/services/hooks/use-providers', () => ({
-  useProviders: () => mockUseProviders()
-}))
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useGetProvidersBffWebProvidersGet: () => mockUseGetProviders()
+  }
+})
 
 /* ───────────── Tests ───────────── */
 
@@ -41,27 +46,27 @@ afterEach(() => {
 
 describe('ProvidersTable', () => {
   it('should display loading state while fetching data', () => {
-    mockUseProviders.mockReturnValue({
+    mockUseGetProviders.mockReturnValue({
       isLoading: true,
       isError: false,
       data: undefined
     })
-    render(<ProvidersTable />)
+    renderWithProviders(<ProvidersTable />)
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
   it('should display error message when query fails', () => {
-    mockUseProviders.mockReturnValue({
+    mockUseGetProviders.mockReturnValue({
       isLoading: false,
       isError: true,
       data: undefined
     })
-    render(<ProvidersTable />)
+    renderWithProviders(<ProvidersTable />)
     expect(screen.getByText('Error loading providers.')).toBeInTheDocument()
   })
 
   it('should render table with empty state when data is empty', () => {
-    mockUseProviders.mockReturnValue({
+    mockUseGetProviders.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -73,7 +78,7 @@ describe('ProvidersTable', () => {
         has_previous: false
       }
     })
-    render(<ProvidersTable />)
+    renderWithProviders(<ProvidersTable />)
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByText('table.noData')).toBeInTheDocument()
   })
@@ -81,7 +86,7 @@ describe('ProvidersTable', () => {
   it('should render rows and open modal when add button is clicked', async () => {
     process.env.NEXT_PUBLIC_MOCK_DATA = 'true'
 
-    mockUseProviders.mockReturnValue({
+    mockUseGetProviders.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -107,7 +112,7 @@ describe('ProvidersTable', () => {
       }
     })
 
-    render(<ProvidersTable />)
+    renderWithProviders(<ProvidersTable />)
 
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByText('Alice')).toBeInTheDocument()

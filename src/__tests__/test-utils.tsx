@@ -9,6 +9,7 @@ import {
 import { NextIntlClientProvider } from 'next-intl'
 import messagesEs from '../../messages/es.json'
 import messagesEn from '../../messages/en.json'
+import { RealtimeProvider } from '@/lib/realtime'
 
 /**
  * Creates a QueryClient for testing with sensible defaults
@@ -36,6 +37,11 @@ interface RenderHookWithProvidersOptions<TProps>
    */
   queryClient?: QueryClient
   /**
+   * Include RealtimeProvider (Ably) wrapper (optional)
+   * Defaults to true
+   */
+  includeRealtimeProvider?: boolean
+  /**
    * Additional wrapper components to nest
    * Will be wrapped inside QueryClientProvider
    */
@@ -43,7 +49,7 @@ interface RenderHookWithProvidersOptions<TProps>
 }
 
 /**
- * Renders a hook with all necessary providers (QueryClient, etc.)
+ * Renders a hook with all necessary providers (QueryClient, Realtime, etc.)
  *
  * @example
  * ```tsx
@@ -62,12 +68,24 @@ interface RenderHookWithProvidersOptions<TProps>
  *   additionalWrappers: [ThemeProvider, AuthProvider]
  * })
  * ```
+ *
+ * @example Without RealtimeProvider
+ * ```tsx
+ * const { result } = renderHookWithProviders(() => useMyHook(), {
+ *   includeRealtimeProvider: false
+ * })
+ * ```
  */
 export function renderHookWithProviders<TResult, TProps>(
   hook: (props: TProps) => TResult,
   options?: RenderHookWithProvidersOptions<TProps>
 ) {
-  const { queryClient, additionalWrappers, ...renderOptions } = options || {}
+  const {
+    queryClient,
+    additionalWrappers,
+    includeRealtimeProvider = true,
+    ...renderOptions
+  } = options || {}
 
   const testQueryClient = queryClient || createTestQueryClient()
 
@@ -82,7 +100,13 @@ export function renderHookWithProviders<TResult, TProps>(
       )
     }
 
+    // Wrap with RealtimeProvider inside QueryClientProvider (since it needs useQueryClient)
+    if (includeRealtimeProvider) {
+      wrappedChildren = <RealtimeProvider>{wrappedChildren}</RealtimeProvider>
+    }
+
     // QueryClientProvider is always the outermost provider
+    // RealtimeProvider is placed inside since it uses useQueryClient()
     return (
       <QueryClientProvider client={testQueryClient}>
         {wrappedChildren}
@@ -114,6 +138,11 @@ interface RenderWithProvidersOptions extends Omit<RenderOptions, 'wrapper'> {
    */
   customMessages?: Record<string, unknown>
   /**
+   * Include RealtimeProvider (Ably) wrapper (optional)
+   * Defaults to true
+   */
+  includeRealtimeProvider?: boolean
+  /**
    * Additional wrapper components to nest (e.g., SidebarProvider, ThemeProvider)
    * Will be wrapped inside QueryClientProvider and NextIntlClientProvider
    */
@@ -125,7 +154,7 @@ interface RenderWithProvidersOptions extends Omit<RenderOptions, 'wrapper'> {
 }
 
 /**
- * Renders a component with all necessary providers (QueryClient, NextIntl)
+ * Renders a component with all necessary providers (QueryClient, NextIntl, Realtime)
  * Uses real Spanish messages by default
  *
  * @example Basic usage
@@ -151,6 +180,11 @@ interface RenderWithProvidersOptions extends Omit<RenderOptions, 'wrapper'> {
  * ```tsx
  * renderWithProviders(<PureComponent />, { skipQueryClient: true })
  * ```
+ *
+ * @example Without RealtimeProvider
+ * ```tsx
+ * renderWithProviders(<MyComponent />, { includeRealtimeProvider: false })
+ * ```
  */
 export function renderWithProviders(
   ui: React.ReactElement,
@@ -162,6 +196,7 @@ export function renderWithProviders(
     customMessages,
     additionalWrappers,
     skipQueryClient = false,
+    includeRealtimeProvider = !skipQueryClient, // Only include RealtimeProvider if QueryClient is enabled
     ...renderOptions
   } = options || {}
 
@@ -189,7 +224,13 @@ export function renderWithProviders(
       </NextIntlClientProvider>
     )
 
-    // Optionally wrap with QueryClient (outermost)
+    // Wrap with RealtimeProvider inside QueryClientProvider (since it needs useQueryClient)
+    // RealtimeProvider is only included if QueryClientProvider is enabled
+    if (includeRealtimeProvider && !skipQueryClient) {
+      wrappedChildren = <RealtimeProvider>{wrappedChildren}</RealtimeProvider>
+    }
+
+    // Optionally wrap with QueryClient (outermost, since RealtimeProvider uses useQueryClient)
     if (!skipQueryClient) {
       wrappedChildren = (
         <QueryClientProvider client={testQueryClient}>

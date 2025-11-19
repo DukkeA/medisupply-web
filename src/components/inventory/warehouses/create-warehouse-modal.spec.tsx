@@ -1,112 +1,179 @@
-// WARNING: This file is testing the wrong component (WarehousesTable instead of CreateWarehouseModal)
-// TODO: Fix this test to actually test CreateWarehouseModal component
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { WarehousesTable } from './warehouses-table'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
+import { toast } from 'sonner'
+import { z } from 'zod'
+import { renderWithProviders } from '@/__tests__/test-utils'
+import { CreateWarehouseModal } from './create-warehouse-modal'
 
 /* ─────────── Mocks tipados ─────────── */
 
-// Mock del modal correcto: CreateWarehouseModal (NO add-to-inventory)
-vi.mock('./create-warehouse-modal', () => ({
-  CreateWarehouseModal: ({ open }: { open: boolean }) => (
-    <div
-      data-testid="create-warehouse-modal"
-      data-open={open ? 'true' : 'false'}
-    />
-  )
+// Mock validation schema to always pass
+vi.mock('@/lib/validations/warehouse-schema', () => ({
+  createWarehouseSchema: () =>
+    z.object({
+      name: z.string(),
+      address: z.string(),
+      country: z.string(),
+      city: z.string()
+    })
 }))
 
-/* ─────────── Mock useWarehouses hook ─────────── */
-type UseWarehousesResult = {
-  data?: { items: unknown[] }
-  isLoading: boolean
-  isError: boolean
-}
-const mockUseWarehouses = vi.fn<() => UseWarehousesResult>()
+const mockMutate = vi.fn()
+let mockIsPending = false
 
-vi.mock('@/services/hooks/use-warehouses', () => ({
-  useWarehouses: () => mockUseWarehouses()
-}))
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useCreateWarehouseBffWebWarehousePost: () => ({
+      mutate: mockMutate,
+      isPending: mockIsPending
+    })
+  }
+})
 
 /* ─────────── Tests ─────────── */
-describe('WarehousesTable', () => {
+describe('CreateWarehouseModal', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockIsPending = false
   })
 
-  it('should display loading state while fetching data', () => {
-    mockUseWarehouses.mockReturnValue({
-      isLoading: true,
-      isError: false,
-      data: undefined
+  it('should render title and description and allow cancellation', async () => {
+    const onOpenChange = vi.fn()
+    renderWithProviders(
+      <CreateWarehouseModal open={true} onOpenChange={onOpenChange} />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('modal.title')).toBeInTheDocument()
+      expect(screen.getByText('modal.description')).toBeInTheDocument()
     })
-    render(<WarehousesTable />)
-    expect(screen.getByText('Loading...')).toBeInTheDocument()
-  })
 
-  it('should display error message when query fails', () => {
-    mockUseWarehouses.mockReturnValue({
-      isLoading: false,
-      isError: true,
-      data: undefined
+    const cancelBtn = screen.getByRole('button', {
+      name: 'modal.buttons.cancel'
     })
-    render(<WarehousesTable />)
-    expect(screen.getByText('Error loading warehouses.')).toBeInTheDocument()
+    fireEvent.click(cancelBtn)
+    expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
-  it('should render table with empty state when data is empty', () => {
-    mockUseWarehouses.mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: { items: [] }
+  it('should submit form successfully with country and city selection', async () => {
+    const onOpenChange = vi.fn()
+
+    mockMutate.mockImplementation((_data, options) => {
+      options?.onSuccess?.()
     })
-    render(<WarehousesTable />)
-    expect(screen.getByRole('table')).toBeInTheDocument()
-    expect(screen.getByText('table.noData')).toBeInTheDocument()
-  })
 
-  it('should render rows and open modal when add button is clicked', async () => {
-    const user = userEvent.setup()
-    process.env.NEXT_PUBLIC_MOCK_DATA = 'true'
+    renderWithProviders(
+      <CreateWarehouseModal open={true} onOpenChange={onOpenChange} />
+    )
 
-    mockUseWarehouses.mockReturnValue({
-      isLoading: false,
-      isError: false,
-      data: {
-        items: [
-          {
-            id: 1,
-            name: 'Main WH',
-            address: '123 St',
-            country: 'CO',
-            city: 'Bogotá'
-          }
-        ]
+    // Inputs by placeholder
+    fireEvent.change(screen.getByPlaceholderText('Main Warehouse'), {
+      target: { value: 'Test Warehouse' }
+    })
+    fireEvent.change(
+      screen.getByPlaceholderText('123 Main St, New York, USA'),
+      {
+        target: { value: '456 Test Ave' }
       }
+    )
+
+    // LocationSelector (country/city)
+    fireEvent.click(
+      screen.getByRole('button', { name: 'modal.fields.country' })
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'modal.fields.city' }))
+
+    // Wait for button to be enabled
+    const submitBtn = await waitFor(() => {
+      const btn = screen.getByRole('button', {
+        name: /modal\.buttons\.create|modal\.buttons\.creating/
+      })
+      expect(btn).not.toBeDisabled()
+      return btn
     })
 
-    render(<WarehousesTable />)
+    fireEvent.click(submitBtn)
 
-    expect(screen.getByRole('table')).toBeInTheDocument()
-    expect(screen.getByText('Main WH')).toBeInTheDocument()
-    expect(screen.getByText('Bogotá')).toBeInTheDocument()
-    expect(screen.getByText('CO')).toBeInTheDocument()
-    expect(screen.getByText('123 St')).toBeInTheDocument()
+    // onSuccess → cierra modal y muestra toast.success
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith(
+        {
+          data: {
+            name: 'Test Warehouse',
+            address: '456 Test Ave',
+            country: 'Colombia',
+            city: 'Andina'
+          }
+        },
+        expect.any(Object)
+      )
+    })
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    expect(toast.success).toHaveBeenCalledWith('modal.toastSuccess')
+  })
 
-    // Botón "Agregar" (único button en el header)
-    const addBtn = screen.getByRole('button')
-    // El modal mockeado empieza cerrado
-    expect(screen.getByTestId('create-warehouse-modal')).toHaveAttribute(
-      'data-open',
-      'false'
+  it('should disable buttons when pending and display error on failure', async () => {
+    const onOpenChange = vi.fn()
+
+    // First test with isPending = true to verify buttons are disabled
+    mockIsPending = true
+    const { unmount } = renderWithProviders(
+      <CreateWarehouseModal open={true} onOpenChange={onOpenChange} />
     )
 
-    await user.click(addBtn)
-    expect(screen.getByTestId('create-warehouse-modal')).toHaveAttribute(
-      'data-open',
-      'true'
+    const cancelBtn = screen.getByRole('button', {
+      name: 'modal.buttons.cancel'
+    })
+    const submitBtn = screen.getByRole('button', {
+      name: /modal\.buttons\.create|modal\.buttons\.creating/
+    })
+
+    expect(cancelBtn).toBeDisabled()
+    expect(submitBtn).toBeDisabled()
+    unmount()
+
+    // Now test error handling with isPending = false so form can be submitted
+    mockIsPending = false
+    mockMutate.mockImplementation((_data, options) => {
+      options?.onError?.(new Error('fail'))
+    })
+
+    renderWithProviders(
+      <CreateWarehouseModal open={true} onOpenChange={onOpenChange} />
     )
+
+    // Fill form
+    fireEvent.change(screen.getByPlaceholderText('Main Warehouse'), {
+      target: { value: 'Test Warehouse' }
+    })
+    fireEvent.change(
+      screen.getByPlaceholderText('123 Main St, New York, USA'),
+      {
+        target: { value: '456 Test Ave' }
+      }
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'modal.fields.country' })
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'modal.fields.city' }))
+
+    // Wait for button to be enabled before clicking
+    const newSubmitBtn = await waitFor(() => {
+      const btn = screen.getByRole('button', {
+        name: /modal\.buttons\.create|modal\.buttons\.creating/
+      })
+      expect(btn).not.toBeDisabled()
+      return btn
+    })
+
+    fireEvent.click(newSubmitBtn)
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('modal.toastError')
+    })
+    expect(onOpenChange).not.toHaveBeenCalled()
   })
 })

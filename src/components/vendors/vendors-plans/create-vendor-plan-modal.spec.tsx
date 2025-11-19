@@ -1,9 +1,10 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { CreateVendorPlanModal } from './create-vendor-plan-modal'
 
 /* ──────────────── React Query mocks ──────────────── */
@@ -18,36 +19,21 @@ vi.mock('@/lib/validations/sales-plan-schema', () => ({
     })
 }))
 
-// useQuery (vendors) + useMutation + useQueryClient
+// Mock Orval hooks for sales plans
 type UseQueryResult<T> = { data?: T; isLoading: boolean; isError: boolean }
-const mockUseQuery = vi.fn<() => UseQueryResult<unknown>>()
-const mockInvalidate = vi.fn()
-
-type MutationOptions<Vars> = {
-  onSuccess?: (data: unknown, vars: Vars, ctx?: unknown) => void
-  onError?: (err: unknown) => void
-}
+const mockUseGetSellers = vi.fn<() => UseQueryResult<unknown>>()
+const mockMutateCreateSalesPlan = vi.fn()
 let mutationIsPending = false
 
-vi.mock('@tanstack/react-query', () => {
-  const defaultQuery: UseQueryResult<unknown> = {
-    isLoading: false,
-    isError: false,
-    data: { items: [] }
-  }
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
   return {
-    useQuery: () => mockUseQuery() ?? defaultQuery,
-    useQueryClient: () => ({ invalidateQueries: mockInvalidate }),
-    useMutation: <Vars,>(opts: MutationOptions<Vars>) => {
-      return {
-        mutate: (vars: Vars, runtimeOpts?: MutationOptions<Vars>) => {
-          // Call both hook onSuccess and runtime onSuccess
-          opts.onSuccess?.({}, vars, undefined)
-          runtimeOpts?.onSuccess?.({}, vars, undefined)
-        },
-        isPending: mutationIsPending
-      }
-    }
+    ...actual,
+    useGetSellersBffWebSellersGet: () => mockUseGetSellers(),
+    useCreateSalesPlanBffWebSalesPlansPost: () => ({
+      mutate: mockMutateCreateSalesPlan,
+      isPending: mutationIsPending
+    })
   }
 })
 
@@ -57,8 +43,8 @@ describe('CreateVendorPlanModal', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mutationIsPending = false
-    mockUseQuery.mockReset()
-    mockUseQuery.mockReturnValue({
+    mockUseGetSellers.mockReset()
+    mockUseGetSellers.mockReturnValue({
       isLoading: false,
       isError: false,
       data: { items: [{ id: '10', name: 'Vendor X' }] }
@@ -67,7 +53,9 @@ describe('CreateVendorPlanModal', () => {
 
   it('should render title and description and allow cancellation', async () => {
     const onOpenChange = vi.fn()
-    render(<CreateVendorPlanModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateVendorPlanModal open={true} onOpenChange={onOpenChange} />
+    )
 
     await waitFor(() => {
       expect(screen.getByText('createTitle')).toBeInTheDocument()
@@ -82,7 +70,14 @@ describe('CreateVendorPlanModal', () => {
   it('should submit form successfully when vendor is selected', async () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()
-    render(<CreateVendorPlanModal open={true} onOpenChange={onOpenChange} />)
+
+    mockMutateCreateSalesPlan.mockImplementation((_data, options) => {
+      options?.onSuccess?.()
+    })
+
+    renderWithProviders(
+      <CreateVendorPlanModal open={true} onOpenChange={onOpenChange} />
+    )
 
     // Find the combobox button by its text content
     const vendorCombobox = screen.getByRole('combobox')
@@ -111,7 +106,7 @@ describe('CreateVendorPlanModal', () => {
 
     // onSuccess
     await waitFor(() => {
-      expect(mockInvalidate).toHaveBeenCalledWith({ queryKey: ['sales-plans'] })
+      expect(mockMutateCreateSalesPlan).toHaveBeenCalled()
     })
     expect(toast.success).toHaveBeenCalledWith('createSuccess')
     expect(onOpenChange).toHaveBeenCalledWith(false)
@@ -119,7 +114,9 @@ describe('CreateVendorPlanModal', () => {
 
   it('should keep modal open when form validation fails', async () => {
     const onOpenChange = vi.fn()
-    render(<CreateVendorPlanModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateVendorPlanModal open={true} onOpenChange={onOpenChange} />
+    )
 
     // Wait for modal to render and form to initialize
     await waitFor(() => {
@@ -135,7 +132,9 @@ describe('CreateVendorPlanModal', () => {
     const onOpenChange = vi.fn()
     mutationIsPending = true
 
-    render(<CreateVendorPlanModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateVendorPlanModal open={true} onOpenChange={onOpenChange} />
+    )
 
     const cancelBtn = screen.getByRole('button', { name: 'cancel' })
     const submitBtn = screen.getByRole('button', { name: /create|creating/ })

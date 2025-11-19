@@ -40,7 +40,11 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/utils/classNames'
-import { useSellers, useCreateSalesPlan } from '@/services'
+import {
+  useGetSellersBffWebSellersGet,
+  useCreateSalesPlanBffWebSalesPlansPost
+} from '@/generated'
+import type { SellerResponse, PaginatedSellersResponse } from '@/generated'
 import {
   createSalesPlanSchema,
   type SalesPlanFormData
@@ -71,23 +75,27 @@ export function CreateVendorPlanModal({
   })
 
   // mutation to create a new sales plan
-  const { mutate: createSalesPlanMutation, isPending } = useCreateSalesPlan()
+  const { mutate: createSalesPlanMutation, isPending } =
+    useCreateSalesPlanBffWebSalesPlansPost()
 
   // query vendors/sellers to populate vendor select
-  const { data: vendors } = useSellers()
+  const { data: vendors } = useGetSellersBffWebSellersGet()
 
   // form handlers
   const handleSubmit = (data: SalesPlanFormData) => {
-    createSalesPlanMutation(data, {
-      onSuccess: () => {
-        onOpenChange(false)
-        toast.success(t('createSuccess'))
-        form.reset()
-      },
-      onError: () => {
-        toast.error(t('createError'))
+    createSalesPlanMutation(
+      { data },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          toast.success(t('createSuccess'))
+          form.reset()
+        },
+        onError: () => {
+          toast.error(t('createError'))
+        }
       }
-    })
+    )
   }
 
   // Reset form when modal closes
@@ -97,8 +105,15 @@ export function CreateVendorPlanModal({
     }
   }, [open, form])
 
-  const selectedVendor = vendors?.items.find(
-    (v) => v.id === form.watch('seller_id')
+  // Handle union type - vendors can be PaginatedSellersResponse or SellerResponse[]
+  const vendorItems = vendors
+    ? 'items' in vendors
+      ? (vendors as PaginatedSellersResponse).items
+      : (vendors as SellerResponse[])
+    : []
+
+  const selectedVendor = vendorItems.find(
+    (v: SellerResponse) => v.id === form.watch('seller_id')
   )
 
   return (
@@ -142,7 +157,7 @@ export function CreateVendorPlanModal({
                             <CommandList>
                               <CommandEmpty>{t('noVendorFound')}</CommandEmpty>
                               <CommandGroup>
-                                {vendors?.items.map((vendor) => (
+                                {vendorItems.map((vendor: SellerResponse) => (
                                   <CommandItem
                                     key={vendor.id}
                                     value={`${vendor.id} ${vendor.name}`}

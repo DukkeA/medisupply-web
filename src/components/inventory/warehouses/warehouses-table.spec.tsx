@@ -1,7 +1,8 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { WarehousesTable } from './warehouses-table'
 
 // ── Mocks tipados ──
@@ -19,18 +20,22 @@ vi.mock('./create-warehouse-modal', () => ({
   )
 }))
 
-// Mock useWarehouses hook
+// Mock useGetWarehousesBffWebWarehousesGet hook
 type UseQueryResult<T> = {
   data?: T
   isLoading: boolean
   isError: boolean
 }
 
-const mockUseWarehouses = vi.fn<() => UseQueryResult<unknown>>()
+const mockUseGetWarehouses = vi.fn<() => UseQueryResult<unknown>>()
 
-vi.mock('@/services/hooks/use-warehouses', () => ({
-  useWarehouses: () => mockUseWarehouses()
-}))
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useGetWarehousesBffWebWarehousesGet: () => mockUseGetWarehouses()
+  }
+})
 
 // ── Tests ──
 describe('WarehousesTable', () => {
@@ -39,27 +44,27 @@ describe('WarehousesTable', () => {
   })
 
   it('should display loading state while fetching data', () => {
-    mockUseWarehouses.mockReturnValue({
+    mockUseGetWarehouses.mockReturnValue({
       isLoading: true,
       isError: false,
       data: undefined
     })
-    render(<WarehousesTable />)
+    renderWithProviders(<WarehousesTable />)
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
   it('should display error message when query fails', () => {
-    mockUseWarehouses.mockReturnValue({
+    mockUseGetWarehouses.mockReturnValue({
       isLoading: false,
       isError: true,
       data: undefined
     })
-    render(<WarehousesTable />)
+    renderWithProviders(<WarehousesTable />)
     expect(screen.getByText('Error loading warehouses.')).toBeInTheDocument()
   })
 
   it('should render table with empty state when data is empty', () => {
-    mockUseWarehouses.mockReturnValue({
+    mockUseGetWarehouses.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -71,7 +76,7 @@ describe('WarehousesTable', () => {
         has_previous: false
       }
     })
-    render(<WarehousesTable />)
+    renderWithProviders(<WarehousesTable />)
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByText('table.noData')).toBeInTheDocument()
   })
@@ -80,7 +85,7 @@ describe('WarehousesTable', () => {
     const user = userEvent.setup()
     process.env.NEXT_PUBLIC_MOCK_DATA = 'true'
 
-    mockUseWarehouses.mockReturnValue({
+    mockUseGetWarehouses.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -103,7 +108,7 @@ describe('WarehousesTable', () => {
       }
     })
 
-    render(<WarehousesTable />)
+    renderWithProviders(<WarehousesTable />)
 
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByText('Main WH')).toBeInTheDocument()

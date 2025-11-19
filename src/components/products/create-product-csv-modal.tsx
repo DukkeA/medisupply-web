@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import { Upload, Download } from 'lucide-react'
-import { useUploadProductsCSV } from '@/services/hooks/use-products'
+import { useCreateProductsFromCsvBffWebProductsBatchPost } from '@/generated'
 
 type CreateProductCSVModalProps = {
   open: boolean
@@ -34,7 +34,8 @@ export function CreateProductCSVModal({
   const [file, setFile] = useState<File | null>(null)
 
   // mutation to create products from CSV
-  const { mutate: uploadCSVMutation, isPending } = useUploadProductsCSV()
+  const { mutate: uploadCSVMutation, isPending } =
+    useCreateProductsFromCsvBffWebProductsBatchPost()
 
   // form handlers
   const handleSubmit = (e: React.FormEvent) => {
@@ -43,16 +44,19 @@ export function CreateProductCSVModal({
       toast.error(t('csvModal.noFileError'))
       return
     }
-    uploadCSVMutation(file, {
-      onSuccess: () => {
-        onOpenChange(false)
-        setFile(null)
-        toast.success(t('csvModal.toastSuccess'))
-      },
-      onError: () => {
-        toast.error(t('csvModal.toastError'))
+    uploadCSVMutation(
+      { data: { file } },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          setFile(null)
+          toast.success(t('csvModal.toastSuccess'))
+        },
+        onError: () => {
+          toast.error(t('csvModal.toastError'))
+        }
       }
-    })
+    )
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

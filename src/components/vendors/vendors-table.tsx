@@ -12,9 +12,8 @@ import {
 } from '@/components/ui/table'
 import { CreateVendorModal } from '@/components/vendors/create-vendor-modal'
 import { Plus } from 'lucide-react'
-import { useSellers } from '@/services/hooks/use-sellers'
-import { SellerResponse } from '@/generated/models'
-import testData from './test-data.json'
+import { useGetSellersBffWebSellersGet } from '@/generated'
+import type { SellerResponse, PaginatedSellersResponse } from '@/generated'
 import { useTranslations } from 'next-intl'
 
 export function VendorsTable() {
@@ -23,7 +22,14 @@ export function VendorsTable() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // fetch vendors data
-  const { data, isLoading, isError } = useSellers(10, 0, testData)
+  const { data, isLoading, isError } = useGetSellersBffWebSellersGet()
+
+  // Handle union type - data can be PaginatedSellersResponse or SellerResponse[]
+  const vendorItems = data
+    ? 'items' in data
+      ? (data as PaginatedSellersResponse).items
+      : (data as SellerResponse[])
+    : []
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -54,14 +60,14 @@ export function VendorsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {!data || data.items.length === 0 ? (
+            {vendorItems.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
                   {t('table.noData')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.items.map((vendor: SellerResponse) => (
+              vendorItems.map((vendor: SellerResponse) => (
                 <TableRow key={vendor.id}>
                   <TableCell className="font-medium">{vendor.name}</TableCell>
                   <TableCell>{vendor.email}</TableCell>

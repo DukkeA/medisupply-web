@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { ProductCategory } from '@/generated/models'
 import {
   createNameValidator,
   createPriceValidator,

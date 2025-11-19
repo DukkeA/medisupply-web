@@ -26,7 +26,7 @@ import {
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import LocationSelector from '../ui/location-input'
-import { useCreateSeller } from '@/services/hooks/use-sellers'
+import { useCreateSellerBffWebSellersPost } from '@/generated'
 import {
   createSellerSchema,
   type SellerFormData
@@ -58,20 +58,24 @@ export function CreateVendorModal({
   })
 
   // mutation to create a new vendor
-  const { mutate: createVendorMutation, isPending } = useCreateSeller()
+  const { mutate: createVendorMutation, isPending } =
+    useCreateSellerBffWebSellersPost()
 
   // form handlers
   const handleSubmit = (data: SellerFormData) => {
-    createVendorMutation(data, {
-      onSuccess: () => {
-        onOpenChange(false)
-        toast.success(t('modal.toastSuccess'))
-        form.reset()
-      },
-      onError: () => {
-        toast.error(t('modal.toastError'))
+    createVendorMutation(
+      { data },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          toast.success(t('modal.toastSuccess'))
+          form.reset()
+        },
+        onError: () => {
+          toast.error(t('modal.toastError'))
+        }
       }
-    })
+    )
   }
 
   // Reset form when modal closes

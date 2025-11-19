@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { CreateProductModal } from './create-product-modal'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -20,26 +20,16 @@ vi.mock('@/lib/validations/product-schema', () => ({
 // Mock the useCreateProduct hook
 const mockCreateProduct = vi.fn()
 
-vi.mock('@/services/hooks/use-products', () => ({
-  useCreateProduct: () => ({
-    mutate: mockCreateProduct,
-    isPending: false
-  })
-}))
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false
-    }
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useCreateProductBffWebProductsPost: () => ({
+      mutate: mockCreateProduct,
+      isPending: false
+    })
   }
 })
-
-const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-)
-
-// ...rest of test file remains the same...
 
 describe('CreateProductModal', () => {
   beforeEach(() => {
@@ -49,10 +39,8 @@ describe('CreateProductModal', () => {
   const mockOnOpenChange = vi.fn()
 
   it('renders correctly when open', async () => {
-    render(
-      <TestWrapper>
-        <CreateProductModal open={true} onOpenChange={mockOnOpenChange} />
-      </TestWrapper>
+    renderWithProviders(
+      <CreateProductModal open={true} onOpenChange={mockOnOpenChange} />
     )
 
     await waitFor(() => {
@@ -62,10 +50,8 @@ describe('CreateProductModal', () => {
   })
 
   it('handles form input changes', async () => {
-    render(
-      <TestWrapper>
-        <CreateProductModal open={true} onOpenChange={mockOnOpenChange} />
-      </TestWrapper>
+    renderWithProviders(
+      <CreateProductModal open={true} onOpenChange={mockOnOpenChange} />
     )
 
     await waitFor(() => {
@@ -88,10 +74,8 @@ describe('CreateProductModal', () => {
       options?.onSuccess?.()
     })
 
-    render(
-      <TestWrapper>
-        <CreateProductModal open={true} onOpenChange={mockOnOpenChange} />
-      </TestWrapper>
+    renderWithProviders(
+      <CreateProductModal open={true} onOpenChange={mockOnOpenChange} />
     )
 
     fireEvent.change(screen.getByPlaceholderText('Paracetamol 500mg'), {
@@ -129,10 +113,8 @@ describe('CreateProductModal', () => {
       options?.onError?.(new Error('API Error'))
     })
 
-    render(
-      <TestWrapper>
-        <CreateProductModal open={true} onOpenChange={mockOnOpenChange} />
-      </TestWrapper>
+    renderWithProviders(
+      <CreateProductModal open={true} onOpenChange={mockOnOpenChange} />
     )
 
     // Fill and submit form
@@ -163,10 +145,8 @@ describe('CreateProductModal', () => {
   })
 
   it('closes modal on cancel', async () => {
-    render(
-      <TestWrapper>
-        <CreateProductModal open={true} onOpenChange={mockOnOpenChange} />
-      </TestWrapper>
+    renderWithProviders(
+      <CreateProductModal open={true} onOpenChange={mockOnOpenChange} />
     )
 
     await waitFor(() => {
