@@ -37,9 +37,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate API client (Orval)
-        run: npm run api:generate
-
       - name: Check formatting
         run: npm run format:check
 
