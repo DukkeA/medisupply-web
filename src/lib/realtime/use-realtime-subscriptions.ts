@@ -18,11 +18,22 @@ export function useRealtimeSubscriptions() {
 
   useEffect(() => {
     if (!client || !isConnected) {
+      console.log('🔍 Ably - Not ready:', { client: !!client, isConnected })
       return
     }
 
     const userId = user?.user_id
+    console.log('🔍 Ably - User ID:', userId)
+
     const channels = getChannels(userId)
+    console.log(
+      '🔍 Ably - Subscribing to channels:',
+      channels.map((c) => ({
+        channel: c.channel,
+        events: Object.keys(c.events)
+      }))
+    )
+
     const subscriptions: Array<{ channel: RealtimeChannel; events: string[] }> =
       []
 
@@ -31,9 +42,17 @@ export function useRealtimeSubscriptions() {
       const channel = client.channels.get(config.channel)
 
       for (const [eventName, eventConfig] of Object.entries(config.events)) {
-        channel.subscribe(eventName, () => {
+        channel.subscribe(eventName, (message) => {
+          console.log('📨 Ably - Message received:', {
+            channel: config.channel,
+            event: eventName,
+            data: message.data,
+            timestamp: new Date().toISOString()
+          })
+
           // Invalidate all query keys for this event
           for (const queryKey of eventConfig.invalidate) {
+            console.log('🔄 Ably - Invalidating query:', queryKey)
             queryClient.invalidateQueries({ queryKey })
           }
         })
@@ -44,6 +63,8 @@ export function useRealtimeSubscriptions() {
         events: Object.keys(config.events)
       })
     }
+
+    console.log('✅ Ably - Subscriptions active')
 
     // Cleanup subscriptions on unmount
     return () => {

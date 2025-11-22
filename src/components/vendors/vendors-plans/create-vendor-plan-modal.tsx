@@ -38,11 +38,13 @@ import {
 } from '@/components/ui/popover'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { useQueryClient } from '@tanstack/react-query'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/utils/classNames'
 import {
   useGetSellersBffWebSellersGet,
-  useCreateSalesPlanBffWebSalesPlansPost
+  useCreateSalesPlanBffWebSalesPlansPost,
+  getGetSalesPlansBffWebSalesPlansGetQueryKey
 } from '@/generated'
 import type { SellerResponse, PaginatedSellersResponse } from '@/generated'
 import {
@@ -61,6 +63,7 @@ export function CreateVendorPlanModal({
 }: CreateVendorPlanModalProps) {
   const t = useTranslations('vendorPlans')
   const tValidation = useTranslations()
+  const queryClient = useQueryClient()
   const [openVendorSelect, setOpenVendorSelect] = useState(false)
 
   // Initialize form with validation
@@ -87,6 +90,10 @@ export function CreateVendorPlanModal({
       { data },
       {
         onSuccess: () => {
+          // Invalidate sales plans query to refetch the list
+          queryClient.invalidateQueries({
+            queryKey: getGetSalesPlansBffWebSalesPlansGetQueryKey()
+          })
           onOpenChange(false)
           toast.success(t('createSuccess'))
           form.reset()

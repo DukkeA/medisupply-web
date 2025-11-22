@@ -5,6 +5,7 @@ import type React from 'react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -35,6 +36,7 @@ import { useTranslations } from 'next-intl'
 import {
   useCreateProductBffWebProductsPost,
   useGetProvidersBffWebProvidersGet,
+  getGetProductsBffWebProductsGetQueryKey,
   ProductCategory
 } from '@/generated'
 import {
@@ -53,6 +55,7 @@ export function CreateProductModal({
 }: CreateProductModalProps) {
   const t = useTranslations('products')
   const tValidation = useTranslations()
+  const queryClient = useQueryClient()
 
   // Initialize form with validation (using translation)
   const form = useForm<ProductFormData>({
@@ -80,6 +83,10 @@ export function CreateProductModal({
       { data },
       {
         onSuccess: () => {
+          // Invalidate products query to refetch the list
+          queryClient.invalidateQueries({
+            queryKey: getGetProductsBffWebProductsGetQueryKey()
+          })
           onOpenChange(false)
           toast.success(t('modal.toastSuccess'))
           form.reset()

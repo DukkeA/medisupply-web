@@ -26,7 +26,7 @@ export const realtimeConfig: Record<string, ChannelConfig> = {
     channel: 'web:{userId}',
     requiresUserId: true,
     events: {
-      'report.generated': { invalidate: [['listReportsBffWebReportsGet']] }
+      'report.generated': { invalidate: [['/bff/web/reports']] }
     }
   },
   broadcasts: {

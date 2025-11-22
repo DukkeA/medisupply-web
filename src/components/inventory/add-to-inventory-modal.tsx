@@ -39,13 +39,15 @@ import {
 } from '@/components/ui/command'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
+import { useQueryClient } from '@tanstack/react-query'
 import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/utils/classNames'
 import { format } from 'date-fns'
 import {
   useGetProductsBffWebProductsGet,
   useGetWarehousesBffWebWarehousesGet,
-  useCreateInventoryBffWebInventoryPost
+  useCreateInventoryBffWebInventoryPost,
+  getGetInventoriesBffWebInventoriesGetQueryKey
 } from '@/generated'
 import {
   createInventorySchema,
@@ -64,6 +66,7 @@ export function AddToInventoryModal({
 }: AddToInventoryModalProps) {
   const t = useTranslations('inventory')
   const tValidation = useTranslations()
+  const queryClient = useQueryClient()
 
   const [date, setDate] = useState<Date>()
   const [openProductSelect, setOpenProductSelect] = useState(false)
@@ -122,6 +125,10 @@ export function AddToInventoryModal({
       { data: inventoryPayload },
       {
         onSuccess: () => {
+          // Invalidate inventory query to refetch the list
+          queryClient.invalidateQueries({
+            queryKey: getGetInventoriesBffWebInventoriesGetQueryKey()
+          })
           onOpenChange(false)
           toast.success(t('modal.toastSuccess'))
           resetForm()

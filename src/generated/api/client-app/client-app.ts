@@ -139,6 +139,7 @@ This endpoint:
 1. Gets the Cognito User ID from the authenticated user (JWT sub claim)
 2. Looks up the client record using cognito_user_id
 3. Fetches orders for that client (customer_id = cliente_id)
+4. Enriches orders with shipment information from delivery service
 
 Requires client_users group authentication.
 
@@ -147,10 +148,11 @@ Args:
     offset: Number of orders to skip
     order_port: Order port for service communication
     client_port: Client port for service communication
+    delivery_port: Delivery port for fetching shipment info
     user: Authenticated client user
 
 Returns:
-    PaginatedOrdersResponse with user's orders
+    PaginatedOrdersResponse with user's orders and shipment info
 
 Raises:
     HTTPException: If client not found or order fetching fails

@@ -3,6 +3,7 @@
 import type React from 'react'
 
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -17,7 +18,10 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import { Upload, Download } from 'lucide-react'
-import { useCreateProductsFromCsvBffWebProductsBatchPost } from '@/generated'
+import {
+  useCreateProductsFromCsvBffWebProductsBatchPost,
+  getGetProductsBffWebProductsGetQueryKey
+} from '@/generated'
 
 type CreateProductCSVModalProps = {
   open: boolean
@@ -29,6 +33,7 @@ export function CreateProductCSVModal({
   onOpenChange
 }: CreateProductCSVModalProps) {
   const t = useTranslations('products')
+  const queryClient = useQueryClient()
 
   // form state
   const [file, setFile] = useState<File | null>(null)
@@ -48,6 +53,10 @@ export function CreateProductCSVModal({
       { data: { file } },
       {
         onSuccess: () => {
+          // Invalidate products query to refetch the list
+          queryClient.invalidateQueries({
+            queryKey: getGetProductsBffWebProductsGetQueryKey()
+          })
           onOpenChange(false)
           setFile(null)
           toast.success(t('csvModal.toastSuccess'))

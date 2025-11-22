@@ -5,6 +5,7 @@ import type React from 'react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -26,7 +27,10 @@ import {
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import LocationSelector from '../ui/location-input'
-import { useCreateProviderBffWebProviderPost } from '@/generated'
+import {
+  useCreateProviderBffWebProviderPost,
+  getGetProvidersBffWebProvidersGetQueryKey
+} from '@/generated'
 import {
   createProviderSchema,
   type ProviderFormData
@@ -43,6 +47,7 @@ export function CreateProviderModal({
 }: CreateProviderModalProps) {
   const t = useTranslations('providers')
   const tValidation = useTranslations()
+  const queryClient = useQueryClient()
 
   // Initialize form with validation (using translation)
   const form = useForm<ProviderFormData>({
@@ -69,6 +74,10 @@ export function CreateProviderModal({
       { data },
       {
         onSuccess: () => {
+          // Invalidate providers query to refetch the list
+          queryClient.invalidateQueries({
+            queryKey: getGetProvidersBffWebProvidersGetQueryKey()
+          })
           onOpenChange(false)
           toast.success(t('modal.toastSuccess'))
           form.reset()

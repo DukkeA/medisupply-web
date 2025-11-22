@@ -5,6 +5,7 @@ import type React from 'react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -26,7 +27,10 @@ import {
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import LocationSelector from '../../ui/location-input'
-import { useCreateWarehouseBffWebWarehousePost } from '@/generated'
+import {
+  useCreateWarehouseBffWebWarehousePost,
+  getGetWarehousesBffWebWarehousesGetQueryKey
+} from '@/generated'
 import {
   createWarehouseSchema,
   type WarehouseFormData
@@ -43,6 +47,7 @@ export function CreateWarehouseModal({
 }: CreateWarehouseModalProps) {
   const t = useTranslations('warehouses')
   const tValidation = useTranslations()
+  const queryClient = useQueryClient()
 
   // Initialize form with validation (using translation)
   const form = useForm<WarehouseFormData>({
@@ -66,6 +71,10 @@ export function CreateWarehouseModal({
       { data },
       {
         onSuccess: () => {
+          // Invalidate warehouses query to refetch the list
+          queryClient.invalidateQueries({
+            queryKey: getGetWarehousesBffWebWarehousesGetQueryKey()
+          })
           onOpenChange(false)
           toast.success(t('modal.toastSuccess'))
           form.reset()

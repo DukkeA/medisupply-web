@@ -8,8 +8,9 @@ export const AXIOS_INSTANCE = Axios.create({
 AXIOS_INSTANCE.interceptors.request.use(
   (config) => {
     // Add auth token if available
+    // Use id_token as per API requirements for /auth/me endpoint
     const token =
-      typeof window !== 'undefined' ? localStorage.getItem('token') : null
+      typeof window !== 'undefined' ? localStorage.getItem('id_token') : null
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -28,7 +29,9 @@ AXIOS_INSTANCE.interceptors.response.use(
     if (error.response?.status === 401) {
       // Handle unauthorized
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('token')
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('id_token')
+        localStorage.removeItem('refresh_token')
         // Optionally redirect to login
       }
     }

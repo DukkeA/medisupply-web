@@ -13,6 +13,7 @@ import type { OrderResponseCustomerEmail } from './orderResponseCustomerEmail';
 import type { OrderResponseSellerName } from './orderResponseSellerName';
 import type { OrderResponseSellerEmail } from './orderResponseSellerEmail';
 import type { OrderItemResponse } from './orderItemResponse';
+import type { OrderResponseShipment } from './orderResponseShipment';
 
 /**
  * Response schema for an order.
@@ -37,4 +38,5 @@ export interface OrderResponse {
   created_at: string;
   updated_at: string;
   items: OrderItemResponse[];
+  shipment?: OrderResponseShipment;
 }
