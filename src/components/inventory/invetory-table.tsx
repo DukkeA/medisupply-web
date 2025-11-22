@@ -41,13 +41,16 @@ export function InventoryTable() {
   )
 
   // fetch data for filters
-  const { data: productsData } = useGetProductsBffWebProductsGet()
-  const { data: warehousesData } = useGetWarehousesBffWebWarehousesGet()
+  const { data: productsData } = useGetProductsBffWebProductsGet({ limit: 50 })
+  const { data: warehousesData } = useGetWarehousesBffWebWarehousesGet({
+    limit: 50
+  })
 
   // fetch inventory data with applied filters
   const { data, isLoading, isError } = useGetInventoriesBffWebInventoriesGet({
     sku: appliedSku,
-    warehouse_id: appliedWarehouse
+    warehouse_id: appliedWarehouse,
+    limit: 50
   })
 
   const handleApplyFilters = () => {
@@ -130,7 +133,10 @@ export function InventoryTable() {
           </div>
         </div>
 
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          data-testid="add-inventory-button"
+        >
           <Plus className="mr-2 h-4 w-4" />
           {t('table.addButton')}
         </Button>

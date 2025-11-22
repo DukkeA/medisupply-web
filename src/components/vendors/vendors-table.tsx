@@ -22,7 +22,9 @@ export function VendorsTable() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // fetch vendors data
-  const { data, isLoading, isError } = useGetSellersBffWebSellersGet()
+  const { data, isLoading, isError } = useGetSellersBffWebSellersGet({
+    limit: 50
+  })
 
   // Handle union type - data can be PaginatedSellersResponse or SellerResponse[]
   const vendorItems = data
@@ -42,14 +44,17 @@ export function VendorsTable() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          data-testid="add-vendor-button"
+        >
           <Plus className="mr-2 h-4 w-4" />
           {t('table.addButton')}
         </Button>
       </div>
 
       <div>
-        <Table>
+        <Table data-testid="vendors-table">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead>{t('table.columns.name')}</TableHead>

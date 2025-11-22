@@ -24,7 +24,9 @@ export function ProductsTable() {
   const [isCSVModalOpen, setIsCSVModalOpen] = useState(false)
 
   // fetch products data
-  const { data, isLoading, isError } = useGetProductsBffWebProductsGet()
+  const { data, isLoading, isError } = useGetProductsBffWebProductsGet({
+    limit: 50
+  })
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -38,7 +40,7 @@ export function ProductsTable() {
     <div className="space-y-4">
       <div className="flex justify-end gap-4">
         <Button
-          data-testid="add-product-button"
+          data-testid="upload-csv-button"
           variant="outline"
           onClick={() => setIsCSVModalOpen(true)}
         >
@@ -46,7 +48,7 @@ export function ProductsTable() {
           {t('table.addCSVButton')}
         </Button>
         <Button
-          data-testid="import-csv-button"
+          data-testid="add-product-button"
           onClick={() => setIsModalOpen(true)}
         >
           <Plus className="mr-2 h-4 w-4" />
