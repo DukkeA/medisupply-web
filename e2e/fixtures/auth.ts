@@ -24,7 +24,6 @@ export const test = base.extend<{ authenticatedPage: Page }>({
     await page.waitForNavigation()
 
     // Use the authenticated page in tests
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(page)
   }
 })

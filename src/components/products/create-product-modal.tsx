@@ -154,7 +154,7 @@ export function CreateProductModal({
                     <FormLabel>{t('modal.fields.category')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger data-testid="category-select">
                           <SelectValue
                             placeholder={t('modal.fields.categoryPlaceholder')}
                           />
@@ -218,7 +218,7 @@ export function CreateProductModal({
                     <FormLabel>{t('modal.fields.provider')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger data-testid="provider-select">
                           <SelectValue
                             placeholder={t('modal.fields.providerPlaceholder')}
                           />

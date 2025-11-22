@@ -176,7 +176,7 @@ export function AddToInventoryModal({
                         open={openProductSelect}
                         onOpenChange={setOpenProductSelect}
                       >
-                        <PopoverTrigger asChild>
+                        <PopoverTrigger asChild data-testid="product-select">
                           <Button
                             variant="outline"
                             role="combobox"
@@ -250,7 +250,7 @@ export function AddToInventoryModal({
                         open={openWarehouseSelect}
                         onOpenChange={setOpenWarehouseSelect}
                       >
-                        <PopoverTrigger asChild>
+                        <PopoverTrigger asChild data-testid="warehouse-select">
                           <Button
                             variant="outline"
                             role="combobox"

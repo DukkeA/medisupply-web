@@ -22,7 +22,9 @@ export function ProvidersTable() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // fetch providers data
-  const { data, isLoading, isError } = useGetProvidersBffWebProvidersGet()
+  const { data, isLoading, isError } = useGetProvidersBffWebProvidersGet({
+    limit: 50
+  })
 
   if (isLoading) {
     return <div>Loading...</div>
