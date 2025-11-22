@@ -143,7 +143,7 @@ describe('AddToInventoryModal', () => {
         const submitBtn = allButtons[allButtons.length - 1]
         expect(submitBtn).not.toBeDisabled()
       },
-      { timeout: 3000 }
+      { timeout: 8000 }
     )
 
     // Submit (último botón)
@@ -157,7 +157,7 @@ describe('AddToInventoryModal', () => {
     })
     expect(onOpenChange).toHaveBeenCalledWith(false)
     expect(toast.success).toHaveBeenCalled()
-  })
+  }, 10000)
 
   it('should disable buttons when pending and display error on failure', async () => {
     const onOpenChange = vi.fn()

@@ -48,7 +48,11 @@ export function AblyProvider({ children }: AblyProviderProps) {
   const clientRef = useRef<Ably.Realtime | null>(null)
 
   useEffect(() => {
-    // Check if user is authenticated
+    // Check if localStorage is available and user is authenticated
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return
+    }
+
     const token = localStorage.getItem('access_token')
     if (!token) {
       return

@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useContext } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import type { RealtimeChannel } from 'ably'
 import { useAblyClient } from './ably-provider'
 import { getChannels } from './config'
-import { useAuth } from '@/contexts/AuthContext'
+import { AuthContext } from '@/contexts/AuthContext'
 
 /**
  * Hook that subscribes to all configured Ably channels
@@ -13,7 +13,9 @@ import { useAuth } from '@/contexts/AuthContext'
  */
 export function useRealtimeSubscriptions() {
   const { client, isConnected } = useAblyClient()
-  const { user } = useAuth()
+  // Safely get auth context without throwing if not available
+  const authContext = useContext(AuthContext)
+  const user = authContext?.user
   const queryClient = useQueryClient()
 
   useEffect(() => {

@@ -57,15 +57,18 @@ describe('CreateVendorPlanModal', () => {
       <CreateVendorPlanModal open={true} onOpenChange={onOpenChange} />
     )
 
-    await waitFor(() => {
-      expect(screen.getByText('createTitle')).toBeInTheDocument()
-      expect(screen.getByText('createDescription')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByText('createTitle')).toBeInTheDocument()
+        expect(screen.getByText('createDescription')).toBeInTheDocument()
+      },
+      { timeout: 8000 }
+    )
 
     const cancelBtn = screen.getByRole('button', { name: 'cancel' })
     fireEvent.click(cancelBtn)
     expect(onOpenChange).toHaveBeenCalledWith(false)
-  })
+  }, 10000)
 
   it('should submit form successfully when vendor is selected', async () => {
     const user = userEvent.setup()

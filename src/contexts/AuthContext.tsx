@@ -21,7 +21,7 @@ interface AuthContextType {
   isAuthenticated: boolean
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const useAuth = () => {
   const context = useContext(AuthContext)
@@ -40,7 +40,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const pathname = usePathname()
 
   useEffect(() => {
+    let isMounted = true
+
     const initAuth = async () => {
+      // Skip initialization if localStorage is not available (e.g., in test environment)
+      if (
+        typeof window === 'undefined' ||
+        typeof localStorage === 'undefined'
+      ) {
+        if (isMounted) {
+          setIsLoading(false)
+        }
+        return
+      }
+
       const accessToken = localStorage.getItem('access_token')
       const refreshToken = localStorage.getItem('refresh_token')
 
@@ -50,7 +63,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         try {
           // Try to get user info
           const userData = await getMeAuthMeGet()
-          setUser(userData)
+          if (isMounted) {
+            setUser(userData)
+          }
         } catch {
           // If failed, try refresh
           if (refreshToken) {
@@ -65,26 +80,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
               // Get user info
               const userData = await getMeAuthMeGet()
-              setUser(userData)
+              if (isMounted) {
+                setUser(userData)
+              }
             } catch {
               // Logout if refresh fails
-              logout()
+              if (isMounted) {
+                logoutInternal()
+              }
             }
           } else {
-            logout()
+            if (isMounted) {
+              logoutInternal()
+            }
           }
         }
       }
-      setIsLoading(false)
+      if (isMounted) {
+        setIsLoading(false)
+      }
     }
 
     initAuth()
+
+    return () => {
+      isMounted = false
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    if (!isLoading && !user && pathname !== '/login') {
-      router.push('/login')
+    // Skip navigation if localStorage is not available (e.g., in test environment)
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      if (!isLoading && !user && pathname !== '/login') {
+        router.push('/login')
+      }
     }
   }, [isLoading, user, pathname, router])
 
@@ -112,14 +142,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }
 
-  const logout = () => {
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('id_token')
-    localStorage.removeItem('refresh_token')
-    document.cookie =
-      'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+  const logoutInternal = () => {
+    // Internal logout that only clears state, used during initialization
+    // Only modify localStorage if it's available
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('id_token')
+      localStorage.removeItem('refresh_token')
+      document.cookie =
+        'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    }
     setUser(null)
-    if (pathname !== '/login') {
+  }
+
+  const logout = () => {
+    logoutInternal()
+    // Navigate to login if not already there
+    if (typeof window !== 'undefined' && pathname !== '/login') {
       router.push('/login')
     }
   }

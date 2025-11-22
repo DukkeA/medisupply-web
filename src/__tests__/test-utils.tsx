@@ -10,6 +10,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import messagesEs from '../../messages/es.json'
 import messagesEn from '../../messages/en.json'
 import { RealtimeProvider } from '@/lib/realtime'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 /**
  * Creates a QueryClient for testing with sensible defaults
@@ -143,6 +144,11 @@ interface RenderWithProvidersOptions extends Omit<RenderOptions, 'wrapper'> {
    */
   includeRealtimeProvider?: boolean
   /**
+   * Include AuthProvider wrapper (optional)
+   * Defaults to true
+   */
+  includeAuthProvider?: boolean
+  /**
    * Additional wrapper components to nest (e.g., SidebarProvider, ThemeProvider)
    * Will be wrapped inside QueryClientProvider and NextIntlClientProvider
    */
@@ -197,6 +203,7 @@ export function renderWithProviders(
     additionalWrappers,
     skipQueryClient = false,
     includeRealtimeProvider = !skipQueryClient, // Only include RealtimeProvider if QueryClient is enabled
+    includeAuthProvider = true,
     ...renderOptions
   } = options || {}
 
@@ -209,11 +216,16 @@ export function renderWithProviders(
   const AllProviders = ({ children }: { children: ReactNode }) => {
     let wrappedChildren = children
 
+    // Wrap with AuthProvider (needed for components using useAuth hook)
+    if (includeAuthProvider) {
+      wrappedChildren = <AuthProvider>{wrappedChildren}</AuthProvider>
+    }
+
     // Wrap with additional providers from innermost to outermost
     if (additionalWrappers && additionalWrappers.length > 0) {
       wrappedChildren = additionalWrappers.reduceRight(
         (acc, Wrapper) => <Wrapper>{acc}</Wrapper>,
-        children
+        wrappedChildren
       )
     }
 
