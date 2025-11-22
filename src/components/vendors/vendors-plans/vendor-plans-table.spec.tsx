@@ -1,7 +1,8 @@
-import React, { PropsWithChildren } from 'react'
+import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { VendorPlansTable } from './vendor-plans-table'
 
 /* ────────── Mocks tipados ────────── */
@@ -16,13 +17,17 @@ vi.mock('./create-vendor-plan-modal', () => ({
   )
 }))
 
-// Mock useSalesPlans hook
+// Mock useGetSalesPlansBffWebSalesPlansGet hook
 type UseQueryResult<T> = { data?: T; isLoading: boolean; isError: boolean }
-const mockUseSalesPlans = vi.fn<() => UseQueryResult<unknown>>()
+const mockUseGetSalesPlans = vi.fn<() => UseQueryResult<unknown>>()
 
-vi.mock('@/services/hooks/use-sales-plans', () => ({
-  useSalesPlans: () => mockUseSalesPlans()
-}))
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useGetSalesPlansBffWebSalesPlansGet: () => mockUseGetSalesPlans()
+  }
+})
 
 /* ────────── Tests ────────── */
 
@@ -35,29 +40,29 @@ describe('VendorPlansTable', () => {
   })
 
   it('should display loading state while fetching data', () => {
-    mockUseSalesPlans.mockReturnValue({
+    mockUseGetSalesPlans.mockReturnValue({
       isLoading: true,
       isError: false,
       data: undefined
     })
 
-    render(<VendorPlansTable />)
+    renderWithProviders(<VendorPlansTable />)
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
   it('should display error message when query fails', () => {
-    mockUseSalesPlans.mockReturnValue({
+    mockUseGetSalesPlans.mockReturnValue({
       isLoading: false,
       isError: true,
       data: undefined
     })
 
-    render(<VendorPlansTable />)
+    renderWithProviders(<VendorPlansTable />)
     expect(screen.getByText('Error loading vendor plans.')).toBeInTheDocument()
   })
 
   it('should render table with empty state when vendor plans is empty', () => {
-    mockUseSalesPlans.mockReturnValue({
+    mockUseGetSalesPlans.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -70,7 +75,7 @@ describe('VendorPlansTable', () => {
       }
     })
 
-    render(<VendorPlansTable />)
+    renderWithProviders(<VendorPlansTable />)
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByText('noResults')).toBeInTheDocument()
   })
@@ -78,7 +83,7 @@ describe('VendorPlansTable', () => {
   it('should render rows with formatted data and open modal when add button is clicked', async () => {
     process.env.NEXT_PUBLIC_MOCK_DATA = 'true'
 
-    mockUseSalesPlans.mockReturnValue({
+    mockUseGetSalesPlans.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -111,7 +116,7 @@ describe('VendorPlansTable', () => {
       }
     })
 
-    render(<VendorPlansTable />)
+    renderWithProviders(<VendorPlansTable />)
 
     // tabla
     expect(screen.getByRole('table')).toBeInTheDocument()

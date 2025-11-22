@@ -14,6 +14,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { Toaster } from '@/components/ui/sonner'
+import { RealtimeProvider } from '@/lib/realtime'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -46,23 +47,25 @@ export default async function RootLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AuthProvider>
             <QueryProvider>
-              <SidebarProvider>
-                <AppSidebar />
-                <SidebarInset>
-                  <header className="flex h-16 shrink-0 items-center gap-2 ">
-                    <div className="flex items-center gap-2 px-4">
-                      <SidebarTrigger className="-ml-1" />
-                      <Separator
-                        orientation="vertical"
-                        className="mr-2 data-[orientation=vertical]:h-4"
-                      />
-                      <DynamicBreadcrumb />
-                    </div>
-                  </header>
-                  <div className="px-4">{children}</div>
-                </SidebarInset>
-              </SidebarProvider>
-              <Toaster />
+              <RealtimeProvider>
+                <SidebarProvider>
+                  <AppSidebar />
+                  <SidebarInset>
+                    <header className="flex h-16 shrink-0 items-center gap-2 ">
+                      <div className="flex items-center gap-2 px-4">
+                        <SidebarTrigger className="-ml-1" />
+                        <Separator
+                          orientation="vertical"
+                          className="mr-2 data-[orientation=vertical]:h-4"
+                        />
+                        <DynamicBreadcrumb />
+                      </div>
+                    </header>
+                    <div className="px-4">{children}</div>
+                  </SidebarInset>
+                </SidebarProvider>
+                <Toaster />
+              </RealtimeProvider>
             </QueryProvider>
           </AuthProvider>
         </NextIntlClientProvider>

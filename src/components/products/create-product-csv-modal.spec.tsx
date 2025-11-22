@@ -1,28 +1,25 @@
-import React, { PropsWithChildren } from 'react'
+import React from 'react'
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { CreateProductCSVModal } from './create-product-csv-modal'
 import { toast } from 'sonner'
 
 /* ─────────────────── Mocks ─────────────────── */
 const mockUploadCSV = vi.fn()
 
-vi.mock('@/services/hooks/use-products', () => ({
-  useUploadProductsCSV: () => ({
-    mutate: mockUploadCSV,
-    isPending: false
-  })
-}))
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useCreateProductsFromCsvBffWebProductsBatchPost: () => ({
+      mutate: mockUploadCSV,
+      isPending: false
+    })
+  }
+})
 
 /* ─────────────────── Helpers tipados ─────────────────── */
-
-// Query Client wrapper
-const makeClient = () =>
-  new QueryClient({ defaultOptions: { queries: { retry: false } } })
-
-const wrap = (ui: React.ReactNode) =>
-  render(<QueryClientProvider client={makeClient()}>{ui}</QueryClientProvider>)
 
 // Archivo CSV de prueba
 const csv = (name = 'products.csv') =>
@@ -37,7 +34,9 @@ afterEach(() => {
 describe('CreateProductCSVModal', () => {
   it('should render and close when cancel is clicked', () => {
     const onOpenChange = vi.fn()
-    wrap(<CreateProductCSVModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateProductCSVModal open={true} onOpenChange={onOpenChange} />
+    )
 
     expect(screen.getByText('csvModal.title')).toBeInTheDocument()
 
@@ -54,7 +53,9 @@ describe('CreateProductCSVModal', () => {
       options?.onSuccess?.()
     })
 
-    wrap(<CreateProductCSVModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateProductCSVModal open={true} onOpenChange={onOpenChange} />
+    )
 
     // 1) Seleccionar archivo (se refleja el nombre)
     const fileInput = screen.getByTestId('csv-file-input') as HTMLInputElement
@@ -69,8 +70,8 @@ describe('CreateProductCSVModal', () => {
 
     // 3) Se llamó mockUploadCSV con el archivo
     await waitFor(() => expect(mockUploadCSV).toHaveBeenCalledTimes(1))
-    const [file] = mockUploadCSV.mock.calls[0]
-    expect(file.name).toBe('products.csv')
+    const [callData] = mockUploadCSV.mock.calls[0]
+    expect(callData.data.file.name).toBe('products.csv')
 
     // 4) Éxito y cierre
     await waitFor(() => {
@@ -86,7 +87,9 @@ describe('CreateProductCSVModal', () => {
       options?.onError?.(new Error('Upload failed'))
     })
 
-    wrap(<CreateProductCSVModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateProductCSVModal open={true} onOpenChange={onOpenChange} />
+    )
 
     // 1) Seleccionar archivo
     const fileInput = screen.getByTestId('csv-file-input') as HTMLInputElement

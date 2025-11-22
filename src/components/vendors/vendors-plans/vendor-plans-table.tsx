@@ -13,9 +13,8 @@ import {
 import { CreateVendorPlanModal } from './create-vendor-plan-modal'
 import { Plus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useSalesPlans } from '@/services/hooks/use-sales-plans'
-import { SalesPlanResponse } from '@/generated/models'
-import testData from './test-data.json'
+import { useGetSalesPlansBffWebSalesPlansGet } from '@/generated'
+import type { SalesPlanResponse } from '@/generated'
 
 export function VendorPlansTable() {
   const t = useTranslations('vendorPlans')
@@ -25,7 +24,7 @@ export function VendorPlansTable() {
     data: vendorPlans,
     isLoading,
     isError
-  } = useSalesPlans(10, 0, testData)
+  } = useGetSalesPlansBffWebSalesPlansGet()
 
   const getStatusColor = (status: string) => {
     switch (status) {

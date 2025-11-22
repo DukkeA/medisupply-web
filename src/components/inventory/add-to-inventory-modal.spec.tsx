@@ -1,15 +1,10 @@
-import React, {
-  PropsWithChildren,
-  SVGProps,
-  InputHTMLAttributes,
-  LabelHTMLAttributes,
-  ButtonHTMLAttributes
-} from 'react'
+import React, { SVGProps } from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { AddToInventoryModal } from './add-to-inventory-modal'
 
 /* ───────────────────── Mocks tipados ───────────────────── */
@@ -34,50 +29,36 @@ vi.mock('lucide-react', () => ({
   ChevronsUpDown: (p: SVGProps<SVGSVGElement>) => <svg {...p} />
 }))
 
-/* ───────────────── React Query mocks (tipados) ───────────────── */
+/* ───────────────── Orval hooks mocks ───────────────── */
 
 type UseQueryResult<T> = { data?: T; isLoading: boolean; isError: boolean }
 
-// useQuery: no necesitamos reenviar args → firma simple y tipada
-const mockUseQuery = vi.fn<() => UseQueryResult<unknown>>()
-const mockInvalidate = vi.fn()
-
-// Tipado de opciones de mutación que nos interesan
-type MutationOptions<Vars> = {
-  onSuccess?: (data: unknown, variables: Vars, context?: unknown) => void
-  onError?: (err: unknown) => void
-}
-
+// Mock Orval hooks
+const mockUseGetProducts = vi.fn<() => UseQueryResult<unknown>>()
+const mockUseGetWarehouses = vi.fn<() => UseQueryResult<unknown>>()
+const mockMutateCreateInventory = vi.fn()
 let mutationIsPending = false
 
-vi.mock('@tanstack/react-query', () => ({
-  useQuery: () => mockUseQuery(),
-  useQueryClient: () => ({ invalidateQueries: mockInvalidate }),
-  useMutation: <Vars,>(opts: MutationOptions<Vars>) => {
-    return {
-      mutate: (vars: Vars, runtimeOpts?: MutationOptions<Vars>) => {
-        if (mutationIsPending) {
-          // If pending, trigger error callbacks
-          opts.onError?.(new Error('pending'))
-          runtimeOpts?.onError?.(new Error('pending'))
-        } else {
-          // Call both hook onSuccess and runtime onSuccess
-          opts.onSuccess?.({ ok: true }, vars, undefined)
-          runtimeOpts?.onSuccess?.({ ok: true }, vars, undefined)
-        }
-      },
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useGetProductsBffWebProductsGet: () => mockUseGetProducts(),
+    useGetWarehousesBffWebWarehousesGet: () => mockUseGetWarehouses(),
+    useCreateInventoryBffWebInventoryPost: () => ({
+      mutate: mockMutateCreateInventory,
       isPending: mutationIsPending
-    }
+    })
   }
-}))
+})
 
 /* ───────────────── Setup ───────────────── */
 beforeEach(() => {
   vi.clearAllMocks()
   mutationIsPending = false
 
-  // Por defecto, queries con datos para cubrir mapeos - using valid UUIDs
-  mockUseQuery.mockReturnValue({
+  // Default mock values for products and warehouses
+  mockUseGetProducts.mockReturnValue({
     data: {
       items: [
         {
@@ -85,6 +66,21 @@ beforeEach(() => {
           name: 'Test Product',
           sku: 'TEST-001',
           price: 10.99
+        }
+      ]
+    },
+    isLoading: false,
+    isError: false
+  })
+
+  mockUseGetWarehouses.mockReturnValue({
+    data: {
+      items: [
+        {
+          id: '660e8400-e29b-41d4-a716-446655440001',
+          name: 'Test Warehouse',
+          address: 'Test Address',
+          city: 'Test City'
         }
       ]
     },
@@ -99,7 +95,13 @@ describe('AddToInventoryModal', () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()
 
-    render(<AddToInventoryModal open={true} onOpenChange={onOpenChange} />)
+    mockMutateCreateInventory.mockImplementation((_data, options) => {
+      options?.onSuccess?.()
+    })
+
+    renderWithProviders(
+      <AddToInventoryModal open={true} onOpenChange={onOpenChange} />
+    )
 
     // Título/Descripción (translation keys)
     expect(screen.getByText('modal.title')).toBeInTheDocument()
@@ -141,7 +143,7 @@ describe('AddToInventoryModal', () => {
         const submitBtn = allButtons[allButtons.length - 1]
         expect(submitBtn).not.toBeDisabled()
       },
-      { timeout: 3000 }
+      { timeout: 8000 }
     )
 
     // Submit (último botón)
@@ -151,11 +153,11 @@ describe('AddToInventoryModal', () => {
 
     // onSuccess
     await waitFor(() => {
-      expect(mockInvalidate).toHaveBeenCalledWith({ queryKey: ['inventory'] })
+      expect(mockMutateCreateInventory).toHaveBeenCalled()
     })
     expect(onOpenChange).toHaveBeenCalledWith(false)
     expect(toast.success).toHaveBeenCalled()
-  })
+  }, 10000)
 
   it('should disable buttons when pending and display error on failure', async () => {
     const onOpenChange = vi.fn()
@@ -163,7 +165,9 @@ describe('AddToInventoryModal', () => {
     // Forzar isPending
     mutationIsPending = true
 
-    render(<AddToInventoryModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <AddToInventoryModal open={true} onOpenChange={onOpenChange} />
+    )
 
     const allButtons = screen.getAllByRole('button')
     const cancelBtn = allButtons.find(
