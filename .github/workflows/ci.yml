@@ -69,7 +69,7 @@ jobs:
           E2E_TEST_USER_EMAIL: ${{ secrets.E2E_TEST_USER_EMAIL }}
           E2E_TEST_USER_PASSWORD: ${{ secrets.E2E_TEST_USER_PASSWORD }}
           BASE_URL: http://localhost:3000
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_API_URL: https://bffproyecto.juanandresdeveloper.com
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4

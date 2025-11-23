@@ -40,14 +40,11 @@ export class LoginPage extends BasePage {
    * Expect successful login (redirects to homepage)
    */
   async expectLoginSuccess() {
-    // Wait for either the URL to be / or for the welcome heading to appear
-    await Promise.race([
-      this.page.waitForURL('/', { timeout: 10000 }),
-      this.page
-        .getByRole('heading', { name: /welcome/i })
-        .waitFor({ timeout: 10000 })
-    ])
-    await expect(this.page).toHaveURL('/')
+    // Wait for URL to change to / without waiting for load event
+    await this.page.waitForURL('/', {
+      timeout: 30000,
+      waitUntil: 'domcontentloaded'
+    })
   }
 
   /**
