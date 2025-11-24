@@ -84,7 +84,7 @@ describe('ProductsTable', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('add-product-button')).toBeInTheDocument()
-      expect(screen.getByTestId('import-csv-button')).toBeInTheDocument()
+      expect(screen.getByTestId('upload-csv-button')).toBeInTheDocument()
     })
   })
 })
