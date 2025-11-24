@@ -447,5 +447,107 @@
       "getStarted": "Comenzar",
       "viewDocs": "Ver Documentación"
     }
+  },
+  "routes": {
+    "page": {
+      "title": "Rutas",
+      "description": "Administra las rutas de entrega aquí."
+    },
+    "generate": {
+      "toastSuccess": "¡Rutas generadas exitosamente!",
+      "toastError": "Error al generar rutas. Por favor intenta de nuevo.",
+      "fields": {
+        "vehicles": "Vehículos",
+        "deliveryDate": "Fecha de Entrega"
+      },
+      "placeholders": {
+        "selectVehicles": "Selecciona vehículos...",
+        "searchVehicle": "Buscar vehículo...",
+        "pickDate": "Selecciona una fecha"
+      },
+      "buttons": {
+        "generate": "Generar Rutas",
+        "generating": "Generando..."
+      },
+      "noVehicleFound": "No se encontró ningún vehículo.",
+      "loadingVehicles": "Cargando vehículos..."
+    },
+    "list": {
+      "title": "Rutas Existentes",
+      "loading": "Cargando rutas...",
+      "noData": "No se encontraron rutas. Genera tu primera ruta para comenzar.",
+      "unknownVehicle": "Vehículo Desconocido",
+      "fields": {
+        "routeId": "ID de Ruta",
+        "vehicle": "Vehículo",
+        "vehicleId": "ID de Vehículo",
+        "createdAt": "Fecha de Creación"
+      },
+      "columns": {
+        "vehicle": "Vehículo",
+        "routeDate": "Fecha de Ruta",
+        "status": "Estado",
+        "createdAt": "Fecha de Creación",
+        "actions": "Acciones"
+      },
+      "viewRoute": "Ver Ruta",
+      "statuses": {
+        "planeada": "Planeada",
+        "planned": "Planeada",
+        "en_ruta": "En Ruta",
+        "on_route": "En Ruta",
+        "completada": "Completada",
+        "completed": "Completada",
+        "cancelada": "Cancelada",
+        "cancelled": "Cancelada",
+        "en_progreso": "En Progreso",
+        "in_progress": "En Progreso",
+        "pendiente": "Pendiente",
+        "pending": "Pendiente"
+      }
+    },
+    "detail": {
+      "title": "Detalles de Ruta",
+      "loading": "Cargando detalles de ruta...",
+      "notFound": "Ruta no encontrada.",
+      "backToRoutes": "Volver a Rutas",
+      "unknownVehicle": "Vehículo Desconocido",
+      "shipmentsTitle": "Envíos",
+      "noShipments": "No hay envíos asignados a esta ruta.",
+      "fields": {
+        "vehicle": "Vehículo",
+        "routeDate": "Fecha de Ruta",
+        "routeId": "ID de Ruta"
+      },
+      "columns": {
+        "sequence": "Secuencia",
+        "orderId": "ID de Orden",
+        "shipmentStatus": "Estado"
+      },
+      "statuses": {
+        "planeada": "Planeada",
+        "planned": "Planeada",
+        "en_ruta": "En Ruta",
+        "on_route": "En Ruta",
+        "completada": "Completada",
+        "completed": "Completada",
+        "cancelada": "Cancelada",
+        "cancelled": "Cancelada",
+        "en_progreso": "En Progreso",
+        "in_progress": "En Progreso",
+        "pendiente": "Pendiente",
+        "pending": "Pendiente"
+      },
+      "shipmentStatuses": {
+        "assigned_to_route": "Asignado a Ruta",
+        "asignado_a_ruta": "Asignado a Ruta",
+        "in_transit": "En Tránsito",
+        "en_transito": "En Tránsito",
+        "delivered": "Entregado",
+        "entregado": "Entregado",
+        "failed": "Fallido",
+        "fallido": "Fallido"
+      }
+    }
   }
 }

@@ -12,9 +12,8 @@ import {
 } from '@/components/ui/table'
 import { CreateProviderModal } from '@/components/proveedores/create-provider-modal'
 import { Plus } from 'lucide-react'
-import { useProviders } from '@/services/hooks/use-providers'
-import { ProviderResponse } from '@/generated/models'
-import testData from './test-data.json'
+import { useGetProvidersBffWebProvidersGet } from '@/generated'
+import type { ProviderResponse } from '@/generated'
 import { useTranslations } from 'next-intl'
 
 export function ProvidersTable() {
@@ -23,7 +22,9 @@ export function ProvidersTable() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // fetch providers data
-  const { data, isLoading, isError } = useProviders(10, 0, testData)
+  const { data, isLoading, isError } = useGetProvidersBffWebProvidersGet({
+    limit: 50
+  })
 
   if (isLoading) {
     return <div>Loading...</div>

@@ -5,6 +5,26 @@ import { setupGlobalMocks } from './global-mocks'
 // Set environment variables for tests
 process.env.NEXT_PUBLIC_API_URL = 'http://localhost:3000'
 
+// Mock localStorage with access_token for Ably authentication
+const localStorageMock = {
+  getItem: vi.fn((key: string) => {
+    if (key === 'access_token') {
+      return 'mock-access-token-for-testing'
+    }
+    return null
+  }),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+  length: 0,
+  key: vi.fn()
+}
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+  writable: true
+})
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

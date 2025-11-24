@@ -20,11 +20,12 @@ import {
 import { AddToInventoryModal } from '@/components/inventory/add-to-inventory-modal'
 import { Plus, Filter, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useInventory } from '@/services/hooks/use-inventory'
-import { useProducts } from '@/services/hooks/use-products'
-import { useWarehouses } from '@/services/hooks/use-warehouses'
-import { InventoryResponse } from '@/generated/models'
-import testData from './test-data.json'
+import {
+  useGetInventoriesBffWebInventoriesGet,
+  useGetProductsBffWebProductsGet,
+  useGetWarehousesBffWebWarehousesGet
+} from '@/generated'
+import type { WebSchemasInventorySchemasInventoryResponse } from '@/generated'
 
 export function InventoryTable() {
   const t = useTranslations('inventory')
@@ -40,15 +41,17 @@ export function InventoryTable() {
   )
 
   // fetch data for filters
-  const { data: productsData } = useProducts(100, 0)
-  const { data: warehousesData } = useWarehouses(100, 0)
+  const { data: productsData } = useGetProductsBffWebProductsGet({ limit: 50 })
+  const { data: warehousesData } = useGetWarehousesBffWebWarehousesGet({
+    limit: 50
+  })
 
   // fetch inventory data with applied filters
-  const { data, isLoading, isError } = useInventory(
-    appliedSku,
-    appliedWarehouse,
-    testData
-  )
+  const { data, isLoading, isError } = useGetInventoriesBffWebInventoriesGet({
+    sku: appliedSku,
+    warehouse_id: appliedWarehouse,
+    limit: 50
+  })
 
   const handleApplyFilters = () => {
     setAppliedSku(selectedSku || undefined)
@@ -130,7 +133,10 @@ export function InventoryTable() {
           </div>
         </div>
 
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          data-testid="add-inventory-button"
+        >
           <Plus className="mr-2 h-4 w-4" />
           {t('table.addButton')}
         </Button>
@@ -157,19 +163,21 @@ export function InventoryTable() {
                 </TableCell>
               </TableRow>
             ) : (
-              data.items.map((item: InventoryResponse) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">
-                    {item.product_sku}
-                  </TableCell>
-                  <TableCell>{item.product_name}</TableCell>
-                  <TableCell>{item.warehouse_name}</TableCell>
-                  <TableCell>{item.total_quantity}</TableCell>
-                  <TableCell>{item.reserved_quantity}</TableCell>
-                  <TableCell>{item.batch_number}</TableCell>
-                  <TableCell>{item.expiration_date.slice(0, 10)}</TableCell>
-                </TableRow>
-              ))
+              data.items.map(
+                (item: WebSchemasInventorySchemasInventoryResponse) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">
+                      {item.product_sku}
+                    </TableCell>
+                    <TableCell>{item.product_name}</TableCell>
+                    <TableCell>{item.warehouse_name}</TableCell>
+                    <TableCell>{item.total_quantity}</TableCell>
+                    <TableCell>{item.reserved_quantity}</TableCell>
+                    <TableCell>{item.batch_number}</TableCell>
+                    <TableCell>{item.expiration_date.slice(0, 10)}</TableCell>
+                  </TableRow>
+                )
+              )
             )}
           </TableBody>
         </Table>

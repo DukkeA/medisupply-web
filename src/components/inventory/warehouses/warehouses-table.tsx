@@ -12,9 +12,8 @@ import {
 } from '@/components/ui/table'
 import { CreateWarehouseModal } from '@/components/inventory/warehouses/create-warehouse-modal'
 import { Plus } from 'lucide-react'
-import { useWarehouses } from '@/services/hooks/use-warehouses'
-import { WarehouseResponse } from '@/generated/models'
-import testData from './test-data.json'
+import { useGetWarehousesBffWebWarehousesGet } from '@/generated'
+import type { WarehouseResponse } from '@/generated'
 import { useTranslations } from 'next-intl'
 
 export function WarehousesTable() {
@@ -23,7 +22,7 @@ export function WarehousesTable() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // fetch warehouses data
-  const { data, isLoading, isError } = useWarehouses(10, 0, testData)
+  const { data, isLoading, isError } = useGetWarehousesBffWebWarehousesGet()
 
   if (isLoading) {
     return <div>Loading...</div>

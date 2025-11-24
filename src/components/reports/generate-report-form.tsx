@@ -14,6 +14,7 @@ import { useTranslations } from 'next-intl'
 import { DateRangePicker } from '@/components/reports/date-range-picker'
 import { DateRange } from 'react-day-picker'
 import { toast } from 'sonner'
+import { getListReportsBffWebReportsGetQueryKey } from '@/generated'
 
 export function GenerateReportForm() {
   const t = useTranslations('reports')
@@ -46,7 +47,9 @@ export function GenerateReportForm() {
     },
     onSuccess: () => {
       // Invalidate and refetch reports
-      queryClient.invalidateQueries({ queryKey: ['reports'] })
+      queryClient.invalidateQueries({
+        queryKey: getListReportsBffWebReportsGetQueryKey()
+      })
       toast.success(t('generateForm.success'))
       // Reset form
       setReportType('')

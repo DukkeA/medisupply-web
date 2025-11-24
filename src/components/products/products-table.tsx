@@ -14,9 +14,8 @@ import { CreateProductModal } from '@/components/products/create-product-modal'
 import { Plus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { CreateProductCSVModal } from '@/components/products/create-product-csv-modal'
-import { useProducts } from '@/services/hooks/use-products'
-import { ProductResponse } from '@/generated/models'
-import testData from './test-data.json'
+import { useGetProductsBffWebProductsGet } from '@/generated'
+import type { ProductResponse } from '@/generated'
 
 export function ProductsTable() {
   const t = useTranslations('products')
@@ -25,7 +24,9 @@ export function ProductsTable() {
   const [isCSVModalOpen, setIsCSVModalOpen] = useState(false)
 
   // fetch products data
-  const { data, isLoading, isError } = useProducts(100, 0, testData)
+  const { data, isLoading, isError } = useGetProductsBffWebProductsGet({
+    limit: 50
+  })
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -39,7 +40,7 @@ export function ProductsTable() {
     <div className="space-y-4">
       <div className="flex justify-end gap-4">
         <Button
-          data-testid="add-product-button"
+          data-testid="upload-csv-button"
           variant="outline"
           onClick={() => setIsCSVModalOpen(true)}
         >
@@ -47,7 +48,7 @@ export function ProductsTable() {
           {t('table.addCSVButton')}
         </Button>
         <Button
-          data-testid="import-csv-button"
+          data-testid="add-product-button"
           onClick={() => setIsModalOpen(true)}
         >
           <Plus className="mr-2 h-4 w-4" />

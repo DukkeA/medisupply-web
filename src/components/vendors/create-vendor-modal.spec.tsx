@@ -1,8 +1,9 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { CreateVendorModal } from './create-vendor-modal'
 
 /* ─────────────────── Mocks tipados ─────────────────── */
@@ -19,15 +20,19 @@ vi.mock('@/lib/validations/seller-schema', () => ({
     })
 }))
 
-const mockCreateSeller = vi.fn()
+const mockMutate = vi.fn()
 let mockIsPending = false
 
-vi.mock('@/services/hooks/use-sellers', () => ({
-  useCreateSeller: () => ({
-    mutate: mockCreateSeller,
-    isPending: mockIsPending
-  })
-}))
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useCreateSellerBffWebSellersPost: () => ({
+      mutate: mockMutate,
+      isPending: mockIsPending
+    })
+  }
+})
 
 /* ─────────────────── Tests ─────────────────── */
 
@@ -39,7 +44,9 @@ describe('CreateVendorModal', () => {
 
   it('should render title and description and allow cancellation', async () => {
     const onOpenChange = vi.fn()
-    render(<CreateVendorModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateVendorModal open={true} onOpenChange={onOpenChange} />
+    )
 
     await waitFor(() => {
       expect(screen.getByText('modal.title')).toBeInTheDocument()
@@ -57,11 +64,13 @@ describe('CreateVendorModal', () => {
   it('should submit form successfully with country and territory selection', async () => {
     const onOpenChange = vi.fn()
 
-    mockCreateSeller.mockImplementation((_data, options) => {
+    mockMutate.mockImplementation((_data, options) => {
       options?.onSuccess?.()
     })
 
-    render(<CreateVendorModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateVendorModal open={true} onOpenChange={onOpenChange} />
+    )
 
     // Inputs by placeholder
     fireEvent.change(screen.getByPlaceholderText('John Doe'), {
@@ -95,13 +104,15 @@ describe('CreateVendorModal', () => {
 
     // onSuccess → cierra modal y muestra toast.success
     await waitFor(() => {
-      expect(mockCreateSeller).toHaveBeenCalledWith(
+      expect(mockMutate).toHaveBeenCalledWith(
         {
-          name: 'John',
-          email: 'john@example.com',
-          phone: '+57 123',
-          country: 'Colombia',
-          city: 'Andina'
+          data: {
+            name: 'John',
+            email: 'john@example.com',
+            phone: '+57 123',
+            country: 'Colombia',
+            city: 'Andina'
+          }
         },
         expect.any(Object)
       )
@@ -115,7 +126,7 @@ describe('CreateVendorModal', () => {
 
     // First test with isPending = true to verify buttons are disabled
     mockIsPending = true
-    const { unmount } = render(
+    const { unmount } = renderWithProviders(
       <CreateVendorModal open={true} onOpenChange={onOpenChange} />
     )
 
@@ -132,11 +143,13 @@ describe('CreateVendorModal', () => {
 
     // Now test error handling with isPending = false so form can be submitted
     mockIsPending = false
-    mockCreateSeller.mockImplementation((_data, options) => {
+    mockMutate.mockImplementation((_data, options) => {
       options?.onError?.(new Error('fail'))
     })
 
-    render(<CreateVendorModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateVendorModal open={true} onOpenChange={onOpenChange} />
+    )
 
     // Fill form
     fireEvent.change(screen.getByPlaceholderText('John Doe'), {

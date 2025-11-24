@@ -17,7 +17,8 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/.{idea,git,cache,output,temp}/**',
-      '**/src/components/ui/**' // Exclude shadcn UI components
+      '**/src/components/ui/**', // Exclude shadcn UI components
+      '**/e2e/**' // Exclude Playwright E2E tests
     ],
     coverage: {
       provider: 'v8',

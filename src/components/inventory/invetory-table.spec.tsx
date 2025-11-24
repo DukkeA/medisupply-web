@@ -1,7 +1,8 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { InventoryTable } from './invetory-table'
 
 /* ────────────── Mocks tipados (sin any) ────────────── */
@@ -16,23 +17,21 @@ vi.mock('./add-to-inventory-modal', () => ({
   )
 }))
 
-// Mock useInventory hook
+// Mock Orval hooks
 type UseQueryResult<T> = { data?: T; isLoading: boolean; isError: boolean }
-const mockUseInventory = vi.fn<() => UseQueryResult<unknown>>()
-const mockUseProducts = vi.fn<() => UseQueryResult<unknown>>()
-const mockUseWarehouses = vi.fn<() => UseQueryResult<unknown>>()
+const mockUseGetInventories = vi.fn<() => UseQueryResult<unknown>>()
+const mockUseGetProducts = vi.fn<() => UseQueryResult<unknown>>()
+const mockUseGetWarehouses = vi.fn<() => UseQueryResult<unknown>>()
 
-vi.mock('@/services/hooks/use-inventory', () => ({
-  useInventory: () => mockUseInventory()
-}))
-
-vi.mock('@/services/hooks/use-products', () => ({
-  useProducts: () => mockUseProducts()
-}))
-
-vi.mock('@/services/hooks/use-warehouses', () => ({
-  useWarehouses: () => mockUseWarehouses()
-}))
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useGetInventoriesBffWebInventoriesGet: () => mockUseGetInventories(),
+    useGetProductsBffWebProductsGet: () => mockUseGetProducts(),
+    useGetWarehousesBffWebWarehousesGet: () => mockUseGetWarehouses()
+  }
+})
 
 /* ────────────── Tests ────────────── */
 
@@ -44,7 +43,7 @@ describe('InventoryTable', () => {
     process.env = { ...origEnv }
 
     // Default mock values for products and warehouses
-    mockUseProducts.mockReturnValue({
+    mockUseGetProducts.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -64,7 +63,7 @@ describe('InventoryTable', () => {
       }
     })
 
-    mockUseWarehouses.mockReturnValue({
+    mockUseGetWarehouses.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -90,27 +89,27 @@ describe('InventoryTable', () => {
   })
 
   it('should display loading state while fetching data', () => {
-    mockUseInventory.mockReturnValue({
+    mockUseGetInventories.mockReturnValue({
       isLoading: true,
       isError: false,
       data: undefined
     })
-    render(<InventoryTable />)
+    renderWithProviders(<InventoryTable />)
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
   it('should display error message when query fails', () => {
-    mockUseInventory.mockReturnValue({
+    mockUseGetInventories.mockReturnValue({
       isLoading: false,
       isError: true,
       data: undefined
     })
-    render(<InventoryTable />)
+    renderWithProviders(<InventoryTable />)
     expect(screen.getByText('Error loading inventory.')).toBeInTheDocument()
   })
 
   it('should render table with empty state when data is empty', () => {
-    mockUseInventory.mockReturnValue({
+    mockUseGetInventories.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -122,7 +121,7 @@ describe('InventoryTable', () => {
         has_previous: false
       }
     })
-    render(<InventoryTable />)
+    renderWithProviders(<InventoryTable />)
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByText('table.noData')).toBeInTheDocument()
   })
@@ -130,7 +129,7 @@ describe('InventoryTable', () => {
   it('should render rows and open modal when add button is clicked', async () => {
     process.env.NEXT_PUBLIC_MOCK_DATA = 'true'
 
-    mockUseInventory.mockReturnValue({
+    mockUseGetInventories.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -160,7 +159,7 @@ describe('InventoryTable', () => {
       }
     })
 
-    render(<InventoryTable />)
+    renderWithProviders(<InventoryTable />)
 
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByText('SKU-001')).toBeInTheDocument()

@@ -1,3 +1,4 @@
+import React from 'react'
 import { renderWithProviders } from '@/__tests__/test-utils'
 import { screen } from '@testing-library/react'
 import { SidebarProvider } from '@/components/ui/sidebar'
@@ -14,7 +15,7 @@ vi.mock('@/components/ui/sidebar', async () => {
   }
 })
 
-// Mock the useAuth hook
+// Mock the AuthContext
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => ({
     user: {
@@ -27,7 +28,8 @@ vi.mock('@/contexts/AuthContext', () => ({
     logout: vi.fn(),
     isLoading: false,
     isAuthenticated: true
-  })
+  }),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children
 }))
 
 const renderOptions = {

@@ -9,6 +9,8 @@
  * - **UI components** (shadcn/ui): Button, Dialog, Input, Label, Popover, Command, Select, Form, Table, Calendar
  * - **Sidebar**: useSidebar hook with default state
  * - **LocationSelector**: Country/state selection component with default test behavior
+ * - **Ably Realtime**: Mock Ably SDK with token authentication
+ * - **Ably API**: Mock Ably token generation endpoint
  *
  * ## What's NOT Mocked (uses real implementation):
  * - **lucide-react**: Uses real icon components
@@ -243,14 +245,12 @@ export function setupUIComponentMocks() {
       mode?: unknown
       [key: string]: unknown
     }) => {
-      const {
-        onSelect,
-        selected,
-        defaultMonth,
-        numberOfMonths,
-        mode,
-        ...domProps
-      } = props
+      const { onSelect, ...domProps } = props
+      // Remove non-DOM props to avoid React warnings
+      delete domProps.selected
+      delete domProps.defaultMonth
+      delete domProps.numberOfMonths
+      delete domProps.mode
       return (
         <div
           role="grid"
@@ -327,6 +327,39 @@ export function setupLocationSelectorMock() {
 }
 
 /**
+ * Setup Ably Realtime SDK mock
+ * Provides mock Ably.Realtime client and token authentication
+ */
+export function setupAblyMocks() {
+  vi.mock('ably', async () => {
+    const ablyMock =
+      await vi.importActual<typeof import('../__mocks__/ably')>(
+        '../__mocks__/ably'
+      )
+    return {
+      ...ablyMock,
+      __esModule: true
+    }
+  })
+}
+
+/**
+ * Setup Ably token API mock
+ * Provides mock generateTokenAuthAblyTokenPost function
+ */
+export function setupAblyTokenApiMocks() {
+  vi.mock('@/generated/api/realtime/realtime', async () => {
+    const realtime = await vi.importActual<
+      typeof import('../__mocks__/generated-realtime')
+    >('../__mocks__/generated-realtime')
+    return {
+      ...realtime,
+      __esModule: true
+    }
+  })
+}
+
+/**
  * Apply all global mocks
  * This is called in setup.ts to automatically apply common mocks
  */
@@ -337,4 +370,6 @@ export function setupGlobalMocks() {
   setupUIComponentMocks()
   setupSidebarMocks()
   setupLocationSelectorMock()
+  setupAblyMocks()
+  setupAblyTokenApiMocks()
 }

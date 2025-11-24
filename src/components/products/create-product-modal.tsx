@@ -5,6 +5,7 @@ import type React from 'react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -32,9 +33,12 @@ import {
 } from '@/components/ui/select'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
-import { useCreateProduct } from '@/services/hooks/use-products'
-import { ProductCategory } from '@/generated/models'
-import { useProviders } from '@/services/hooks/use-providers'
+import {
+  useCreateProductBffWebProductsPost,
+  useGetProvidersBffWebProvidersGet,
+  getGetProductsBffWebProductsGetQueryKey,
+  ProductCategory
+} from '@/generated'
 import {
   createProductSchema,
   type ProductFormData
@@ -51,6 +55,7 @@ export function CreateProductModal({
 }: CreateProductModalProps) {
   const t = useTranslations('products')
   const tValidation = useTranslations()
+  const queryClient = useQueryClient()
 
   // Initialize form with validation (using translation)
   const form = useForm<ProductFormData>({
@@ -58,7 +63,7 @@ export function CreateProductModal({
     mode: 'onChange',
     defaultValues: {
       name: '',
-      category: ProductCategory.Otros,
+      category: ProductCategory.otros,
       sku: '',
       price: 0,
       provider_id: ''
@@ -66,23 +71,31 @@ export function CreateProductModal({
   })
 
   // mutation to create a new product
-  const { mutate: createProductMutation, isPending } = useCreateProduct()
+  const { mutate: createProductMutation, isPending } =
+    useCreateProductBffWebProductsPost()
 
   // query providers to populate provider select
-  const { data: providers } = useProviders()
+  const { data: providers } = useGetProvidersBffWebProvidersGet()
 
   // form handlers
   const handleSubmit = (data: ProductFormData) => {
-    createProductMutation(data, {
-      onSuccess: () => {
-        onOpenChange(false)
-        toast.success(t('modal.toastSuccess'))
-        form.reset()
-      },
-      onError: () => {
-        toast.error(t('modal.toastError'))
+    createProductMutation(
+      { data },
+      {
+        onSuccess: () => {
+          // Invalidate products query to refetch the list
+          queryClient.invalidateQueries({
+            queryKey: getGetProductsBffWebProductsGetQueryKey()
+          })
+          onOpenChange(false)
+          toast.success(t('modal.toastSuccess'))
+          form.reset()
+        },
+        onError: () => {
+          toast.error(t('modal.toastError'))
+        }
       }
-    })
+    )
   }
 
   // Reset form when modal closes
@@ -141,7 +154,7 @@ export function CreateProductModal({
                     <FormLabel>{t('modal.fields.category')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger data-testid="category-select">
                           <SelectValue
                             placeholder={t('modal.fields.categoryPlaceholder')}
                           />
@@ -149,22 +162,22 @@ export function CreateProductModal({
                       </FormControl>
                       <SelectContent>
                         <SelectItem
-                          value={ProductCategory.MedicamentosEspeciales}
+                          value={ProductCategory.medicamentos_especiales}
                         >
                           {t('modal.categories.medicamentosEspeciales')}
                         </SelectItem>
-                        <SelectItem value={ProductCategory.InsumosQuirurgicos}>
+                        <SelectItem value={ProductCategory.insumos_quirurgicos}>
                           {t('modal.categories.insumosQuirurgicos')}
                         </SelectItem>
                         <SelectItem
-                          value={ProductCategory.ReactivosDiagnosticos}
+                          value={ProductCategory.reactivos_diagnosticos}
                         >
                           {t('modal.categories.reactivosDiagnosticos')}
                         </SelectItem>
-                        <SelectItem value={ProductCategory.EquiposBiomedicos}>
+                        <SelectItem value={ProductCategory.equipos_biomedicos}>
                           {t('modal.categories.equiposBiomedicos')}
                         </SelectItem>
-                        <SelectItem value={ProductCategory.Otros}>
+                        <SelectItem value={ProductCategory.otros}>
                           {t('modal.categories.otros')}
                         </SelectItem>
                       </SelectContent>
@@ -205,7 +218,7 @@ export function CreateProductModal({
                     <FormLabel>{t('modal.fields.provider')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger data-testid="provider-select">
                           <SelectValue
                             placeholder={t('modal.fields.providerPlaceholder')}
                           />

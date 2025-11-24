@@ -1,7 +1,7 @@
-import React, { PropsWithChildren } from 'react'
+import React from 'react'
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { CreateProviderModal } from './create-provider-modal'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -24,18 +24,16 @@ vi.mock('@/lib/validations/provider-schema', () => ({
 
 const mockCreateProvider = vi.fn()
 
-vi.mock('@/services/hooks/use-providers', () => ({
-  useCreateProvider: () => ({
-    mutate: mockCreateProvider,
-    isPending: false
-  })
-}))
-
-const makeClient = () =>
-  new QueryClient({ defaultOptions: { queries: { retry: false } } })
-
-const wrap = (ui: React.ReactNode) =>
-  render(<QueryClientProvider client={makeClient()}>{ui}</QueryClientProvider>)
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useCreateProviderBffWebProviderPost: () => ({
+      mutate: mockCreateProvider,
+      isPending: false
+    })
+  }
+})
 
 afterEach(() => {
   vi.clearAllMocks()
@@ -68,7 +66,9 @@ const fillBasics = () => {
 describe('CreateProviderModal', () => {
   it('should render and close when cancel is clicked', async () => {
     const onOpenChange = vi.fn()
-    wrap(<CreateProviderModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateProviderModal open={true} onOpenChange={onOpenChange} />
+    )
 
     await waitFor(() => {
       expect(screen.getByText('modal.title')).toBeInTheDocument()
@@ -89,7 +89,9 @@ describe('CreateProviderModal', () => {
       options?.onSuccess?.()
     })
 
-    wrap(<CreateProviderModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateProviderModal open={true} onOpenChange={onOpenChange} />
+    )
 
     fillBasics()
 
@@ -98,15 +100,17 @@ describe('CreateProviderModal', () => {
 
     await waitFor(() => expect(mockCreateProvider).toHaveBeenCalledTimes(1))
 
-    const [formData] = mockCreateProvider.mock.calls[0]
-    expect(formData).toEqual({
-      name: 'John Doe',
-      contact_name: 'Acme',
-      nit: '123',
-      email: 'john@example.com',
-      phone: '+1 234',
-      address: 'Main St',
-      country: 'Colombia'
+    const [callData] = mockCreateProvider.mock.calls[0]
+    expect(callData).toEqual({
+      data: {
+        name: 'John Doe',
+        contact_name: 'Acme',
+        nit: '123',
+        email: 'john@example.com',
+        phone: '+1 234',
+        address: 'Main St',
+        country: 'Colombia'
+      }
     })
 
     await waitFor(() => {
@@ -122,7 +126,9 @@ describe('CreateProviderModal', () => {
       options?.onError?.(new Error('Server error'))
     })
 
-    wrap(<CreateProviderModal open={true} onOpenChange={onOpenChange} />)
+    renderWithProviders(
+      <CreateProviderModal open={true} onOpenChange={onOpenChange} />
+    )
 
     fillBasics()
 

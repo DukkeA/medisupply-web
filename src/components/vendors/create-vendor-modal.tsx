@@ -5,6 +5,7 @@ import type React from 'react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -26,7 +27,10 @@ import {
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import LocationSelector from '../ui/location-input'
-import { useCreateSeller } from '@/services/hooks/use-sellers'
+import {
+  useCreateSellerBffWebSellersPost,
+  getGetSellersBffWebSellersGetQueryKey
+} from '@/generated'
 import {
   createSellerSchema,
   type SellerFormData
@@ -43,6 +47,7 @@ export function CreateVendorModal({
 }: CreateVendorModalProps) {
   const t = useTranslations('vendors')
   const tValidation = useTranslations()
+  const queryClient = useQueryClient()
 
   // Initialize form with validation
   const form = useForm<SellerFormData>({
@@ -58,20 +63,28 @@ export function CreateVendorModal({
   })
 
   // mutation to create a new vendor
-  const { mutate: createVendorMutation, isPending } = useCreateSeller()
+  const { mutate: createVendorMutation, isPending } =
+    useCreateSellerBffWebSellersPost()
 
   // form handlers
   const handleSubmit = (data: SellerFormData) => {
-    createVendorMutation(data, {
-      onSuccess: () => {
-        onOpenChange(false)
-        toast.success(t('modal.toastSuccess'))
-        form.reset()
-      },
-      onError: () => {
-        toast.error(t('modal.toastError'))
+    createVendorMutation(
+      { data },
+      {
+        onSuccess: () => {
+          // Invalidate sellers query to refetch the list
+          queryClient.invalidateQueries({
+            queryKey: getGetSellersBffWebSellersGetQueryKey()
+          })
+          onOpenChange(false)
+          toast.success(t('modal.toastSuccess'))
+          form.reset()
+        },
+        onError: () => {
+          toast.error(t('modal.toastError'))
+        }
       }
-    })
+    )
   }
 
   // Reset form when modal closes

@@ -1,7 +1,8 @@
-import React, { PropsWithChildren } from 'react'
+import React from 'react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { VendorsTable } from './vendors-table'
 
 /* ────────── Mocks tipados ────────── */
@@ -16,13 +17,17 @@ vi.mock('@/components/vendors/create-vendor-modal', () => ({
   )
 }))
 
-// Mock useSellers hook
+// Mock useGetSellersBffWebSellersGet hook
 type UseQueryResult<T> = { data?: T; isLoading: boolean; isError: boolean }
-const mockUseSellers = vi.fn<() => UseQueryResult<unknown>>()
+const mockUseGetSellers = vi.fn<() => UseQueryResult<unknown>>()
 
-vi.mock('@/services/hooks/use-sellers', () => ({
-  useSellers: () => mockUseSellers()
-}))
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useGetSellersBffWebSellersGet: () => mockUseGetSellers()
+  }
+})
 
 /* ────────── Tests ────────── */
 
@@ -39,27 +44,27 @@ describe('VendorsTable', () => {
   })
 
   it('should display loading state while fetching data', () => {
-    mockUseSellers.mockReturnValue({
+    mockUseGetSellers.mockReturnValue({
       isLoading: true,
       isError: false,
       data: undefined
     })
-    render(<VendorsTable />)
+    renderWithProviders(<VendorsTable />)
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
   it('should display error message when query fails', () => {
-    mockUseSellers.mockReturnValue({
+    mockUseGetSellers.mockReturnValue({
       isLoading: false,
       isError: true,
       data: undefined
     })
-    render(<VendorsTable />)
+    renderWithProviders(<VendorsTable />)
     expect(screen.getByText('Error loading vendors.')).toBeInTheDocument()
   })
 
   it('should render table with empty state when data is empty', () => {
-    mockUseSellers.mockReturnValue({
+    mockUseGetSellers.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -71,7 +76,7 @@ describe('VendorsTable', () => {
         has_previous: false
       }
     })
-    render(<VendorsTable />)
+    renderWithProviders(<VendorsTable />)
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByText('table.noData')).toBeInTheDocument()
   })
@@ -79,7 +84,7 @@ describe('VendorsTable', () => {
   it('should render rows and open modal when add button is clicked', async () => {
     process.env.NEXT_PUBLIC_MOCK_DATA = 'true'
 
-    mockUseSellers.mockReturnValue({
+    mockUseGetSellers.mockReturnValue({
       isLoading: false,
       isError: false,
       data: {
@@ -103,7 +108,7 @@ describe('VendorsTable', () => {
       }
     })
 
-    render(<VendorsTable />)
+    renderWithProviders(<VendorsTable />)
 
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByText('Alice')).toBeInTheDocument()

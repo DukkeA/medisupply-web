@@ -1,11 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
+import { renderWithProviders } from '@/__tests__/test-utils'
 import { ProductsTable } from './products-table'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { NextIntlClientProvider } from 'next-intl'
 
-// Mock the useProducts hook
-const mockUseProducts = vi.fn()
+// Mock the Orval hooks
+const mockUseGetProducts = vi.fn()
 const mockUseCreateProduct = vi.fn(() => ({
   mutate: vi.fn(),
   isPending: false
@@ -15,75 +14,16 @@ const mockUseUploadProductsCSV = vi.fn(() => ({
   isPending: false
 }))
 
-vi.mock('@/services/hooks/use-products', () => ({
-  useProducts: () => mockUseProducts(),
-  useCreateProduct: () => mockUseCreateProduct(),
-  useUploadProductsCSV: () => mockUseUploadProductsCSV()
-}))
-
-const mockMessages = {
-  products: {
-    title: 'Products',
-    table: {
-      addButton: 'Add Product',
-      addCSVButton: 'Import CSV',
-      columns: {
-        sku: 'SKU',
-        name: 'Name',
-        category: 'Category',
-        price: 'Price',
-        refrigerated: 'Refrigerated',
-        provider: 'Provider'
-      }
-    },
-    modal: {
-      title: 'Add Product',
-      description: 'Fill the form to add a new product',
-      fields: {
-        sku: 'SKU',
-        name: 'Name',
-        category: 'Category',
-        price: 'Price',
-        refrigerated: 'Refrigerated',
-        provider: 'Provider'
-      },
-      buttons: {
-        cancel: 'Cancel',
-        create: 'Create'
-      }
-    },
-    csvModal: {
-      title: 'Import CSV',
-      description: 'Upload a CSV file with products',
-      fields: {
-        file: 'File',
-        fileDescription: 'Select a CSV file'
-      },
-      buttons: {
-        cancel: 'Cancel',
-        upload: 'Upload'
-      }
-    }
-  }
-}
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false
-    }
+vi.mock('@/generated', async () => {
+  const actual = await vi.importActual('@/generated')
+  return {
+    ...actual,
+    useGetProductsBffWebProductsGet: () => mockUseGetProducts(),
+    useCreateProductBffWebProductsPost: () => mockUseCreateProduct(),
+    useCreateProductsFromCsvBffWebProductsBatchPost: () =>
+      mockUseUploadProductsCSV()
   }
 })
-
-const Wrapper = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider messages={mockMessages} locale="es">
-        {children}
-      </NextIntlClientProvider>
-    </QueryClientProvider>
-  )
-}
 
 describe('ProductsTable', () => {
   beforeEach(() => {
@@ -91,7 +31,7 @@ describe('ProductsTable', () => {
   })
 
   it('should render products table', async () => {
-    mockUseProducts.mockReturnValue({
+    mockUseGetProducts.mockReturnValue({
       data: {
         items: [
           {
@@ -115,11 +55,7 @@ describe('ProductsTable', () => {
       isError: false
     })
 
-    render(
-      <Wrapper>
-        <ProductsTable />
-      </Wrapper>
-    )
+    renderWithProviders(<ProductsTable />)
 
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument()
@@ -131,7 +67,7 @@ describe('ProductsTable', () => {
   })
 
   it('should show action buttons', async () => {
-    mockUseProducts.mockReturnValue({
+    mockUseGetProducts.mockReturnValue({
       data: {
         items: [],
         total: 0,
@@ -144,15 +80,11 @@ describe('ProductsTable', () => {
       isError: false
     })
 
-    render(
-      <Wrapper>
-        <ProductsTable />
-      </Wrapper>
-    )
+    renderWithProviders(<ProductsTable />)
 
     await waitFor(() => {
       expect(screen.getByTestId('add-product-button')).toBeInTheDocument()
-      expect(screen.getByTestId('import-csv-button')).toBeInTheDocument()
+      expect(screen.getByTestId('upload-csv-button')).toBeInTheDocument()
     })
   })
 })

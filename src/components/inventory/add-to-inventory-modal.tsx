@@ -2,7 +2,7 @@
 
 import type React from 'react'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
@@ -39,15 +39,21 @@ import {
 } from '@/components/ui/command'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
+import { useQueryClient } from '@tanstack/react-query'
 import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/utils/classNames'
 import { format } from 'date-fns'
-import { useProducts, useWarehouses, useAddToInventory } from '@/services'
+import {
+  useGetProductsBffWebProductsGet,
+  useGetWarehousesBffWebWarehousesGet,
+  useCreateInventoryBffWebInventoryPost,
+  getGetInventoriesBffWebInventoriesGetQueryKey
+} from '@/generated'
 import {
   createInventorySchema,
   type InventoryFormData
 } from '@/lib/validations/inventory-schema'
-import type { InventoryCreateRequest } from '@/generated/models'
+import type { InventoryCreateRequest } from '@/generated'
 
 type AddToInventoryModalProps = {
   open: boolean
@@ -60,6 +66,7 @@ export function AddToInventoryModal({
 }: AddToInventoryModalProps) {
   const t = useTranslations('inventory')
   const tValidation = useTranslations()
+  const queryClient = useQueryClient()
 
   const [date, setDate] = useState<Date>()
   const [openProductSelect, setOpenProductSelect] = useState(false)
@@ -79,19 +86,20 @@ export function AddToInventoryModal({
   })
 
   // mutation to add to inventory
-  const { mutate: addToInventoryMutation, isPending } = useAddToInventory()
+  const { mutate: addToInventoryMutation, isPending } =
+    useCreateInventoryBffWebInventoryPost()
 
   // query products to populate product select
-  const { data: products } = useProducts()
+  const { data: products } = useGetProductsBffWebProductsGet()
 
   // query warehouses to populate warehouse select
-  const { data: warehouses } = useWarehouses()
+  const { data: warehouses } = useGetWarehousesBffWebWarehousesGet()
 
   // form handlers
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     form.reset()
     setDate(undefined)
-  }
+  }, [form])
 
   const handleSubmit = (data: InventoryFormData) => {
     // Get selected product to populate denormalized fields
@@ -113,16 +121,23 @@ export function AddToInventoryModal({
       expiration_date: data.expiration_date
     }
 
-    addToInventoryMutation(inventoryPayload, {
-      onSuccess: () => {
-        onOpenChange(false)
-        toast.success(t('modal.toastSuccess'))
-        resetForm()
-      },
-      onError: () => {
-        toast.error(t('modal.toastError'))
+    addToInventoryMutation(
+      { data: inventoryPayload },
+      {
+        onSuccess: () => {
+          // Invalidate inventory query to refetch the list
+          queryClient.invalidateQueries({
+            queryKey: getGetInventoriesBffWebInventoriesGetQueryKey()
+          })
+          onOpenChange(false)
+          toast.success(t('modal.toastSuccess'))
+          resetForm()
+        },
+        onError: () => {
+          toast.error(t('modal.toastError'))
+        }
       }
-    })
+    )
   }
 
   // Reset form when modal closes
@@ -130,7 +145,7 @@ export function AddToInventoryModal({
     if (!open) {
       resetForm()
     }
-  }, [open])
+  }, [open, resetForm])
 
   const selectedProduct = products?.items.find(
     (p) => p.id === form.watch('product_id')
@@ -161,7 +176,7 @@ export function AddToInventoryModal({
                         open={openProductSelect}
                         onOpenChange={setOpenProductSelect}
                       >
-                        <PopoverTrigger asChild>
+                        <PopoverTrigger asChild data-testid="product-select">
                           <Button
                             variant="outline"
                             role="combobox"
@@ -235,7 +250,7 @@ export function AddToInventoryModal({
                         open={openWarehouseSelect}
                         onOpenChange={setOpenWarehouseSelect}
                       >
-                        <PopoverTrigger asChild>
+                        <PopoverTrigger asChild data-testid="warehouse-select">
                           <Button
                             variant="outline"
                             role="combobox"
