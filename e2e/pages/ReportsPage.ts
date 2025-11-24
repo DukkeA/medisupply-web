@@ -42,7 +42,10 @@ export class ReportsPage extends BasePage {
     await this.reportTypeSelect.click()
     // Convert underscore to hyphen for data-testid
     const testId = `report-type-${type.replace(/_/g, '-')}`
-    await this.page.getByTestId(testId).click()
+    const option = this.page.getByTestId(testId)
+    // Wait for the option to be visible before clicking
+    await option.waitFor({ state: 'visible', timeout: 15000 })
+    await option.click()
   }
 
   /**
