@@ -9,7 +9,8 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'medisupply.andres-duque.com'
       }
-    ]
+    ],
+    formats: ['image/avif', 'image/webp']
   }
 }
 

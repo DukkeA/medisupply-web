@@ -13,5 +13,5 @@ export interface ShipmentInRoute {
   id: string;
   order_id: string;
   shipment_status: string;
-  delivery_sequence: number;
+  sequence_in_route: number;
 }

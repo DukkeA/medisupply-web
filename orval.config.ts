@@ -3,7 +3,7 @@ import { defineConfig } from 'orval'
 export default defineConfig({
   medisupplyApi: {
     input: {
-      target: 'http://localhost:8000/bff/openapi.json'
+      target: 'https://bffproyecto.juanandresdeveloper.com/bff/openapi.json'
     },
     output: {
       mode: 'tags-split',
